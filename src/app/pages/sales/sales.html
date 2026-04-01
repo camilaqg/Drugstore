@@ -1,0 +1,33 @@
+<h2>Sales</h2>
+
+<form (ngSubmit)="addSale()">
+  <label>Medicine ID:</label>
+  <input 
+    type="number" 
+    [(ngModel)]="newSale.medicineId" 
+    name="medicineId" 
+    required 
+  />
+
+  <label>Quantity:</label>
+  <input 
+    type="number" 
+    [(ngModel)]="newSale.quantity" 
+    name="quantity" 
+    required 
+  />
+
+  <button type="submit">Add Sale</button>
+</form>
+
+<hr>
+
+<ul>
+  <li *ngFor="let sale of sales$ | async">
+    <strong>ID:</strong> {{ sale.id }} |
+    <strong>Medicine:</strong> {{ sale.medicineId }} |
+    <strong>Quantity:</strong> {{ sale.quantity }} |
+    <strong>Total:</strong> {{ sale.total }} |
+    <strong>Date:</strong> {{ sale.date | date:'short' }}
+  </li>
+</ul>

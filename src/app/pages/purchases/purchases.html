@@ -1,0 +1,47 @@
+<h2>Purchases</h2>
+
+<form (ngSubmit)="addPurchase()">
+
+  <label>Medicine:</label>
+  <select [(ngModel)]="newPurchase.medicineId" name="medicineId" required>
+    <option [ngValue]="0">-- Select medicine --</option>
+    <option *ngFor="let med of medicines" [ngValue]="med.id">
+      {{ med.name }}
+    </option>
+  </select>
+
+  <br><br>
+
+  <label>Quantity:</label>
+  <input 
+    type="number" 
+    [(ngModel)]="newPurchase.quantity" 
+    name="quantity" 
+    required 
+  />
+
+  <br><br>
+
+  <button type="submit">Add Purchase</button>
+
+</form>
+
+<hr>
+
+<h3>Recent Purchases</h3>
+
+<table border="1" cellpadding="5">
+  <tr>
+    <th>Medicine</th>
+    <th>Quantity</th>
+    <th>Total</th>
+    <th>Date</th>
+  </tr>
+
+  <tr *ngFor="let purchase of (purchases$ | async) || []">
+    <td>{{ getMedicineName(purchase.medicineId) }}</td>
+    <td>{{ purchase.quantity }}</td>
+    <td>{{ purchase.total }}</td>
+    <td>{{ purchase.date | date:'short' }}</td>
+  </tr>
+</table>

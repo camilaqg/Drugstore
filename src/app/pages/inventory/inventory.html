@@ -1,0 +1,23 @@
+<h2>Inventario</h2>
+
+<form (ngSubmit)="addMedicine()">
+  <label>Nombre:</label>
+  <input type="text" [(ngModel)]="newMedicine.name" name="name" required />
+
+  <label>Precio:</label>
+  <input type="number" [(ngModel)]="newMedicine.price" name="price" required />
+
+  <label>Stock:</label>
+  <input type="number" [(ngModel)]="newMedicine.stock" name="stock" required />
+
+  <button type="submit">Agregar</button>
+</form>
+
+<hr />
+
+<h3>Lista de Medicamentos</h3>
+<ul>
+  <li *ngFor="let med of medicines$ | async">
+    {{ med.name }} - ${{ med.price }} - Stock: {{ med.stock }}
+  </li>
+</ul>
