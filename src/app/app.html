@@ -1,1 +1,29 @@
-<router-outlet></router-outlet>
+@if (mostrarLayout) {
+  <header>
+    <img class="logo" src="assets/logo.png" alt="Logo TrikiTrueke" routerLink="/home" routerLinkActive="activo">
+
+    <nav>
+      <div class="LinksNav">
+       <a class="btn-fondo" routerLink="/inventory" routerLinkActive="activo">Inventario</a>
+<a class="btn-fondo" routerLink="/sales" routerLinkActive="activo">Sales</a>
+<a class="btn-fondo" routerLink="/purchases" routerLinkActive="activo">Purchases</a>
+<a class="btn-fondo" routerLink="/reports" routerLinkActive="activo">Reports</a>
+      </div>
+    </nav>
+  </header>
+}
+
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+@if (mostrarLayout) {
+  <footer class="footer">
+    <p>© 2025 Drugstore — Todos los derechos reservados</p>
+    <div class="social">
+      <a href="https://www.instagram.com/SaraBlonde">
+        <img src="assets/Instagram.png" alt="Instagram">
+      </a>
+    </div>
+  </footer>
+}
