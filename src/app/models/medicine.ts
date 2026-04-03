@@ -1,6 +1,10 @@
 export interface Medicine {
-  id: number;
+  id: string; // MED-001
   name: string;
-  price: number;
+  laboratory: string;
+  description: string;
   stock: number;
+  purchasePrice: number;
+  salePrice: number;
+  status?: 'Activo' | 'Bajo stock' | 'Sin stock';
 }

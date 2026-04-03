@@ -1,23 +1,118 @@
-<h2>Inventario</h2>
+<div class="inventory-container">
 
-<form (ngSubmit)="addMedicine()">
-  <label>Nombre:</label>
-  <input type="text" [(ngModel)]="newMedicine.name" name="name" required />
+  <!-- parte de arriba -->
+  <div class="header-actions">
+    <h2>Agregar Producto</h2>
 
-  <label>Precio:</label>
-  <input type="number" [(ngModel)]="newMedicine.price" name="price" required />
+    <!-- buscador simple -->
+    <div class="search-bar">
+      <input type="text" placeholder="Buscar producto">
+    </div>
+  </div>
 
-  <label>Stock:</label>
-  <input type="number" [(ngModel)]="newMedicine.stock" name="stock" required />
+  <!-- formulario -->
+  <section class="form-card">
+    <p class="section-title">DATOS DEL PRODUCTO</p>
 
-  <button type="submit">Agregar</button>
-</form>
+    <!-- formulario principal -->
+    <form (ngSubmit)="addMedicine()" class="grid-form">
 
-<hr />
+      <!-- id automatico -->
+      <div class="field">
+        <label>ID PRODUCTO</label>
+        <input type="text" [(ngModel)]="newMedicine.id" name="id" placeholder="Auto" readonly>
+      </div>
 
-<h3>Lista de Medicamentos</h3>
-<ul>
-  <li *ngFor="let med of medicines$ | async">
-    {{ med.name }} - ${{ med.price }} - Stock: {{ med.stock }}
-  </li>
-</ul>
+      <!-- nombre -->
+      <div class="field large">
+        <label>NOMBRE DEL MEDICAMENTO</label>
+        <input type="text" [(ngModel)]="newMedicine.name" name="name" placeholder="Nombre">
+      </div>
+      
+      <!-- laboratorio -->
+      <div class="field">
+        <label>LABORATORIO</label>
+        <input type="text" [(ngModel)]="newMedicine.laboratory" name="lab" placeholder="Laboratorio">
+      </div>
+
+      <!-- descripcion -->
+      <div class="field large">
+        <label>DESCRIPCION</label>
+        <input type="text" [(ngModel)]="newMedicine.description" name="desc" placeholder="Descripcion">
+      </div>
+
+      <!-- cantidad -->
+      <div class="field">
+        <label>CANTIDAD</label>
+        <input type="number" [(ngModel)]="newMedicine.stock" name="stock">
+      </div>
+
+      <!-- precio compra -->
+      <div class="field">
+        <label>PRECIO COMPRA</label>
+        <input type="number" [(ngModel)]="newMedicine.purchasePrice" name="pPurchase" placeholder="$ 0">
+      </div>
+
+      <!-- precio venta -->
+      <div class="field">
+        <label>PRECIO VENTA</label>
+        <input type="number" [(ngModel)]="newMedicine.salePrice" name="pSale" placeholder="$ 0">
+      </div>
+
+    </form>
+  </section>
+
+  <!-- tabla -->
+  <section class="table-card">
+    <p class="section-title">LISTADO DE PRODUCTOS</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>CODIGO</th>
+          <th>NOMBRE</th>
+          <th>LABORATORIO</th>
+          <th>DESCRIPCION</th>
+          <th>CANTIDAD</th>
+          <th>PRECIO COMPRA</th>
+          <th>PRECIO VENTA</th>
+          <th>ESTADO</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <!-- lista de productos -->
+        <tr *ngFor="let med of medicines$ | async"
+            (click)="seleccionarMed(med)"
+            style="cursor: pointer;">
+
+          <td>{{ med.id }}</td>
+          <td>{{ med.name }}</td>
+          <td>{{ med.laboratory }}</td>
+          <td>{{ med.description }}</td>
+          <td>{{ med.stock }}</td>
+          <td>${{ med.purchasePrice }}</td>
+          <td>${{ med.salePrice }}</td>
+
+          <!-- estado del producto -->
+          <td>
+            <span class="status-badge" [attr.data-status]="med.status">
+              {{ med.status }}
+            </span>
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- botones -->
+  <div class="footer-buttons">
+    <button type="button" class="btn btn-mod" (click)="modificarMed()">Modificar</button>
+    <button type="button" class="btn btn-del" (click)="eliminarMed()">Eliminar</button>
+    <button type="button" class="btn btn-reg" (click)="addMedicine()">Registrar</button>
+    <button type="button" class="btn btn-clear" (click)="limpiarForm()">Limpiar</button>
+    <button type="button" class="btn btn-exit" (click)="salir()">Salir</button>
+  </div>
+
+</div>

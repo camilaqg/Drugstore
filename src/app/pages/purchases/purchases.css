@@ -1,0 +1,102 @@
+:host {
+    display: block;
+    background-color: #f4f7fc;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.purchase-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+h2 {
+    color: #3f51b5;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.section-title {
+    font-size: 12px;
+    color: #888;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.grid-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-items: end;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field label {
+    font-size: 11px;
+    color: #3f51b5;
+    font-weight: bold;
+}
+
+.field input {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #f9f9f9;
+    outline: none;
+}
+
+.field input:focus {
+    border-color: #3f51b5;
+}
+
+/* Grupo de búsqueda */
+.search-group {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-search {
+    background-color: #4db6ac;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 15px;
+    cursor: pointer;
+}
+
+/* Botón circular verde */
+.btn-add-circle {
+    background-color: #2ecc71;
+    color: white;
+    font-size: 24px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+.btn-add-circle:hover {
+    transform: scale(1.1);
+    background-color: #27ae60;
+}

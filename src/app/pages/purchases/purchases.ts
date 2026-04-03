@@ -1,70 +1,65 @@
-import { Component } from '@angular/core';
-import { PurchaseService } from '../../services/purchase.service';
-import { Purchase } from '../../models/purchase';
+import { Component, inject } from '@angular/core';
 import { MedicineService } from '../../services/medicine.service';
 import { Medicine } from '../../models/medicine';
-import { CommonModule } from '@angular/common';
+import { Purchase } from '../../models/purchase';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-purchases',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './purchases.html',
-  styleUrl: './purchases.css',
+  styleUrl: './purchases.css'
 })
 export class Purchases {
+  private medicineService = inject(MedicineService);
 
-  purchases$!: Observable<Purchase[]>; 
-  medicines: Medicine[] = [];
-
+  // Objeto para el formulario basado en el nuevo mockup
   newPurchase: Purchase = {
-    id: 0,
-    medicineId: 0,
+    id: '',
+    date: '',
+    provider: '',
+    invoiceNumber: '',
+    medicineId: '',
     quantity: 0,
-    total: 0,
-    date: new Date()
+    purchasePrice: 0,
+    salePrice: 0,
+    total: 0
   };
 
-  constructor(
-    private purchaseService: PurchaseService,
-    private medicineService: MedicineService
-  ) {
-    this.purchases$ = this.purchaseService.purchases$; // 👈 aquí correcto
-    this.medicineService.medicines$.subscribe(data => this.medicines = data);
+  // Para buscar el medicamento
+  medicineFound?: Medicine;
+
+  buscarMedicamento() {
+    // Buscamos en el servicio de medicinas usando el ID (string)
+    this.medicineService.medicines$.subscribe(medicines => {
+      this.medicineFound = medicines.find(m => m.id === this.newPurchase.medicineId);
+      if (this.medicineFound) {
+        this.newPurchase.purchasePrice = this.medicineFound.purchasePrice;
+        this.newPurchase.salePrice = this.medicineFound.salePrice;
+      }
+    });
   }
 
   addPurchase() {
     if (this.newPurchase.medicineId && this.newPurchase.quantity > 0) {
-
-      const medicine = this.medicines.find(m => m.id === this.newPurchase.medicineId);
-
-      if (medicine) {
-        this.newPurchase.total = medicine.price * this.newPurchase.quantity;
-        this.newPurchase.id = Date.now();
-        this.newPurchase.date = new Date();
-
-        this.purchaseService.addPurchase({ ...this.newPurchase });
-
-        // 📦 SUMAR STOCK
-        medicine.stock += this.newPurchase.quantity;
-        this.medicineService.updateMedicines(this.medicines);
-
-        // 🔄 reset
-        this.newPurchase = {
-          id: 0,
-          medicineId: 0,
-          quantity: 0,
-          total: 0,
-          date: new Date()
-        };
+      this.newPurchase.total = this.newPurchase.quantity * this.newPurchase.purchasePrice;
+      
+      // Actualizamos el stock en el inventario
+      if (this.medicineFound) {
+        this.medicineFound.stock += this.newPurchase.quantity;
+        // IMPORTANTE: Usamos el nombre correcto del método que definimos antes
+        this.medicineService.updateMedicine(this.medicineFound);
       }
+
+      alert('Compra registrada y stock actualizado');
+      this.limpiarForm();
     }
   }
 
-  getMedicineName(id: number) {
-    const med = this.medicines.find(m => m.id === id);
-    return med ? med.name : 'Desconocido';
+  limpiarForm() {
+    this.newPurchase = { id: '', date: '', provider: '', invoiceNumber: '', medicineId: '', quantity: 0, purchasePrice: 0, salePrice: 0, total: 0 };
+    this.medicineFound = undefined;
   }
 }

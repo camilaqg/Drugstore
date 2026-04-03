@@ -1,47 +1,59 @@
-<h2>Purchases</h2>
+<div class="purchase-container">
+  <h2>Registro de Compras</h2>
 
-<form (ngSubmit)="addPurchase()">
+  <div class="card">
+    <p class="section-title">INFORMACIÓN DE COMPRA</p>
+    <div class="grid-row">
+      <div class="field">
+        <label>FECHA DE COMPRA</label>
+        <input type="date" [(ngModel)]="newPurchase.date">
+      </div>
+      <div class="field">
+        <label>PROVEEDOR</label>
+        <input type="text" [(ngModel)]="newPurchase.provider" placeholder="Nombre del proveedor">
+      </div>
+      <div class="field">
+        <label>N° FACTURA</label>
+        <input type="text" [(ngModel)]="newPurchase.invoiceNumber" placeholder="FAC-0001">
+      </div>
+    </div>
+  </div>
 
-  <label>Medicine:</label>
-  <select [(ngModel)]="newPurchase.medicineId" name="medicineId" required>
-    <option [ngValue]="0">-- Select medicine --</option>
-    <option *ngFor="let med of medicines" [ngValue]="med.id">
-      {{ med.name }}
-    </option>
-  </select>
+  <div class="card">
+    <p class="section-title">MEDICAMENTO</p>
+    
+    <div class="grid-row">
+      <div class="field">
+        <label>CÓDIGO MEDICAMENTO</label>
+        <div class="search-group">
+          <input type="text" [(ngModel)]="newPurchase.medicineId" placeholder="MED-XXX">
+          <button class="btn-search" (click)="buscarMedicamento()">🔍 Buscar</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>MEDICAMENTO</label>
+        <input type="text" [value]="medicineFound?.name || ''" readonly placeholder="Nombre del medicamento">
+      </div>
+      <div class="field">
+        <label>LABORATORIO</label>
+        <input type="text" [value]="medicineFound?.laboratory || ''" readonly placeholder="Laboratorio">
+      </div>
+    </div>
 
-  <br><br>
-
-  <label>Quantity:</label>
-  <input 
-    type="number" 
-    [(ngModel)]="newPurchase.quantity" 
-    name="quantity" 
-    required 
-  />
-
-  <br><br>
-
-  <button type="submit">Add Purchase</button>
-
-</form>
-
-<hr>
-
-<h3>Recent Purchases</h3>
-
-<table border="1" cellpadding="5">
-  <tr>
-    <th>Medicine</th>
-    <th>Quantity</th>
-    <th>Total</th>
-    <th>Date</th>
-  </tr>
-
-  <tr *ngFor="let purchase of (purchases$ | async) || []">
-    <td>{{ getMedicineName(purchase.medicineId) }}</td>
-    <td>{{ purchase.quantity }}</td>
-    <td>{{ purchase.total }}</td>
-    <td>{{ purchase.date | date:'short' }}</td>
-  </tr>
-</table>
+    <div class="grid-row" style="margin-top: 25px;">
+      <div class="field">
+        <label>CANTIDAD</label>
+        <input type="number" [(ngModel)]="newPurchase.quantity">
+      </div>
+      <div class="field">
+        <label>PRECIO COMPRA</label>
+        <input type="number" [(ngModel)]="newPurchase.purchasePrice" placeholder="$ 0.00">
+      </div>
+      <div class="field">
+        <label>PRECIO VENTA</label>
+        <input type="number" [(ngModel)]="newPurchase.salePrice" placeholder="$ 0.00">
+      </div>
+      <button class="btn-add-circle" (click)="addPurchase()">+</button>
+    </div>
+  </div>
+</div>
