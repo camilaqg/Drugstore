@@ -1,30 +1,26 @@
 import { Component, inject } from '@angular/core';
 import { MedicineService } from '../../services/medicine.service';
-import { Observable } from 'rxjs';
 import { Medicine } from '../../models/medicine';
-import { AsyncPipe, NgFor, CommonModule } from '@angular/common';
+import { NgFor, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [AsyncPipe, NgFor, FormsModule, CommonModule],
+  imports: [ NgFor, FormsModule, CommonModule],
   templateUrl: './inventory.html',
-  styleUrl: './inventory.css' 
 })
 export class Inventory {
 
-  // servicio donde se guardan los medicamentos
-  private medicineService = inject(MedicineService);
-
-  // router para moverse entre paginas
+  // llamamos al servicio y al router
+  private servicio = inject(MedicineService);
   private router = inject(Router);
 
-  // lista de medicamentos en tiempo real
-  medicines$: Observable<Medicine[]>;
-
-  // objeto para el formulario
+  // lista que se muestra en la tabla
+  listaMeds: Medicine[] = [];
+  
+  // objeto para limpiar o llenar el formulario
   newMedicine: Medicine = {
     id: '',
     name: '',
@@ -36,69 +32,70 @@ export class Inventory {
   };
 
   constructor() {
-    // se conecta con el servicio
-    this.medicines$ = this.medicineService.medicines$;
+    // nos traemos los datos del servicio apenas cargue la pagina
+    this.servicio.medicines$.subscribe(datos => {
+      this.listaMeds = datos;
+    });
   }
 
-  // registrar producto
-  addMedicine() {
-    // valida que tenga datos basicos
-    if (this.newMedicine.name && this.newMedicine.salePrice >= 0) {
+  // genera un codigo aleatorio para el producto
+  generarId() {
+    return 'MED-' + Math.floor(Math.random() * 500);
+  }
 
-      // genera id si no existe
-      if (!this.newMedicine.id) {
-        this.newMedicine.id = 'MED-' + Math.floor(Math.random() * 1000);
-      }
-
-      // guarda el producto
-      this.medicineService.addMedicine({ ...this.newMedicine });
-
-      // limpia formulario
-      this.limpiarForm();
-
+  // este es el que llamas en el boton Registrar
+  registrar() {
+    if (this.newMedicine.name != '') {
+      // le ponemos un id antes de guardar
+      this.newMedicine.id = this.generarId();
+      this.servicio.addMedicine({ ...this.newMedicine });
+      
+      alert('Guardado con exito');
+      this.limpiar();
     } else {
-      alert('Ingrese el nombre y el precio');
+      alert('El nombre no puede estar vacio');
     }
   }
 
-  // cargar datos de la tabla al formulario
-  seleccionarMed(med: Medicine) {
-    // copia para no modificar directo la lista
-    this.newMedicine = { ...med };
+  // cuando haces clic en la fila de la tabla
+  seleccionar(m: Medicine) {
+    this.newMedicine = { ...m };
   }
 
-  // eliminar producto
-  eliminarMed() {
+  // este es el del boton Modificar
+  actualizar() {
     if (this.newMedicine.id) {
-
-      // confirmacion simple
-      if (confirm('Seguro que desea eliminar este producto')) {
-        this.medicineService.deleteMedicine(this.newMedicine.id);
-        this.limpiarForm();
-      }
-
-    } else {
-      alert('Seleccione un producto');
+      this.servicio.updateMedicine({ ...this.newMedicine });
+      alert('Se actualizaron los datos');
+      this.limpiar();
     }
   }
 
-  // modificar producto
-  modificarMed() {
+  // este es el del boton Eliminar
+  borrar() {
     if (this.newMedicine.id) {
-
-      // actualiza datos
-      this.medicineService.updateMedicine({ ...this.newMedicine });
-
-      alert('Producto actualizado');
-      this.limpiarForm();
-
+      if (confirm('¿Desea borrar este medicamento?')) {
+        this.servicio.deleteMedicine(this.newMedicine.id);
+        this.limpiar();
+      }
     } else {
-      alert('Seleccione un producto');
+      alert('Primero seleccione un producto de la tabla');
     }
   }
 
-  // limpiar formulario
-  limpiarForm() {
+  // para el buscador
+  buscar(event: any) {
+    const texto = event.target.value.toLowerCase();
+    this.servicio.medicines$.subscribe(todos => {
+      this.listaMeds = todos.filter(m => 
+        m.name.toLowerCase().includes(texto) || 
+        m.id.toLowerCase().includes(texto)
+      );
+    });
+  }
+
+  // limpia los cuadros de texto
+  limpiar() {
     this.newMedicine = {
       id: '',
       name: '',
@@ -110,8 +107,8 @@ export class Inventory {
     };
   }
 
-  // volver al dashboard
-  salir() {
+  // boton Salir
+  irAlMenu() {
     this.router.navigate(['/dashboard']);
   }
 }

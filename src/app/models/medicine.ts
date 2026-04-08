@@ -1,5 +1,5 @@
 export interface Medicine {
-  id: string; // MED-001
+  id: string;
   name: string;
   laboratory: string;
   description: string;

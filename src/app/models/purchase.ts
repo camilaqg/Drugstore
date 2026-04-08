@@ -3,7 +3,7 @@ export interface Purchase {
   date: string;
   provider: string;
   invoiceNumber: string;
-  medicineId: string; // Cambiado de number a string para que coincida con MED-001
+  medicineId: string; // porque esta asi en medicine como strign 
   quantity: number;
   purchasePrice: number;
   salePrice: number;

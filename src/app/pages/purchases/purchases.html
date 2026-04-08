@@ -2,10 +2,10 @@
   <h2>Registro de Compras</h2>
 
   <div class="card">
-    <p class="section-title">INFORMACIÓN DE COMPRA</p>
+    <p class="section-title">DATOS DE LA COMPRA</p>
     <div class="grid-row">
       <div class="field">
-        <label>FECHA DE COMPRA</label>
+        <label>FECHA</label>
         <input type="date" [(ngModel)]="newPurchase.date">
       </div>
       <div class="field">
@@ -14,29 +14,31 @@
       </div>
       <div class="field">
         <label>N° FACTURA</label>
-        <input type="text" [(ngModel)]="newPurchase.invoiceNumber" placeholder="FAC-0001">
+        <input type="text" [(ngModel)]="newPurchase.invoiceNumber" placeholder="Numero de factura">
       </div>
     </div>
   </div>
 
   <div class="card">
-    <p class="section-title">MEDICAMENTO</p>
+    <p class="section-title">BUSCAR MEDICAMENTO</p>
     
     <div class="grid-row">
       <div class="field">
-        <label>CÓDIGO MEDICAMENTO</label>
-        <div class="search-group">
-          <input type="text" [(ngModel)]="newPurchase.medicineId" placeholder="MED-XXX">
-          <button class="btn-search" (click)="buscarMedicamento()">🔍 Buscar</button>
-        </div>
+        <label>SELECCIONAR</label>
+        <select class="form-select" [(ngModel)]="newPurchase.medicineId" (change)="buscarMed()">
+          <option value="">Seleccione un producto</option>
+          <option *ngFor="let med of listaMedicamentos" [value]="med.id">
+            {{ med.id }} - {{ med.name }}
+          </option>
+        </select>
       </div>
       <div class="field">
-        <label>MEDICAMENTO</label>
-        <input type="text" [value]="medicineFound?.name || ''" readonly placeholder="Nombre del medicamento">
+        <label>NOMBRE</label>
+        <input type="text" [value]="medEncontrado?.name || ''" readonly>
       </div>
       <div class="field">
         <label>LABORATORIO</label>
-        <input type="text" [value]="medicineFound?.laboratory || ''" readonly placeholder="Laboratorio">
+        <input type="text" [value]="medEncontrado?.laboratory || ''" readonly>
       </div>
     </div>
 
@@ -47,13 +49,62 @@
       </div>
       <div class="field">
         <label>PRECIO COMPRA</label>
-        <input type="number" [(ngModel)]="newPurchase.purchasePrice" placeholder="$ 0.00">
+        <input type="number" [(ngModel)]="newPurchase.purchasePrice">
       </div>
       <div class="field">
         <label>PRECIO VENTA</label>
-        <input type="number" [(ngModel)]="newPurchase.salePrice" placeholder="$ 0.00">
+        <input type="number" [(ngModel)]="newPurchase.salePrice">
       </div>
-      <button class="btn-add-circle" (click)="addPurchase()">+</button>
+      
+      <div class="field-button">
+        <button type="button" class="btn-add-circle" (click)="meterALista()">
+          +
+        </button>
+      </div>
     </div>
+  </div>
+
+  <div class="card">
+    <p class="section-title">DETALLE DE LA COMPRA ACTUAL</p>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>NOMBRE</th>
+            <th>LABORATORIO</th>
+            <th>DESCRIPCION</th>
+            <th>CANT</th>
+            <th>P. COMPRA</th>
+            <th>P. VENTA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="tablaTemporal.length === 0">
+            <td colspan="7" style="text-align: center; padding: 20px;">
+              No hay productos en la lista
+            </td>
+          </tr>
+          <tr *ngFor="let item of tablaTemporal">
+            <td>{{ item.medicineId }}</td>
+            <td>{{ obtenerNombre(item.medicineId) }}</td>
+            <td>{{ obtenerLab(item.medicineId) }}</td>
+            <td>{{ obtenerDesc(item.medicineId) }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.purchasePrice }}</td>
+            <td>{{ item.salePrice }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer-actions">
+    <button class="btn-save" (click)="guardarCompra()">
+      Guardar Datos
+    </button>
+    <button class="btn-exit" (click)="regresar()">
+      Volver
+    </button>
   </div>
 </div>
