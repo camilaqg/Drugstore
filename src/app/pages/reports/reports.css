@@ -1,0 +1,213 @@
+/* CONTENEDOR */
+.informes-container{
+  background:#f4f6fb;
+  min-height:100vh;
+  font-family:Arial, Helvetica, sans-serif;
+  padding:20px 40px;
+}
+
+/* BARRA SUPERIOR */
+
+.barra-superior{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
+
+/* LOGO */
+
+.logo{
+  font-weight:bold;
+  color:#4f54d3;
+  font-size:18px;
+}
+
+/* BOTONES SUPERIORES */
+
+.botones-superiores{
+  display:flex;
+  gap:10px;
+}
+
+.admin{
+  background:#dff5ec;
+  color:#1e9b6c;
+  padding:6px 14px;
+  border:none;
+  border-radius:15px;
+  cursor:pointer;
+  font-size:13px;
+}
+
+.salir{
+  background:#ffe3e3;
+  color:#d9534f;
+  padding:6px 14px;
+  border:none;
+  border-radius:15px;
+  cursor:pointer;
+  font-size:13px;
+}
+
+/* TITULO */
+
+.titulo-informes h2{
+  color:#333;
+  text-align:left;
+  margin-bottom:15px;
+}
+
+/* TARJETA FILTROS */
+
+.filtros{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.06);
+  margin-bottom:20px;
+}
+
+/* GRID */
+
+.fila-filtros{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  align-items:flex-end;
+}
+
+/* CAMPOS */
+
+.campo{
+  display:flex;
+  flex-direction:column;
+}
+
+.campo label{
+  font-size:12px;
+  margin-bottom:4px;
+}
+
+.campo input{
+  padding:7px 8px;
+  border-radius:6px;
+  border:1px solid #ddd;
+  background:#f8f9fb;
+  width:170px;
+  font-size:13px;
+}
+
+/* FOCUS */
+
+.campo input:focus{
+  border-color:#4f54d3;
+  outline:none;
+  background:white;
+}
+
+/* BOTONES FILTRO */
+
+.botones-filtro{
+  display:flex;
+  gap:10px;
+}
+
+.buscar{
+  background:#4f54d3;
+  color:white;
+  border:none;
+  padding:8px 16px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.excel{
+  background:#33e299;
+  color:white;
+  border:none;
+  padding:8px 16px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* RESULTADOS */
+
+.resultados-ventas{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.06);
+}
+
+/* TABLA */
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+thead{
+  background:#4f54d3;
+  color:white;
+}
+
+thead th{
+  padding:10px;
+}
+
+tbody td{
+  padding:10px;
+  border-bottom:1px solid #eee;
+  text-align:center;
+}
+
+tbody tr:hover{
+  background:#f2f2f2;
+}
+
+/* MENSAJE VACIO */
+
+tbody td[colspan]{
+  color:#777;
+  padding:20px;
+}
+
+/* BOTON VOLVER */
+
+.volver{
+  margin-top:20px;
+}
+
+.volver button{
+  background:#fcfafa;
+  border:1px solid #ddd;
+  padding:10px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:13px;
+}
+
+/* HOVER GENERAL */
+
+button:hover{
+  opacity:0.95;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+  .fila-filtros{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .barra-superior{
+    flex-direction:column;
+    gap:10px;
+  }
+
+}

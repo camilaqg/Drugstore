@@ -1,1 +1,98 @@
-<p>reports works!</p>
+<div class="informes-container">
+
+  <!-- BARRA SUPERIOR -->
+  <div class="barra-superior">
+
+    <div class="logo">
+      <span>SISTEMA DROGUERÍA PILI</span>
+    </div>
+
+    <!-- MENÚ-->
+    
+
+    <!-- BOTONES -->
+    <div class="botones-superiores">
+      <button type="button" class="admin" (click)="irAdmin()">Admin</button>
+      <button type="button" class="salir" (click)="salir()">Salir</button>
+    </div>
+
+  </div>
+
+  <!-- TITULO -->
+  <div class="titulo-informes">
+    <h2>Informes de Venta</h2>
+  </div>
+
+  <!-- FORMULARIO -->
+  <form [formGroup]="filtroForm">
+
+    <section class="filtros">
+
+      <div class="fila-filtros">
+
+        <div class="campo">
+          <label>FECHA INICIAL</label>
+          <input type="date" formControlName="fechaInicial">
+        </div>
+
+        <div class="campo">
+          <label>FECHA FINAL</label>
+          <input type="date" formControlName="fechaFinal">
+        </div>
+
+        <div class="botones-filtro">
+          <button type="button" class="buscar" (click)="buscarVentas()">Buscar</button>
+          <button type="button" class="excel" (click)="exportarExcel()">Exportar Excel</button>
+        </div>
+
+      </div>
+
+    </section>
+
+  </form>
+
+  <!-- RESULTADOS -->
+  <section class="resultados-ventas">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>FECHA</th>
+          <th>FACTURA</th>
+          <th>CLIENTE</th>
+          <th>PRODUCTO</th>
+          <th>CANTIDAD</th>
+          <th>TOTAL</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let v of listaVentas">
+          <td>{{v.fechaVenta}}</td>
+          <td>{{v.Factura}}</td>
+          <td>{{v.Cliente}}</td>
+          <td>{{v.Medicamento}}</td>
+          <td>{{v.Cantidad}}</td>
+          <td>{{v.Total}}</td>
+        </tr>
+
+        <tr *ngIf="listaVentas.length === 0">
+          <td colspan="6" style="text-align:center;">
+            No hay ventas registradas
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </section>
+
+  <!-- VOLVER -->
+  <div class="volver">
+    <button type="button" (click)="volverInicio()">⟵ Volver al Inicio</button>
+  </div>
+
+</div>

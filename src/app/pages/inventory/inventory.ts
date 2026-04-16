@@ -5,11 +5,14 @@ import { NgFor, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
+
 @Component({
   selector: 'app-inventory',
   standalone: true,
   imports: [ NgFor, FormsModule, CommonModule],
   templateUrl: './inventory.html',
+  styleUrl: './inventory.css'
+  
 })
 export class Inventory {
 
@@ -110,5 +113,12 @@ export class Inventory {
   // boton Salir
   irAlMenu() {
     this.router.navigate(['/dashboard']);
+  }
+  irAdministrador() {
+    this.router.navigate(['/admin']);
+  }
+
+  salir() {
+    this.router.navigate(['/login']);
   }
 }

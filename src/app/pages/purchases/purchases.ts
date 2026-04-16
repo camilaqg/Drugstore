@@ -90,4 +90,11 @@ export class Purchases {
   regresar() {
     this.router.navigate(['/dashboard']);
   }
+  irAdministrador() {
+    this.router.navigate(['/admin']);
+  }
+
+  salir() {
+    this.router.navigate(['/login']);
+  }
 }

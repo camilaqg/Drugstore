@@ -1,33 +1,161 @@
-<h2>Sales</h2>
+<div class="ventas-container">
 
-<form (ngSubmit)="addSale()">
-  <label>Medicine ID:</label>
-  <input 
-    type="number" 
-    [(ngModel)]="newSale.medicineId" 
-    name="medicineId" 
-    required 
-  />
+  <!-- BARRA SUPERIOR -->
+  <div class="barra-superior">
+    <nav class="menu">
 
-  <label>Quantity:</label>
-  <input 
-    type="number" 
-    [(ngModel)]="newSale.quantity" 
-    name="quantity" 
-    required 
-  />
+      <div class="logo">
+        <span>SISTEMA DROGUERÍA PILI</span>
+      </div>
 
-  <button type="submit">Add Sale</button>
-</form>
+      
 
-<hr>
+      <div class="menu-administrador">
+        <span class="admin" (click)="irAdministrador()">Admin</span>
+        <span class="salir" (click)="salir()">Salir</span>
+      </div>
 
-<ul>
-  <li *ngFor="let sale of sales$ | async">
-    <strong>ID:</strong> {{ sale.id }} |
-    <strong>Medicine:</strong> {{ sale.medicineId }} |
-    <strong>Quantity:</strong> {{ sale.quantity }} |
-    <strong>Total:</strong> {{ sale.total }} |
-    <strong>Date:</strong> {{ sale.date | date:'short' }}
-  </li>
-</ul>
+    </nav>
+  </div>
+
+  <!-- TITULO -->
+  <div class="titulo-ventas">
+    <h2>Registro de Ventas</h2>
+  </div>
+
+  <!-- TARJETAS -->
+  <div class="resumen">
+    <div class="tarjeta"><p>VENTAS HOY</p><h3>$48.500</h3></div>
+    <div class="tarjeta"><p>TRANSACCIONES</p><h3>23</h3></div>
+    <div class="tarjeta"><p>PRODUCTOS VENDIDOS</p><h3>87</h3></div>
+    <div class="tarjeta"><p>VENTAS DEL MES</p><h3>$1.200.000</h3></div>
+  </div>
+
+  <!-- FORMULARIO -->
+  <form class="formulario-venta" [formGroup]="FormularioVentas">
+
+    <h3>Nueva Venta</h3>
+
+    <div class="fila">
+
+      <div class="campo">
+        <label>Fecha de Venta</label>
+        <input type="date" formControlName="fechaVenta">
+      </div>
+
+      <div class="campo">
+        <label>Cliente</label>
+        <input type="text" formControlName="Cliente">
+      </div>
+
+      <div class="campo">
+        <label>N° Factura</label>
+        <input type="text" formControlName="Factura">
+      </div>
+
+    </div>
+
+    <div class="fila">
+
+      <div class="campo">
+        <label>Código Medicamento</label>
+        <input type="text" formControlName="Codigo">
+      </div>
+
+      <div class="campo">
+        <label>Medicamento</label>
+        <input type="text" formControlName="Medicamento">
+      </div>
+
+      <div class="campo">
+        <label>Laboratorio</label>
+        <input type="text" formControlName="Laboratorio">
+      </div>
+
+      <div class="campo">
+        <label>Fecha Caducidad</label>
+        <input type="date" formControlName="fechaCaducidad">
+      </div>
+
+    </div>
+
+    <div class="fila">
+
+      <div class="campo">
+        <label>Cantidad</label>
+        <input type="number" formControlName="Cantidad">
+      </div>
+
+      <div class="campo">
+        <label>Precio Venta</label>
+        <input type="number" formControlName="Precio">
+      </div>
+
+      <div class="campo total">
+        <label>Total</label>
+        <input type="number" formControlName="Total" readonly>
+      </div>
+
+      <button type="button" class="boton-agregar" (click)="agregarProducto()">+</button>
+
+    </div>
+
+  </form>
+
+  <!-- DETALLE DE VENTA -->
+  <div class="detalle">
+
+    <h3>Detalle de Venta</h3>
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Laboratorio</th>
+          <th>Cantidad</th>
+          <th>Precio</th>
+          <th>Total</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let item of detalleVenta; let i = index">
+          <td>{{item.Codigo}}</td>
+          <td>{{item.Medicamento}}</td>
+          <td>{{item.Laboratorio}}</td>
+          <td>{{item.Cantidad}}</td>
+          <td>{{item.Precio}}</td>
+          <td>{{item.Total}}</td>
+          <td>
+            <button class="boton-quitar" type="button" (click)="quitarProducto(i)">Quitar</button>
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+    <div class="total-general">
+      Total: <strong>{{totalGeneral}}</strong>
+    </div>
+
+  </div>
+
+  <!-- BOTONES -->
+  <div class="botones">
+
+    <button class="boton confirmar" type="button" (click)="confirmarVenta()">Confirmar Venta</button>
+
+    <button class="boton imprimir" type="button" (click)="imprimirVenta()">Imprimir</button>
+
+    <button class="boton limpiar" type="button" (click)="limpiarFormulario()">Limpiar</button>
+
+    <button class="boton salir" type="button" (click)="salir()">⟵ Salir</button>
+
+  </div>
+
+</div>
