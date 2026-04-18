@@ -91,10 +91,10 @@ export class Purchases {
     this.router.navigate(['/dashboard']);
   }
   irAdministrador() {
-    this.router.navigate(['/admin']);
+    this.router.navigate(['/login']);
   }
 
   salir() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/dashboard']);
   }
 }

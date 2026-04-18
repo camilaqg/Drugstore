@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { SalesService } from '../../services/sales.service';
 
 @Component({
   selector: 'app-ventas',
@@ -17,7 +18,11 @@ export class SalesComponent {
   detalleVenta: any[] = [];
   totalGeneral = 0;
 
-  constructor(private form: FormBuilder, private router: Router) {
+  constructor(
+    private form: FormBuilder,
+    private router: Router,
+    private salesService: SalesService
+  ) {
 
     this.FormularioVentas = this.form.group({
       fechaVenta: ['', Validators.required],
@@ -67,6 +72,11 @@ export class SalesComponent {
   }
 
   confirmarVenta() {
+
+    this.detalleVenta.forEach(venta => {
+      this.salesService.addSale(venta);
+    });
+
     alert('Venta guardada');
     console.log(this.detalleVenta);
   }
@@ -82,11 +92,11 @@ export class SalesComponent {
   }
 
   irAdministrador() {
-    this.router.navigate(['/admin']);
+    this.router.navigate(['/login']);
   }
 
   salir() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/dashboard']);
   }
 
 }
