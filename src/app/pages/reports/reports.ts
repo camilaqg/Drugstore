@@ -41,15 +41,10 @@ export class ReportsComponents implements OnInit {
 
     console.log('Filtro:', f);
 
-
   }
 
   exportarExcel() {
     alert('Exportando a Excel...');
-  }
-
-  irAdmin() {
-    this.router.navigate(['/login']);
   }
 
   salir() {

@@ -1,6 +1,12 @@
 @if (mostrarLayout) {
+
   <!-- header con el menu principal -->
-  <header>
+  <header class="header">
+
+    <div class="logo"> 
+    <h2>SISTEMA DROGUERÍA PILI</h2> 
+  </div>
+
     <nav>
       <div class="LinksNav">
         <!-- links para navegar en la app -->
@@ -10,6 +16,12 @@
         <a class="btn-fondo" routerLink="/reports" routerLinkActive="activo">Informes</a>
       </div>
     </nav>
+
+    <div class="user">
+    <span class="admin" (click)="irAlMenu()">Admin</span>
+    <button class="salir" (click)="logout()">Salir</button>
+  </div>
+
   </header>
 }
 

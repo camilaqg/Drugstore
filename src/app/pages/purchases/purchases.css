@@ -6,50 +6,14 @@
   padding:20px 40px;
 }
 
-/* LOGO */
-
-.logo{
- font-weight:bold;
-  color:#4f54d3;
-  font-size:18px;
-  text-align:left;
-  margin-bottom:10px;
-}
-
-/* ADMIN */
-
-.menu-administrador{
-  display:flex;
-  justify-content:flex-end;
-  gap:10px;
-  margin-bottom:10px;
-}
-
-.admin{
-  background:#dff5ec;
-  color:#1e9b6c;
-  padding:5px 12px;
-  border-radius:15px;
-  cursor:pointer;
-}
-
-.menu-administrador .salir{
-  background:#ffe3e3;
-  color:#d9534f;
-  padding:5px 12px;
-  border-radius:15px;
-  cursor:pointer;
-}
-
 /* TITULO */
-
 h2{
   color:#333;
   text-align:left;
+  margin: 0;
 }
 
 /* TARJETAS */
-
 .card{
   background:white;
   margin-bottom:20px;
@@ -65,8 +29,6 @@ h2{
   font-weight:bold;
 }
 
-/* GRID */
-
 .grid-row{
   display:flex;
   gap:20px;
@@ -74,7 +36,6 @@ h2{
 }
 
 /* CAMPOS */
-
 .field{
   display:flex;
   flex-direction:column;
@@ -96,7 +57,6 @@ h2{
 }
 
 /* BOTON + */
-
 .field-button{
   display:flex;
   align-items:flex-end;
@@ -114,7 +74,6 @@ h2{
 }
 
 /* TABLA */
-
 .table-container{
   overflow-x:auto;
 }
@@ -143,14 +102,11 @@ tbody tr:hover{
   background:#f2f2f2;
 }
 
-/* MENSAJE VACIO */
-
 tbody td[colspan]{
   color:#777;
 }
 
 /* BOTONES FINALES */
-
 .footer-actions{
   padding:20px 0;
   display:flex;
@@ -181,16 +137,11 @@ button:hover{
   opacity:0.9;
 }
 
-/* RESPONSIVE */
-
+/* RESPONSIVE PARA QUE SE VEA BIEN EN DISPOSITIVOS MÓVILES */
 @media(max-width:768px){
 
   .grid-row{
     flex-direction:column;
-  }
-
-  .menu-administrador{
-    justify-content:center;
   }
 
 }

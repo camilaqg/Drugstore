@@ -6,54 +6,7 @@
   padding:20px 40px;
 }
 
-/* BARRA SUPERIOR */
-
-.barra-superior{
-  margin-bottom:10px;
-}
-
-.menu{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-}
-
-/* LOGO */
-
-.logo{
-  font-weight:bold;
-  color:#4f54d3;
-  font-size:18px;
-}
-
-/* ADMIN */
-
-.menu-administrador{
-  display:flex;
-  gap:10px;
-}
-
-.admin{
-  background:#dff5ec;
-  color:#1e9b6c;
-  padding:6px 14px;
-  border-radius:15px;
-  cursor:pointer;
-  font-size:13px;
-}
-
-.menu-administrador .salir{
-  background:#ffe3e3;
-  color:#d9534f;
-  padding:6px 14px;
-  border-radius:15px;
-  cursor:pointer;
-  font-size:13px;
-}
-
 /* TITULO */
-
 .titulo-ventas h2{
   color:#333;
   text-align:left;
@@ -61,7 +14,6 @@
 }
 
 /* TARJETAS */
-
 .resumen{
   display:flex;
   gap:20px;
@@ -87,7 +39,6 @@
 }
 
 /* FORMULARIO */
-
 .formulario-venta{
   background:white;
   padding:20px;
@@ -100,7 +51,6 @@
   margin-bottom:15px;
 }
 
-/* GRID */
 
 .fila{
   display:flex;
@@ -109,7 +59,6 @@
 }
 
 /* CAMPOS */
-
 .campo{
   display:flex;
   flex-direction:column;
@@ -129,7 +78,6 @@
   font-size:13px;
 }
 
-/* FOCUS */
 
 .campo input:focus{
   border-color:#4f54d3;
@@ -138,13 +86,11 @@
 }
 
 /* TOTAL */
-
 .total input{
   width:200px;
 }
 
 /* BOTON + */
-
 .boton-agregar{
   background:#28b463;
   color:white;
@@ -158,7 +104,6 @@
 }
 
 /* DETALLE */
-
 .detalle{
   background:white;
   padding:20px;
@@ -168,7 +113,6 @@
 }
 
 /* TABLA */
-
 table{
   width:100%;
   border-collapse:collapse;
@@ -195,7 +139,6 @@ tbody tr:hover{
 }
 
 /* BOTON QUITAR */
-
 .boton-quitar{
   background:#ff6b6b;
   border:none;
@@ -206,7 +149,6 @@ tbody tr:hover{
 }
 
 /* TOTAL GENERAL */
-
 .total-general{
   text-align:right;
   margin-top:10px;
@@ -214,7 +156,6 @@ tbody tr:hover{
 }
 
 /* BOTONES */
-
 .botones{
   display:flex;
   gap:15px;
@@ -230,7 +171,6 @@ tbody tr:hover{
 }
 
 /* COLORES */
-
 .confirmar{
   background:#33e299;
   color:white;
@@ -253,13 +193,11 @@ tbody tr:hover{
 }
 
 /* HOVER */
-
 button:hover{
   opacity:0.95;
 }
 
-/* RESPONSIVE */
-
+/* RESPONSIVE PARA QUE SE VEA BIEN EN DISPOSITIVOS MÓVILES */
 @media(max-width:768px){
 
   .fila{
@@ -268,11 +206,6 @@ button:hover{
 
   .resumen{
     flex-direction:column;
-  }
-
-  .menu{
-    flex-direction:column;
-    gap:10px;
   }
 
 }

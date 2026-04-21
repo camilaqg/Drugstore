@@ -6,53 +6,7 @@
   padding:20px 40px;
 }
 
-/* BARRA SUPERIOR */
-
-.barra-superior{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:15px;
-  flex-wrap:wrap;
-}
-
-/* LOGO */
-
-.logo{
-  font-weight:bold;
-  color:#4f54d3;
-  font-size:18px;
-}
-
-/* BOTONES SUPERIORES */
-
-.botones-superiores{
-  display:flex;
-  gap:10px;
-}
-
-.admin{
-  background:#dff5ec;
-  color:#1e9b6c;
-  padding:6px 14px;
-  border:none;
-  border-radius:15px;
-  cursor:pointer;
-  font-size:13px;
-}
-
-.salir{
-  background:#ffe3e3;
-  color:#d9534f;
-  padding:6px 14px;
-  border:none;
-  border-radius:15px;
-  cursor:pointer;
-  font-size:13px;
-}
-
 /* TITULO */
-
 .titulo-informes h2{
   color:#333;
   text-align:left;
@@ -60,7 +14,6 @@
 }
 
 /* TARJETA FILTROS */
-
 .filtros{
   background:white;
   padding:20px;
@@ -68,8 +21,6 @@
   box-shadow:0 4px 10px rgba(0,0,0,0.06);
   margin-bottom:20px;
 }
-
-/* GRID */
 
 .fila-filtros{
   display:flex;
@@ -79,7 +30,6 @@
 }
 
 /* CAMPOS */
-
 .campo{
   display:flex;
   flex-direction:column;
@@ -100,7 +50,6 @@
 }
 
 /* FOCUS */
-
 .campo input:focus{
   border-color:#4f54d3;
   outline:none;
@@ -108,7 +57,6 @@
 }
 
 /* BOTONES FILTRO */
-
 .botones-filtro{
   display:flex;
   gap:10px;
@@ -133,7 +81,6 @@
 }
 
 /* RESULTADOS */
-
 .resultados-ventas{
   background:white;
   padding:20px;
@@ -142,7 +89,6 @@
 }
 
 /* TABLA */
-
 table{
   width:100%;
   border-collapse:collapse;
@@ -168,15 +114,12 @@ tbody tr:hover{
   background:#f2f2f2;
 }
 
-/* MENSAJE VACIO */
-
 tbody td[colspan]{
   color:#777;
   padding:20px;
 }
 
 /* BOTON VOLVER */
-
 .volver{
   margin-top:20px;
 }
@@ -190,24 +133,16 @@ tbody td[colspan]{
   font-size:13px;
 }
 
-/* HOVER GENERAL */
-
 button:hover{
   opacity:0.95;
 }
 
-/* RESPONSIVE */
-
+/* RESPONSIVE PARA QUE SE VEA BIEN EN DISPOSITIVOS MÓVILES */
 @media(max-width:768px){
 
   .fila-filtros{
     flex-direction:column;
     align-items:flex-start;
-  }
-
-  .barra-superior{
-    flex-direction:column;
-    gap:10px;
   }
 
 }

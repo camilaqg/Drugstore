@@ -91,10 +91,6 @@ export class SalesComponent {
     this.totalGeneral = 0;
   }
 
-  irAdministrador() {
-    this.router.navigate(['/login']);
-  }
-
   salir() {
     this.router.navigate(['/dashboard']);
   }

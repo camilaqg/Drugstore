@@ -35,4 +35,14 @@ export class App {
       this.mostrarLayout = !rutasSinMenu.includes(event.urlAfterRedirects);
     });
   }
+
+  logout() {
+  localStorage.removeItem('admin');
+  this.router.navigate(['/']);
+}
+
+irAlMenu() {
+  this.router.navigate(['/dashboard']);
+}
+
 }
