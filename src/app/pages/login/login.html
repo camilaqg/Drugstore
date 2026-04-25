@@ -46,17 +46,24 @@
             placeholder="Ingrese su contraseña"
             required
           />
+
+          <!-- 🔥 MENSAJES AQUÍ ABAJO DEL INPUT -->
+          @if (errorCampos) {
+            <p style="color:#0f0f0f; margin-top:5px; text-align: center;">
+              *Campos obligatorios*
+            </p>
+          }
+
+          @if (errorCredenciales) {
+            <p style="color:#0f0f0f; margin-top:5px; text-align: center;">
+              *Usuario o contraseña incorrectos*
+            </p>
+          }
+
         </div>
 
         <!-- boton -->
         <button type="submit">Ingresar</button>
-
-        <!-- error -->
-        @if (error) {
-          <p style="color:red; margin-top:10px; text-align:center;">
-            Credenciales invalidas
-          </p>
-        }
 
       </form>
     </div>

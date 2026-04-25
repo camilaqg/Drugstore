@@ -12,29 +12,36 @@ import { Router } from '@angular/router';
 })
 export class Login {
 
-  // variables para guardar lo que escribe el usuario
   username: string = '';
   password: string = '';
 
-  // variable para mostrar error si falla
-  error: boolean = false;
+  // 🔥 ahora usamos dos errores
+  errorCampos: boolean = false;
+  errorCredenciales: boolean = false;
 
   constructor(private router: Router) {}
 
-  // funcion que se ejecuta al iniciar sesion
   login() {
 
-    // validacion basica de usuario y contraseña
+    // 🔹 validar campos vacíos
+    if (this.username === '' || this.password === '') {
+      this.errorCampos = true;
+      this.errorCredenciales = false;
+      return;
+    }
+
+    // si los campos están llenos
+    this.errorCampos = false;
+
+    // 🔹 validar credenciales
     if (this.username === 'admin' && this.password === '1234') {
 
-      // si es correcto entra al sistema
-      this.error = false;
+      this.errorCredenciales = false;
       this.router.navigate(['/dashboard']);
 
     } else {
 
-      // si no es correcto muestra error
-      this.error = true;
+      this.errorCredenciales = true;
     }
   }
 }

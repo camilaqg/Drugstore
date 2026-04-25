@@ -2,9 +2,7 @@
 
   <!-- BARRA SUPERIOR -->
   <div class="barra-superior">
-    <nav class="menu">
-      
-    </nav>
+    <nav class="menu"></nav>
   </div>
 
   <!-- TITULO -->
@@ -48,17 +46,25 @@
 
       <div class="campo">
         <label>Código Medicamento</label>
-        <input type="text" formControlName="Codigo">
+
+        <select formControlName="Codigo" (change)="buscarMedicamento()">
+          <option value="">Seleccione...</option>
+
+          <option *ngFor="let med of medicamentos" [value]="med.Codigo">
+            {{med.Codigo}} - {{med.Medicamento}}
+          </option>
+
+        </select>
       </div>
 
       <div class="campo">
         <label>Medicamento</label>
-        <input type="text" formControlName="Medicamento">
+        <input type="text" formControlName="Medicamento" readonly>
       </div>
 
       <div class="campo">
         <label>Laboratorio</label>
-        <input type="text" formControlName="Laboratorio">
+        <input type="text" formControlName="Laboratorio" readonly>
       </div>
 
       <div class="campo">
@@ -72,12 +78,19 @@
 
       <div class="campo">
         <label>Cantidad</label>
-        <input type="number" formControlName="Cantidad">
+
+        <!-- 🔥 AQUÍ ESTÁ EL CAMBIO -->
+        <input 
+          type="number" 
+          formControlName="Cantidad"
+          min="1"
+          step="1"
+          (input)="calcularTotalProducto()">
       </div>
 
       <div class="campo">
         <label>Precio Venta</label>
-        <input type="number" formControlName="Precio">
+        <input type="number" formControlName="Precio" readonly>
       </div>
 
       <div class="campo total">

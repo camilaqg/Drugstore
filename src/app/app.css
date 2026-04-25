@@ -61,9 +61,19 @@
 .admin {
   background: #d4f5e9;
   color: #1b8a5a;
-  padding: 5px 12px;
+  padding: 6px 14px;
   border-radius: 15px;
   font-size: 13px;
+  border: none;              
+  cursor: pointer;         
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.admin:hover {
+  background: #bff0dd;
+  transform: scale(1.05);    /* 🔥 efecto pro */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 /* BOTÓN SALIR */
