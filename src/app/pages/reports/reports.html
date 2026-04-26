@@ -52,12 +52,14 @@
       <tbody>
 
         <tr *ngFor="let v of listaVentas">
-          <td>{{v.fechaVenta}}</td>
-          <td>{{v.Factura}}</td>
-          <td>{{v.Cliente}}</td>
-          <td>{{v.Medicamento}}</td>
-          <td>{{v.Cantidad}}</td>
-          <td>{{v.Total}}</td>
+          <td>{{ v.fechaVenta }}</td>
+          <td>{{ v.Factura }}</td>
+          <td>{{ v.Cliente }}</td>
+          <td>{{ v.Medicamento }}</td>
+          <td>{{ v.Cantidad }}</td>
+
+
+          <td>{{ v.Total | currency:'COP' }}</td> <!--PARA EL CAMBIO DE LA  MONEDA -->
         </tr>
 
         <tr *ngIf="listaVentas.length === 0">

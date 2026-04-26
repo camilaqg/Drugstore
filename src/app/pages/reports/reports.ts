@@ -19,7 +19,7 @@ export class ReportsComponents implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private salesService: SalesService 
+    private salesService: SalesService
   ) {
 
     this.filtroForm = this.fb.group({
@@ -28,8 +28,9 @@ export class ReportsComponents implements OnInit {
     });
 
   }
-
   ngOnInit() {
+
+    // CARGA TODAS LAS VENTAS AL INICIO
     this.salesService.sales$.subscribe(data => {
       this.listaVentas = data;
     });
@@ -37,9 +38,28 @@ export class ReportsComponents implements OnInit {
 
   buscarVentas() {
 
-    const f = this.filtroForm.value;
+    const { fechaInicial, fechaFinal } = this.filtroForm.value;
 
-    console.log('Filtro:', f);
+    this.salesService.sales$.subscribe(data => {
+
+      // SI NO HAY FECHAS PUES  MUESTRA TODO
+      if (!fechaInicial || !fechaFinal) {
+        this.listaVentas = data;
+        return;
+      }
+
+      // FILTRAR POR FECHA
+      this.listaVentas = data.filter(v => {
+
+        const fechaVenta = new Date(v.fechaVenta);
+        const inicio = new Date(fechaInicial);
+        const fin = new Date(fechaFinal);
+
+        return fechaVenta >= inicio && fechaVenta <= fin;
+
+      });
+
+    });
 
   }
 

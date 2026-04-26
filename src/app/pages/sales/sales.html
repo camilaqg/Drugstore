@@ -10,12 +10,29 @@
     <h2>Registro de Ventas</h2>
   </div>
 
-  <!-- TARJETAS -->
+
   <div class="resumen">
-    <div class="tarjeta"><p>VENTAS HOY</p><h3>$48.500</h3></div>
-    <div class="tarjeta"><p>TRANSACCIONES</p><h3>23</h3></div>
-    <div class="tarjeta"><p>PRODUCTOS VENDIDOS</p><h3>87</h3></div>
-    <div class="tarjeta"><p>VENTAS DEL MES</p><h3>$1.200.000</h3></div>
+
+    <div class="tarjeta">
+      <p>VENTAS HOY</p>
+      <h3>{{ ventasHoy | currency:'COP' }}</h3> <!-- PARA VER LAS VENTAS Y CURRENCY PARA CAMBIAR LA MODEDA-->
+    </div>
+
+    <div class="tarjeta">
+      <p>TRANSACCIONES</p>
+      <h3>{{ transacciones }}</h3>
+    </div>
+
+    <div class="tarjeta">
+      <p>PRODUCTOS VENDIDOS</p>
+      <h3>{{ productosVendidos }}</h3>
+    </div>
+
+    <div class="tarjeta">
+      <p>VENTAS DEL MES</p>
+      <h3>{{ ventasMes | currency:'COP' }}</h3>
+    </div>
+
   </div>
 
   <!-- FORMULARIO -->
@@ -46,8 +63,7 @@
 
       <div class="campo">
         <label>Código Medicamento</label>
-
-        <select formControlName="Codigo" (change)="buscarMedicamento()">
+        <select formControlName="Codigo" (change)="buscarMedicamento()"> <!--CHANGE PARA QUE SE EJECUTE LA FUNCIÓN CUANDO SE CAMBIE LA SELECCIÓN -->
           <option value="">Seleccione...</option>
 
           <option *ngFor="let med of medicamentos" [value]="med.Codigo">
@@ -59,7 +75,7 @@
 
       <div class="campo">
         <label>Medicamento</label>
-        <input type="text" formControlName="Medicamento" readonly>
+        <input type="text" formControlName="Medicamento" readonly> <!-- READONLY PARA QUE EL CAMPO NO SE PUEDA MODIFICAR -->
       </div>
 
       <div class="campo">
@@ -78,14 +94,7 @@
 
       <div class="campo">
         <label>Cantidad</label>
-
-        <!-- 🔥 AQUÍ ESTÁ EL CAMBIO -->
-        <input 
-          type="number" 
-          formControlName="Cantidad"
-          min="1"
-          step="1"
-          (input)="calcularTotalProducto()">
+        <input type="number" formControlName="Cantidad" min="1" step="1" (input)="calcularTotalProducto()"> <!--MIN Y STEP PARA QUE NO HAYAN VALORES NEGATIVOS-->
       </div>
 
       <div class="campo">
@@ -142,7 +151,7 @@
     </table>
 
     <div class="total-general">
-      Total: <strong>{{totalGeneral}}</strong>
+      Total: <strong>{{ totalGeneral | currency:'COP' }}</strong>
     </div>
 
   </div>

@@ -4,4 +4,5 @@ export interface Sale {
   quantity: number;
   total: number;
   date: Date;
+  fechaVenta: string; 
 }
