@@ -11,38 +11,44 @@ import { filter } from 'rxjs/operators';
 })
 export class App {
 
-  // título básico de la app (lo dejo así por ahora)
   protected readonly title = signal('drugstore-system');
 
-  // variable para saber si se muestra el menú o no
-  // la dejo en false para que no se vea raro cuando carga el login
   mostrarLayout = false; 
 
   constructor(private router: Router) {
 
-    // aquí estoy escuchando cuando cambia la ruta
-    // (cada vez que navego a otra página)
+    // ESTADO INICIAL
+    const urlInicial = this.router.url;
+
+    this.mostrarLayout = !(
+      urlInicial === '/' ||
+      urlInicial.includes('/login') ||
+      urlInicial.includes('/register') ||
+      urlInicial.includes('/dashboard')
+    );
+
+    // PARA ESCUCHAR LOS CAMBIOS DE LA RUTA Y QUE NO APAREZCA LA BARRA DE NAVEGACION EN LAS PÁGINAS DE LOGIN, REGISTRO Y DASHBOARD
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
 
-      // estas son las rutas donde NO quiero que salga el menú
-      // ejemplo: login o pantalla principal
-      const rutasSinMenu = ['/login', '/dashboard', '/']; 
-      
-      // si la ruta actual NO está en esa lista, entonces sí muestro el layout
-      // si está, entonces no lo muestro
-      this.mostrarLayout = !rutasSinMenu.includes(event.urlAfterRedirects);
+      const url = event.urlAfterRedirects;
+
+      this.mostrarLayout = !(
+        url === '/' ||
+        url.includes('/login') ||
+        url.includes('/register') ||
+        url.includes('/dashboard')
+      );
     });
   }
 
   logout() {
-  localStorage.removeItem('admin');
-  this.router.navigate(['/']);
-}
+    localStorage.removeItem('admin');
+    this.router.navigate(['/']);
+  }
 
-irAlMenu() {
-  this.router.navigate(['/dashboard']);
-}
-
+  irAlMenu() {
+    this.router.navigate(['/dashboard']);
+  }
 }

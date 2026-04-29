@@ -6,6 +6,8 @@ import { Inventory } from './pages/inventory/inventory';
 import { SalesComponent} from './pages/sales/sales';
 import { Purchases} from './pages/purchases/purchases';
 import { ReportsComponents} from './pages/reports/reports';
+import { RegisterComponent } from './pages/register/register';
+
 
 export const routes: Routes = [
   { path: '', component: Login },
@@ -15,6 +17,7 @@ export const routes: Routes = [
   { path: 'sales', component: SalesComponent },
   { path: 'purchases', component: Purchases },
   { path: 'reports', component: ReportsComponents },
+  { path: 'register', component: RegisterComponent },
 
   { path: '**', redirectTo: '' }
 ];
