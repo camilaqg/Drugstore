@@ -23,16 +23,18 @@ export class Login {
 
   login() {
 
-    //  validar campos vacíos
+    //PARA VER EL MENSAJE DE ERROR
+    this.errorCampos = false;
+    this.errorCredenciales = false;
+
+    // VALIDAR CAMPOS VACÍOS
     if (this.username === '' || this.password === '') {
+      this.errorCampos = true;
       return;
     }
 
-    this.errorCampos = false;
-
     // LOGIN ADMIN
     if (this.username === 'admin' && this.password === '1234') {
-      this.errorCredenciales = false;
       localStorage.setItem('loggedIn', 'true');
       this.router.navigate(['/dashboard']);
       return;
@@ -51,12 +53,7 @@ export class Login {
     // VALIDAR USUARIO REGISTRADO
     if (this.username === user.username && this.password === user.password) {
 
-      this.errorCredenciales = false;
-
-      // GUARDAR SESIÓN
       localStorage.setItem('loggedIn', 'true');
-
-      // REDIRIGIR AL DASHBOARD
       this.router.navigate(['/dashboard']);
 
     } else {

@@ -13,48 +13,57 @@ import { SalesService } from '../../services/sales.service';
 })
 export class ReportsComponents implements OnInit {
 
+  // Formulario para filtrar por fechas
   filtroForm: FormGroup;
+
+  // Lista donde se guardan las ventas a mostrar
   listaVentas: any[] = [];
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private salesService: SalesService
+    private fb: FormBuilder,        // Para crear formularios reactivos
+    private router: Router,         // Para navegar entre páginas
+    private salesService: SalesService // Servicio que se maneja para las ventas para que se registre tambien la tabla de informes
   ) {
 
+    // se inicializa el formulario con campos vacíos
     this.filtroForm = this.fb.group({
       fechaInicial: [''],
       fechaFinal: ['']
     });
 
   }
+
   ngOnInit() {
 
-    // CARGA TODAS LAS VENTAS AL INICIO
+    // Se ejecuta al cargar el componente y se encarga de obtener todas las ventas para mostrarlas inicialmente
     this.salesService.sales$.subscribe(data => {
-      this.listaVentas = data;
+      this.listaVentas = data; // Guarda todas las ventas inicialmente
     });
+
   }
 
   buscarVentas() {
 
+    // se obtienen los valores del formulario
     const { fechaInicial, fechaFinal } = this.filtroForm.value;
 
+    // Se vuelve a suscribir para obtener los datos actualizados
     this.salesService.sales$.subscribe(data => {
 
-      // SI NO HAY FECHAS PUES  MUESTRA TODO
+      // Si no se seleccionan fechas, muestra todas las ventas
       if (!fechaInicial || !fechaFinal) {
         this.listaVentas = data;
         return;
       }
 
-      // FILTRAR POR FECHA
+      // Filtra las ventas según el rango de fechas
       this.listaVentas = data.filter(v => {
 
-        const fechaVenta = new Date(v.fechaVenta);
-        const inicio = new Date(fechaInicial);
-        const fin = new Date(fechaFinal);
+        const fechaVenta = new Date(v.fechaVenta); // Fecha de cada venta
+        const inicio = new Date(fechaInicial);     // Fecha inicial
+        const fin = new Date(fechaFinal);          // Fecha final
 
+        // se retornan las ventas que estén dentro del rango de fechas seleccionado
         return fechaVenta >= inicio && fechaVenta <= fin;
 
       });
