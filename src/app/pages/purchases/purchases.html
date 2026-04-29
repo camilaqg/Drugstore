@@ -46,15 +46,15 @@
     <div class="grid-row" style="margin-top: 25px;">
       <div class="field">
         <label>CANTIDAD</label>
-        <input type="number" [(ngModel)]="newPurchase.quantity">
+        <input type="number" min="0" [(ngModel)]="newPurchase.quantity">
       </div>
       <div class="field">
         <label>PRECIO COMPRA</label>
-        <input type="number" [(ngModel)]="newPurchase.purchasePrice">
+       <input type="number" min="0" [(ngModel)]="newPurchase.precioCompra">
       </div>
       <div class="field">
         <label>PRECIO VENTA</label>
-        <input type="number" [(ngModel)]="newPurchase.salePrice">
+        <input type="number" min="0" [(ngModel)]="newPurchase.salePrice">
       </div>
 
       <div class="field-button">

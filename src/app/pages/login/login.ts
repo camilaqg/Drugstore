@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink], 
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './login.html',
-  styleUrls: ['./login.css'] 
+  styleUrls: ['./login.css']
 })
 export class Login {
 
@@ -19,14 +19,12 @@ export class Login {
   errorCampos: boolean = false;
   errorCredenciales: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   login() {
 
-    // VALIDAR CAMPOS VACÍOS
-    if (!this.username || !this.password) {
-      this.errorCampos = true;
-      this.errorCredenciales = false;
+    //  validar campos vacíos
+    if (this.username === '' || this.password === '') {
       return;
     }
 

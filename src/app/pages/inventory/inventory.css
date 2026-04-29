@@ -60,6 +60,15 @@
   width:160px;
   font-size:13px;
 }
+.campo input,
+.campo select {
+  padding:6px;
+  border-radius:6px;
+  border:1px solid #ddd;
+  background:#f8f9fb;
+  width:160px;
+  font-size:13px;
+}
 
 /* TABLA */
 .tabla-scroll{

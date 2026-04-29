@@ -52,17 +52,27 @@ export class Purchases {
 
   // mete el registro a la tabla de abajo
   meterALista() {
-    if (this.newPurchase.medicineId != '' && this.newPurchase.quantity > 0) {
-      this.tablaTemporal.push({ ...this.newPurchase });
-      
-      // limpio solo los datos del medicamento para agregar otro
-      this.newPurchase.medicineId = '';
-      this.newPurchase.quantity = 0;
-      this.medEncontrado = undefined;
-    } else {
-      alert('Debe seleccionar producto y cantidad');
-    }
+  if (this.newPurchase.purchasePrice < 0 || this.newPurchase.salePrice < 0) {
+    alert('Los precios no pueden ser negativos');
+    return;
   }
+
+  if (this.newPurchase.quantity <= 0) {
+    alert('La cantidad debe ser mayor a 0');
+    return;
+  }
+
+  if (this.newPurchase.medicineId != '') {
+    this.tablaTemporal.push({ ...this.newPurchase });
+
+    this.newPurchase.medicineId = '';
+    this.newPurchase.quantity = 0;
+    this.medEncontrado = undefined;
+
+  } else {
+    alert('Debe seleccionar producto');
+  }
+}
 
   // procesa la compra y actualiza el inventario
   guardarCompra() {
@@ -71,8 +81,8 @@ export class Purchases {
         let m = this.listaMedicamentos.find(aux => aux.id === item.medicineId);
         if (m) {
           // sumo lo que compre al stock que ya habia
-          m.stock = m.stock + item.quantity;
-          this.medService.updateMedicine(m);
+          const actualizado = { ...m, stock: m.stock + item.quantity };
+this.medService.updateMedicine(actualizado);
         }
       });
       alert('Se registro la compra correctamente');
