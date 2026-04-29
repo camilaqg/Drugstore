@@ -15,7 +15,7 @@ export class Login {
   username: string = '';
   password: string = '';
 
-  // 🔥 ahora usamos dos errores
+  // 
   errorCampos: boolean = false;
   errorCredenciales: boolean = false;
 
@@ -23,7 +23,7 @@ export class Login {
 
   login() {
 
-    // 🔹 validar campos vacíos
+    //  validar campos vacíos
     if (this.username === '' || this.password === '') {
       this.errorCampos = true;
       this.errorCredenciales = false;

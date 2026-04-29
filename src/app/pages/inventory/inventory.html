@@ -12,10 +12,16 @@
     <p class="titulo-gris">DATOS DEL MEDICAMENTO</p>
 
     <div class="grid-formulario">
-      <div class="campo">
-        <label>ID / CODIGO</label>
-        <input type="text" [(ngModel)]="newMedicine.id" readonly placeholder="Automatico">
-      </div>
+    <div class="campo">
+      <label>ID / CODIGO</label>
+    
+      <select [(ngModel)]="newMedicine.id" class="form-select">
+        <option *ngFor="let m of listaMeds" [value]="m.id">
+          {{ m.id }} 
+        </option>
+      </select>
+    
+    </div>
 
       <div class="campo grande">
         <label>NOMBRE COMERCIAL</label>
@@ -39,12 +45,12 @@
 
       <div class="campo">
         <label>PRECIO COMPRA</label>
-        <input type="number" [(ngModel)]="newMedicine.purchasePrice">
+        <input type="number" min="0" [(ngModel)]="newMedicine.purchasePrice">
       </div>
 
       <div class="campo">
         <label>PRECIO VENTA</label>
-        <input type="number" [(ngModel)]="newMedicine.salePrice">
+        <input type="number" min="0" [(ngModel)]="newMedicine.salePrice">
       </div>
     </div>
   </section>
