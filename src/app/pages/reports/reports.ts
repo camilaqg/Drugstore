@@ -72,10 +72,6 @@ export class ReportsComponents implements OnInit {
 
   }
 
-  exportarExcel() {
-    alert('Exportando a Excel...');
-  }
-
   salir() {
     this.router.navigate(['/dashboard']);
   }

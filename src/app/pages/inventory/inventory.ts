@@ -64,7 +64,8 @@ export class Inventory {
   seleccionar(m: Medicine) {
     this.newMedicine = { ...m };
   }
-
+ 
+    
   // este es el del boton Modificar
   actualizar() {
     if (this.newMedicine.id) {

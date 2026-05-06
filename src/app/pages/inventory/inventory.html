@@ -3,11 +3,6 @@
   <div class="header-seccion">
     <h2>Gestion de Inventario</h2>
 
-    <div class="caja-busqueda">
-      <input type="text" placeholder="Filtrar por nombre..." (input)="buscar($event)">
-    </div>
-  </div>
-
   <section class="tarjeta-blanca">
     <p class="titulo-gris">DATOS DEL MEDICAMENTO</p>
 
@@ -51,9 +46,16 @@
       <div class="campo">
         <label>PRECIO VENTA</label>
         <input type="number" min="0" [(ngModel)]="newMedicine.salePrice">
+        
       </div>
     </div>
   </section>
+
+   <div class="caja-busqueda">
+      <input type="text" placeholder="Filtrar por nombre..." (input)="buscar($event)">
+    </div>
+  </div>
+
 
   <section class="tarjeta-blanca">
     <p class="titulo-gris">INVENTARIO ACTUAL</p>
