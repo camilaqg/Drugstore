@@ -1,21 +1,17 @@
+<!-- CONTENIDO -->
 <div class="ventas-container">
-
-  <!-- BARRA SUPERIOR -->
-  <div class="barra-superior">
-    <nav class="menu"></nav>
-  </div>
 
   <!-- TITULO -->
   <div class="titulo-ventas">
     <h2>Registro de Ventas</h2>
   </div>
 
-
+  <!-- TARJETAS -->
   <div class="resumen">
 
     <div class="tarjeta">
       <p>VENTAS HOY</p>
-      <h3>{{ ventasHoy | currency:'COP' }}</h3> <!-- PARA VER LAS VENTAS Y CURRENCY PARA CAMBIAR LA MODEDA-->
+      <h3>{{ ventasHoy | currency:'COP' }}</h3>
     </div>
 
     <div class="tarjeta">
@@ -63,19 +59,17 @@
 
       <div class="campo">
         <label>Código Medicamento</label>
-        <select formControlName="Codigo" (change)="buscarMedicamento()"> <!--CHANGE PARA QUE SE EJECUTE LA FUNCIÓN CUANDO SE CAMBIE LA SELECCIÓN -->
+        <select formControlName="Codigo" (change)="buscarMedicamento()">
           <option value="">Seleccione...</option>
-
           <option *ngFor="let med of medicamentos" [value]="med.Codigo">
             {{med.Codigo}} - {{med.Medicamento}}
           </option>
-
         </select>
       </div>
 
       <div class="campo">
         <label>Medicamento</label>
-        <input type="text" formControlName="Medicamento" readonly> <!-- READONLY PARA QUE EL CAMPO NO SE PUEDA MODIFICAR -->
+        <input type="text" formControlName="Medicamento" readonly>
       </div>
 
       <div class="campo">
@@ -94,7 +88,7 @@
 
       <div class="campo">
         <label>Cantidad</label>
-        <input type="number" formControlName="Cantidad" min="1" step="1" (input)="calcularTotalProducto()"> <!--MIN Y STEP PARA QUE NO HAYAN VALORES NEGATIVOS-->
+        <input type="number" formControlName="Cantidad" min="1" (input)="calcularTotalProducto()">
       </div>
 
       <div class="campo">
@@ -113,13 +107,12 @@
 
   </form>
 
-  <!-- DETALLE DE VENTA -->
+  <!-- DETALLE -->
   <div class="detalle">
 
     <h3>Detalle de Venta</h3>
 
     <table>
-
       <thead>
         <tr>
           <th>Código</th>
@@ -133,21 +126,18 @@
       </thead>
 
       <tbody>
-
         <tr *ngFor="let item of detalleVenta; let i = index">
           <td>{{item.Codigo}}</td>
           <td>{{item.Medicamento}}</td>
           <td>{{item.Laboratorio}}</td>
           <td>{{item.Cantidad}}</td>
-          <td>{{item.Precio}}</td>
-          <td>{{item.Total}}</td>
+          <td>{{item.Precio | currency:'COP'}}</td>
+          <td>{{item.Total | currency:'COP'}}</td>
           <td>
-            <button class="boton-quitar" type="button" (click)="quitarProducto(i)">Quitar</button>
+            <button class="boton-quitar" (click)="quitarProducto(i)">Quitar</button>
           </td>
         </tr>
-
       </tbody>
-
     </table>
 
     <div class="total-general">
@@ -159,13 +149,10 @@
   <!-- BOTONES -->
   <div class="botones">
 
-    <button class="boton confirmar" type="button" (click)="confirmarVenta()">Confirmar Venta</button>
-
-    <button class="boton imprimir" type="button" (click)="imprimirVenta()">Imprimir</button>
-
-    <button class="boton limpiar" type="button" (click)="limpiarFormulario()">Limpiar</button>
-
-    <button class="boton salir" type="button" (click)="salir()">⟵ Salir</button>
+    <button class="boton confirmar" (click)="confirmarVenta()">Confirmar Venta</button>
+    <button class="boton imprimir" (click)="imprimirVenta()">Imprimir</button>
+    <button class="boton limpiar" (click)="limpiarFormulario()">Limpiar</button>
+    <button class="boton salir" (click)="salir()">⟵ Salir</button>
 
   </div>
 

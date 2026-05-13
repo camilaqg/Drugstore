@@ -6,7 +6,12 @@
   background: #f5f6fa;
   border-bottom: 1px solid #ddd;
 }
+nav{
+  flex: 0.8;
+  display: flex;
+  justify-content: center;
 
+}
 /* LOGO + TITULO */
 .logo {
   display: flex;
@@ -25,7 +30,9 @@
 .LinksNav {
   display: flex;
   gap: 20px;
+  justify-content: center;
   margin-left: 40px;
+  flex: 1;
 }
 
 /* LINKS */
@@ -90,4 +97,31 @@
 /* HOVER SALIR */
 .salir:hover {
   background: #f8d7da;
+}
+/* LOGO NUEVO */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* IMAGEN LOGO */
+.logo-container img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}
+
+/* TEXO LOGO */
+.texto-logo h1 {
+  margin: 0;
+  font-size: 16px;
+  color: #4b3b8f;
+  font-weight: 600;
+}
+
+.texto-logo p {
+  margin: 0;
+  font-size: 11px;
+  color: #777;
 }
