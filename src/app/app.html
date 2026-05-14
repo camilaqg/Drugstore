@@ -1,70 +1,73 @@
 @if (mostrarLayout) {
 
-  <!-- header con el menu principal -->
-  <header class="header">
+<header class="header">
 
-    <!-- LOGO -->
-    <div class="logo-container">
+  <!-- LOGO -->
+  <div class="logo-container">
 
-      <img src="iconos/flor.png" alt="logo">
+    <img src="iconos/flor.png" alt="logo">
 
-      <div class="texto-logo">
-        <h1>Droguería Pili</h1>
-        <p>SISTEMA DE GESTIÓN</p>
-      </div>
-
+    <div class="texto-logo">
+      <h1>Droguería Pili</h1>
+      <p>SISTEMA DE GESTIÓN</p>
     </div>
 
-    <nav>
-      <div class="LinksNav">
+  </div>
 
-        <!-- links para navegar en la app -->
-        <a class="btn-fondo" routerLink="/inventory" routerLinkActive="activo">
-          Inventario
-        </a>
+  <nav>
+    <div class="LinksNav">
 
-        <a class="btn-fondo" routerLink="/sales" routerLinkActive="activo">
-          Ventas
-        </a>
+      <a class="btn-fondo" routerLink="/inventory" routerLinkActive="activo">
+        Inventario
+      </a>
 
-        <a class="btn-fondo" routerLink="/purchases" routerLinkActive="activo">
-          Compras
-        </a>
+      <a class="btn-fondo" routerLink="/sales" routerLinkActive="activo">
+        Ventas
+      </a>
 
-        <a class="btn-fondo" routerLink="/reports" routerLinkActive="activo">
-          Informes
-        </a>
+      <a class="btn-fondo" routerLink="/purchases" routerLinkActive="activo">
+        Compras
+      </a>
 
-      </div>
-    </nav>
+      <a class="btn-fondo" routerLink="/reports" routerLinkActive="activo">
+        Informes
+      </a>
 
-    <div class="user">
-      <span class="admin" (click)="irAlMenu()">Admin</span>
-      <button class="salir" (click)="logout()">Salir</button>
     </div>
+  </nav>
 
-  </header>
+  <div class="user">
+
+    <span class="admin" (click)="irAlMenu()">
+      {{ textoUsuario }}
+    </span>
+
+    <button class="salir" (click)="logout()">
+      Salir
+    </button>
+
+  </div>
+
+</header>
+
 }
 
 <main>
-  <!-- aqui se cargan las paginas -->
   <router-outlet></router-outlet>
 </main>
 
 @if (mostrarLayout) {
 
-  <!-- footer de la pagina -->
-  <footer class="footer">
+<footer class="footer">
 
-    <p>© 2026 Droguería Pili Todos los derechos reservados</p>
+  <p>© 2026 Droguería Pili Todos los derechos reservados</p>
 
-    <!-- redes sociales -->
-    <div class="social">
-      <a href="https://www.instagram.com/tu-usuario">
-        <img src="assets/Instagram.png" alt="Instagram">
-      </a>
-    </div>
+  <div class="social">
+    <a href="https://www.instagram.com/tu-usuario">
+      <img src="assets/Instagram.png" alt="Instagram">
+    </a>
+  </div>
 
-  </footer>
+</footer>
 
 }

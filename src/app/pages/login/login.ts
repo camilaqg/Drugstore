@@ -23,7 +23,7 @@ export class Login {
 
   login() {
 
-    //PARA VER EL MENSAJE DE ERROR
+    // LIMPIAR ERRORES
     this.errorCampos = false;
     this.errorCredenciales = false;
 
@@ -35,7 +35,12 @@ export class Login {
 
     // LOGIN ADMIN
     if (this.username === 'admin' && this.password === '1234') {
+
       localStorage.setItem('loggedIn', 'true');
+
+      // GUARDAR NOMBRE DEL USUARIO
+      localStorage.setItem('usuario', this.username);
+
       this.router.navigate(['/dashboard']);
       return;
     }
@@ -54,6 +59,10 @@ export class Login {
     if (this.username === user.username && this.password === user.password) {
 
       localStorage.setItem('loggedIn', 'true');
+
+      // GUARDAR NOMBRE DEL USUARIO
+      localStorage.setItem('usuario', this.username);
+
       this.router.navigate(['/dashboard']);
 
     } else {

@@ -1,19 +1,22 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
-  standalone: true, 
+  standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
-export class App {
+export class App implements OnInit {
 
   protected readonly title = signal('drugstore-system');
 
-  mostrarLayout = false; 
+  mostrarLayout = false;
+
+  // TEXTO QUE SE MOSTRARA ARRIBA
+  textoUsuario: string = 'Admin';
 
   constructor(private router: Router) {
 
@@ -27,7 +30,19 @@ export class App {
       urlInicial.includes('/dashboard')
     );
 
-    // PARA ESCUCHAR LOS CAMBIOS DE LA RUTA Y QUE NO APAREZCA LA BARRA DE NAVEGACION EN LAS PÁGINAS DE LOGIN, REGISTRO Y DASHBOARD
+    // MOSTRAR NOMBRE REAL SOLO EN COMPRAS
+    if (urlInicial.includes('/purchases')) {
+
+      this.textoUsuario =
+        localStorage.getItem('usuario') || 'Admin';
+
+    } else {
+
+      this.textoUsuario = 'Admin';
+
+    }
+
+    // ESCUCHAR CAMBIOS DE RUTA
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
@@ -40,11 +55,30 @@ export class App {
         url.includes('/register') ||
         url.includes('/dashboard')
       );
+
+      // MOSTRAR NOMBRE REAL SOLO EN COMPRAS
+      if (url.includes('/purchases')) {
+
+        this.textoUsuario =
+          localStorage.getItem('usuario') || 'Admin';
+
+      } else {
+
+        this.textoUsuario = 'Admin';
+
+      }
+
     });
   }
 
+  ngOnInit() {
+  }
+
   logout() {
+
     localStorage.removeItem('admin');
+    localStorage.removeItem('usuario');
+
     this.router.navigate(['/']);
   }
 
