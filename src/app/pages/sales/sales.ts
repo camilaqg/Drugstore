@@ -17,19 +17,22 @@ export class SalesComponent implements OnInit {
   // Formulario principal de ventas
   FormularioVentas: FormGroup;
 
-  // aqui es la  lsita donde se agregan los productos
+  // Lista de productos agregados
   detalleVenta: any[] = [];
 
-  // Total acumulado de toda la venta
+  // Total general
   totalGeneral = 0;
 
-  // estadisticas para las tarjetas
+  // Validar impresión
+  ventaConfirmada = false;
+
+  // Estadísticas
   ventasHoy = 0;
   transacciones = 0;
   productosVendidos = 0;
   ventasMes = 0;
 
-  // Lista de medicamentos disponiblesy el desplegable para seleccionar el medicamento
+  // Medicamentos
   medicamentos = [
     { Codigo: '001', Medicamento: 'Acetaminofén', Laboratorio: 'Genfar', Precio: 1500 },
     { Codigo: '002', Medicamento: 'Ibuprofeno', Laboratorio: 'MK', Precio: 2000 },
@@ -37,12 +40,11 @@ export class SalesComponent implements OnInit {
   ];
 
   constructor(
-    private form: FormBuilder,      // Para crear formularios reactivos
-    private router: Router,         //  Para navegación entre páginas
-    private salesService: SalesService //  Servicio para guardar ventas
+    private form: FormBuilder,
+    private router: Router,
+    private salesService: SalesService
   ) {
 
-    // validaciones
     this.FormularioVentas = this.form.group({
       fechaVenta: ['', Validators.required],
       Cliente: ['', Validators.required],
@@ -60,10 +62,10 @@ export class SalesComponent implements OnInit {
 
   ngOnInit() {
 
-    // Carga las estadísticas guardadas en localStorage y se mantienen estatico cuando se recarga la pagina o se sale del sistema
     const data = localStorage.getItem('estadisticasVentas');
 
     if (data) {
+
       const stats = JSON.parse(data);
 
       this.ventasHoy = stats.ventasHoy;
@@ -73,16 +75,15 @@ export class SalesComponent implements OnInit {
     }
   }
 
-  // Busca el medicamento por código
+  // Buscar medicamento
   buscarMedicamento() {
+
     const codigo = this.FormularioVentas.get('Codigo')?.value;
 
-    // Busca en el array el medicamento que coincida con el código
     const med = this.medicamentos.find(m => m.Codigo === codigo);
 
     if (med) {
 
-      //para autocompletar los campos del formulario
       this.FormularioVentas.patchValue({
         Medicamento: med.Medicamento,
         Laboratorio: med.Laboratorio,
@@ -93,43 +94,47 @@ export class SalesComponent implements OnInit {
     }
   }
 
-  // Calcula el total de un producto multiplicando la cantidad por el precio
+  // Calcular total producto
   calcularTotalProducto() {
+
     let cantidad = this.FormularioVentas.get('Cantidad')?.value;
+
     const precio = this.FormularioVentas.get('Precio')?.value;
 
-    //  Evita cantidades menores a 1
     if (cantidad < 1) {
+
       cantidad = 1;
+
       this.FormularioVentas.get('Cantidad')?.setValue(1);
     }
 
-    // Actualiza el total del producto
     this.FormularioVentas.patchValue({
       Total: cantidad * precio
     });
   }
 
-  // Agregar producto a la venta
+  // Agregar producto
   agregarProducto() {
 
     const data = this.FormularioVentas.value;
 
-    //se realiza la validación
     if (!data.Medicamento || data.Cantidad <= 0 || data.Precio <= 0) {
+
       alert('Completa los datos');
+
       return;
     }
 
-    // Calculo total del producto
     data.Total = data.Cantidad * data.Precio;
 
-    // Agregar producto al detalle de la venta
     this.detalleVenta.push({ ...data });
 
     this.calcularTotal();
 
-    // se limpian campos para agregar otro producto
+    // Deshabilitar impresión
+    this.ventaConfirmada = false;
+
+    // Limpiar solo campos del producto
     this.FormularioVentas.patchValue({
       Codigo: '',
       Medicamento: '',
@@ -140,41 +145,54 @@ export class SalesComponent implements OnInit {
     });
   }
 
-  // aqui se eliminan productos de la lista
+  // Quitar producto
   quitarProducto(i: number) {
+
     this.detalleVenta.splice(i, 1);
+
     this.calcularTotal();
+
+    this.ventaConfirmada = false;
   }
 
-  // Calculo general de la venta
+  // Calcular total general
   calcularTotal() {
-    this.totalGeneral = this.detalleVenta.reduce((sum, item) => sum + item.Total, 0);
+
+    this.totalGeneral = this.detalleVenta.reduce(
+      (sum, item) => sum + item.Total,
+      0
+    );
   }
 
-  // se Confirma venta
+  // Confirmar venta
   confirmarVenta() {
 
-    // se Valida que haya productos
     if (this.detalleVenta.length === 0) {
+
       alert('Rellena todos los datos para confirmar la venta');
+
       return;
     }
 
-    // aqui se guarda cada producto como una venta
+    // Guardar ventas
     this.detalleVenta.forEach(venta => {
+
       this.salesService.addSale(venta);
     });
 
-    // se actualizan estadísticas
+    // Actualizar estadísticas
     this.transacciones += 1;
+
     this.ventasHoy += this.totalGeneral;
+
     this.ventasMes += this.totalGeneral;
 
     this.detalleVenta.forEach(item => {
+
       this.productosVendidos += item.Cantidad;
     });
 
-    //  Guardar estadísticas en localStorage 
+    // Guardar estadísticas
     const stats = {
       ventasHoy: this.ventasHoy,
       transacciones: this.transacciones,
@@ -182,25 +200,52 @@ export class SalesComponent implements OnInit {
       ventasMes: this.ventasMes
     };
 
-    localStorage.setItem('estadisticasVentas', JSON.stringify(stats));
+    localStorage.setItem(
+      'estadisticasVentas',
+      JSON.stringify(stats)
+    );
+
+    // HABILITAR IMPRESIÓN
+    this.ventaConfirmada = true;
 
     alert('Venta guardada');
+
     console.log(this.detalleVenta);
 
+  }
+
+  // Imprimir venta
+  imprimirVenta() { //AQUI REALICE EL CAMBIO PARA EL BOTON 
+
+    if (!this.ventaConfirmada) {
+
+      alert('El boton se habilitaria cuando la venta este confirmada');
+
+      return;
+    }
+
+    // Imprimir
+    window.print();
+
+    // Limpiar después de imprimir
     this.limpiarFormulario();
   }
 
-  imprimirVenta() {
-    window.print();
-  }
-
+  // Limpiar formulario
   limpiarFormulario() {
+
     this.FormularioVentas.reset();
+
     this.detalleVenta = [];
+
     this.totalGeneral = 0;
+
+    this.ventaConfirmada = false;
   }
 
+  // Salir
   salir() {
+
     this.router.navigate(['/dashboard']);
   }
 
