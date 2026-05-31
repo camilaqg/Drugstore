@@ -13,7 +13,60 @@
   margin-bottom: 40px;
   width: 100%; 
 }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f2f2f2;
+    font-family: Arial, sans-serif;
+}
+
+.ubicacion-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.icono {
+    color: #00A650;
+    font-size: 24px;
+}
+
+select {
+    border: none;
+    outline: none;
+    font-size: 22px;
+    color: #3b3b3b;
+    background: transparent;
+    cursor: pointer;
+    appearance: none;
+    padding-right: 20px;
+}
+
+/* Flecha personalizada */
+.ubicacion-container {
+    position: relative;
+}
+
+.ubicacion-container::after {
+    content: "⌄";
+    position: absolute;
+    right: 10px;
+    color: #8c8c8c;
+    font-size: 18px;
+    pointer-events: none;
+}
 .logo-pequeno {
   width: 70px;
   height: 70px;
@@ -74,6 +127,7 @@
   background: #ff6b6b;
   color: white;
 }
+
 
 /* Contenedor de tarjetas */
 .contenedor {
