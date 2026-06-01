@@ -1,0 +1,59 @@
+<!-- BOTON FLOTANTE -->
+<button
+  class="boton-chat"
+  (click)="abierto = !abierto">
+
+  <img src="iconos/chat bot.png" alt="chat bot">
+
+</button>
+
+<!-- CHAT -->
+<div
+  class="chat-container"
+  *ngIf="abierto">
+
+  <!-- HEADER -->
+  <div class="chat-header">
+
+    <h3>Asistente Virtual</h3>
+
+    <button
+      (click)="abierto = false">
+
+    </button>
+
+  </div>
+
+  <!-- MENSAJES -->
+  <div class="chat-body">
+
+    <!-- MENSAJES DEL CHAT -->
+    <div
+      *ngFor="let m of mensajes"
+      [ngClass]="m.bot ? 'mensaje-bot' : 'mensaje-user'">
+
+      {{ m.texto }}
+
+    </div>
+
+  </div>
+
+  <!-- INPUT -->
+  <div class="chat-footer">
+
+    <input
+      type="text"
+      [(ngModel)]="mensaje"
+      placeholder="Escribe un mensaje..."
+      (keyup.enter)="enviarMensaje()">
+
+    <button
+      (click)="enviarMensaje()">
+
+      Enviar
+
+    </button>
+
+  </div>
+
+</div>

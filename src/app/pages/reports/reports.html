@@ -12,18 +12,52 @@
 
       <div class="fila-filtros">
 
+        <!-- FECHA INICIAL -->
         <div class="campo">
           <label>FECHA INICIAL</label>
           <input type="date" formControlName="fechaInicial">
         </div>
 
+        <!-- FECHA FINAL -->
         <div class="campo">
           <label>FECHA FINAL</label>
           <input type="date" formControlName="fechaFinal">
         </div>
 
+        <!-- MEDICAMENTO -->
+        <div class="campo">
+          <label>MEDICAMENTO</label>
+
+          <input
+            type="text"
+            formControlName="medicamento"
+            placeholder="Buscar medicamento">
+
+        </div>
+
+        <!-- BOTONES -->
         <div class="botones-filtro">
-          <button type="button" class="buscar" (click)="buscarVentas()">Buscar</button>
+
+          <!-- BUSCAR -->
+          <button
+            type="button"
+            class="buscar"
+            (click)="buscarVentas()">
+
+            Buscar
+
+          </button>
+
+          <!-- LIMPIAR -->
+          <button
+            type="button"
+            class="limpiar"
+            (click)="limpiarFiltros()">
+
+            Limpiar
+
+          </button>
+
         </div>
 
       </div>
@@ -37,34 +71,59 @@
 
     <table>
 
+      <!-- CABECERA -->
       <thead>
+
         <tr>
+
           <th>FECHA</th>
           <th>FACTURA</th>
           <th>CLIENTE</th>
           <th>PRODUCTO</th>
           <th>CANTIDAD</th>
           <th>TOTAL</th>
+
         </tr>
+
       </thead>
 
+      <!-- CUERPO -->
       <tbody>
 
+        <!-- MOSTRAR VENTAS -->
         <tr *ngFor="let v of listaVentas">
-          <td>{{ v.fechaVenta }}</td>
+
+          <td>
+
+            {{ v.fechaVenta | date:'dd/MM/yyyy' }}
+
+          </td>
+
           <td>{{ v.Factura }}</td>
+
           <td>{{ v.Cliente }}</td>
+
           <td>{{ v.Medicamento }}</td>
+
           <td>{{ v.Cantidad }}</td>
 
+          <td>
 
-          <td>{{ v.Total | currency:'COP' }}</td> <!--PARA EL CAMBIO DE LA  MONEDA -->
+            {{ v.Total | currency:'COP' }}
+
+          </td>
+
         </tr>
 
+        <!-- MENSAJE SI NO HAY RESULTADOS -->
         <tr *ngIf="listaVentas.length === 0">
-          <td colspan="6" style="text-align:center;">
-            No hay ventas registradas
+
+          <td colspan="6" class="sin-resultados">
+
+            No se encontraron ventas con los filtros seleccionados
+
           </td>
+
         </tr>
 
       </tbody>
@@ -75,7 +134,15 @@
 
   <!-- VOLVER -->
   <div class="volver">
-    <button type="button" (click)="volverInicio()">⟵ Volver al Inicio</button>
+
+    <button
+      type="button"
+      (click)="volverInicio()">
+
+      ⟵ Volver al Inicio
+
+    </button>
+
   </div>
 
 </div>

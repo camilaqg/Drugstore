@@ -1,11 +1,12 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { ChatbotComponent } from './components/chatbot/chatbot';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive,ChatbotComponent],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })

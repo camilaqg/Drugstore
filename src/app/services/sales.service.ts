@@ -5,15 +5,39 @@ import { Sale } from '../models/sale';
 @Injectable({
   providedIn: 'root'
 })
+
 export class SalesService {
-  getSales() {
-    throw new Error('Method not implemented.');
-  }
-  private _sales = new BehaviorSubject<Sale[]>([]);
+
+  // LISTA DE VENTAS
+  private _sales = new BehaviorSubject<Sale[]>(this.obtenerVentas());
+
+  // OBSERVABLE
   sales$ = this._sales.asObservable();
 
-  addSale(sale: Sale) {
-    const current = this._sales.getValue();
-    this._sales.next([...current, sale]);
+  constructor() { }
+
+  // OBTENER VENTAS DESDE LOCALSTORAGE
+  obtenerVentas(): Sale[] {
+
+    return JSON.parse(localStorage.getItem('ventas') || '[]');
+
   }
+
+  // AGREGAR VENTA
+  addSale(sale: Sale): void {
+
+    // OBTENER VENTAS ACTUALES
+    const current = this.obtenerVentas();
+
+    // AGREGAR NUEVA VENTA
+    current.push(sale);
+
+    // GUARDAR EN LOCALSTORAGE
+    localStorage.setItem('ventas', JSON.stringify(current));
+
+    // ACTUALIZAR BEHAVIORSUBJECT
+    this._sales.next(current);
+
+  }
+
 }

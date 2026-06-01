@@ -15,35 +15,66 @@
   </div>
 
   <nav>
+
     <div class="LinksNav">
 
-      <a class="btn-fondo" routerLink="/inventory" routerLinkActive="activo">
+      <a
+        class="btn-fondo"
+        routerLink="/inventory"
+        routerLinkActive="activo">
+
         Inventario
+
       </a>
 
-      <a class="btn-fondo" routerLink="/sales" routerLinkActive="activo">
+      <a
+        class="btn-fondo"
+        routerLink="/sales"
+        routerLinkActive="activo">
+
         Ventas
+
       </a>
 
-      <a class="btn-fondo" routerLink="/purchases" routerLinkActive="activo">
+      <a
+        class="btn-fondo"
+        routerLink="/purchases"
+        routerLinkActive="activo">
+
         Compras
+
       </a>
 
-      <a class="btn-fondo" routerLink="/reports" routerLinkActive="activo">
+      <a
+        class="btn-fondo"
+        routerLink="/reports"
+        routerLinkActive="activo">
+
         Informes
+
       </a>
 
     </div>
+
   </nav>
 
+  <!-- USUARIO -->
   <div class="user">
 
-    <span class="admin" (click)="irAlMenu()">
+    <span
+      class="admin"
+      (click)="irAlMenu()">
+
       {{ textoUsuario }}
+
     </span>
 
-    <button class="salir" (click)="logout()">
+    <button
+      class="salir"
+      (click)="logout()">
+
       Salir
+
     </button>
 
   </div>
@@ -52,21 +83,24 @@
 
 }
 
+<!-- CONTENIDO -->
 <main>
+
   <router-outlet></router-outlet>
+
 </main>
 
+<!-- CHATBOT -->
+<app-chatbot></app-chatbot>
+
+<!-- FOOTER -->
 @if (mostrarLayout) {
 
 <footer class="footer">
 
-  <p>© 2026 Droguería Pili Todos los derechos reservados</p>
-
-  <div class="social">
-    <a href="https://www.instagram.com/tu-usuario">
-      <img src="assets/Instagram.png" alt="Instagram">
-    </a>
-  </div>
+  <p>
+    © 2026 Droguería Pili Todos los derechos reservados
+  </p>
 
 </footer>
 
