@@ -1,111 +1,279 @@
-<div class="purchase-container">
+<div class="layout-compras">
 
-  <h2>Registro de Compras</h2>
+  <!-- CONTENIDO ORIGINAL -->
+  <div class="purchase-container">
 
-  <div class="card">
-    <p class="section-title">DATOS DE LA COMPRA</p>
-    <div class="grid-row">
-      <div class="field">
-        <label>FECHA</label>
-        <input type="date" [(ngModel)]="newPurchase.date">
-      </div>
-      <div class="field">
-        <label>PROVEEDOR</label>
-        <input type="text" [(ngModel)]="newPurchase.provider" placeholder="Nombre del proveedor">
-      </div>
-      <div class="field">
-        <label>N° FACTURA</label>
-        <input type="text" [(ngModel)]="newPurchase.invoiceNumber" placeholder="Numero de factura">
-      </div>
-    </div>
-  </div>
+    <h2>Registro de Compras</h2>
 
-  <div class="card">
-    <p class="section-title">BUSCAR MEDICAMENTO</p>
+    <div class="card">
+      <p class="section-title">DATOS DE LA COMPRA</p>
 
-    <div class="grid-row">
-      <div class="field">
-        <label>SELECCIONAR</label>
-        <select class="form-select" [(ngModel)]="newPurchase.medicineId" (change)="buscarMed()">
-          <option value="">Seleccione un producto</option>
-          <option *ngFor="let med of listaMedicamentos" [value]="med.id">
-            {{ med.id }} - {{ med.name }}
-          </option>
-        </select>
-      </div>
-      <div class="field">
-        <label>NOMBRE</label>
-        <input type="text" [value]="medEncontrado?.name || ''" readonly>
-      </div>
-      <div class="field">
-        <label>LABORATORIO</label>
-        <input type="text" [value]="medEncontrado?.laboratory || ''" readonly>
+      <div class="grid-row">
+
+        <div class="field">
+          <label>FECHA</label>
+          <input type="date" [(ngModel)]="newPurchase.date">
+        </div>
+
+        <div class="field">
+          <label>PROVEEDOR</label>
+          <input type="text"
+                 [(ngModel)]="newPurchase.provider"
+                 placeholder="Nombre del proveedor">
+        </div>
+
+        <div class="field">
+          <label>N° FACTURA</label>
+          <input type="text"
+                 [(ngModel)]="newPurchase.invoiceNumber"
+                 placeholder="Numero de factura">
+        </div>
+
       </div>
     </div>
 
-    <div class="grid-row" style="margin-top: 25px;">
-      <div class="field">
-        <label>CANTIDAD</label>
-        <input type="number" min="0" [(ngModel)]="newPurchase.quantity">
-      </div>
-      <div class="field">
-        <label>PRECIO COMPRA</label>
-       <input type="number" min="0" [(ngModel)]="newPurchase.precioCompra">
-      </div>
-      <div class="field">
-        <label>PRECIO VENTA</label>
-        <input type="number" min="0" [(ngModel)]="newPurchase.salePrice">
+
+    <div class="card">
+
+      <p class="section-title">BUSCAR MEDICAMENTO</p>
+
+      <div class="grid-row">
+
+        <div class="field">
+
+          <label>SELECCIONAR</label>
+
+          <select class="form-select"
+                  [(ngModel)]="newPurchase.medicineId"
+                  (change)="buscarMed()">
+
+            <option value="">
+              Seleccione un producto
+            </option>
+
+            <option *ngFor="let med of listaMedicamentos"
+                    [value]="med.id">
+
+              {{ med.id }} - {{ med.name }}
+
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+          <label>NOMBRE</label>
+
+          <input type="text"
+                 [value]="medEncontrado?.name || ''"
+                 readonly>
+        </div>
+
+
+        <div class="field">
+          <label>LABORATORIO</label>
+
+          <input type="text"
+                 [value]="medEncontrado?.laboratory || ''"
+                 readonly>
+        </div>
+
       </div>
 
-      <div class="field-button">
-        <button type="button" class="btn-add-circle" (click)="meterALista()">
-          +
-        </button>
+
+      <div class="grid-row" style="margin-top: 25px;">
+
+        <div class="field">
+          <label>CANTIDAD</label>
+
+          <input type="number"
+                 min="0"
+                 [(ngModel)]="newPurchase.quantity">
+        </div>
+
+
+        <div class="field">
+          <label>PRECIO COMPRA</label>
+
+          <input type="number"
+                 min="0"
+                 [(ngModel)]="newPurchase.precioCompra">
+        </div>
+
+
+        <div class="field">
+          <label>PRECIO VENTA</label>
+
+          <input type="number"
+                 min="0"
+                 [(ngModel)]="newPurchase.salePrice">
+        </div>
+
+
+        <div class="field-button">
+
+          <button type="button"
+                  class="btn-add-circle"
+                  (click)="meterALista()">
+
+            +
+
+          </button>
+
+        </div>
+
       </div>
+
     </div>
-  </div>
 
-  <div class="card">
-    <p class="section-title">DETALLE DE LA COMPRA ACTUAL</p>
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>NOMBRE</th>
-            <th>LABORATORIO</th>
-            <th>DESCRIPCION</th>
-            <th>CANT</th>
-            <th>P. COMPRA</th>
-            <th>P. VENTA</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="tablaTemporal.length === 0">
-            <td colspan="7" style="text-align: center; padding: 20px;">
-              No hay productos en la lista
-            </td>
-          </tr>
-          <tr *ngFor="let item of tablaTemporal">
-            <td>{{ item.medicineId }}</td>
-            <td>{{ obtenerNombre(item.medicineId) }}</td>
-            <td>{{ obtenerLab(item.medicineId) }}</td>
-            <td>{{ obtenerDesc(item.medicineId) }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.purchasePrice }}</td>
-            <td>{{ item.salePrice }}</td>
-          </tr>
-        </tbody>
-      </table>
+
+    <div class="card">
+
+      <p class="section-title">
+        DETALLE DE LA COMPRA ACTUAL
+      </p>
+
+      <div class="table-container">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>ID</th>
+              <th>NOMBRE</th>
+              <th>LABORATORIO</th>
+              <th>DESCRIPCION</th>
+              <th>CANT</th>
+              <th>P. COMPRA</th>
+              <th>P. VENTA</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr *ngIf="tablaTemporal.length === 0">
+
+              <td colspan="7"
+                  style="text-align: center; padding: 20px;">
+
+                No hay productos en la lista
+
+              </td>
+
+            </tr>
+
+
+            <tr *ngFor="let item of tablaTemporal">
+
+              <td>{{ item.medicineId }}</td>
+
+              <td>
+                {{ obtenerNombre(item.medicineId) }}
+              </td>
+
+              <td>
+                {{ obtenerLab(item.medicineId) }}
+              </td>
+
+              <td>
+                {{ obtenerDesc(item.medicineId) }}
+              </td>
+
+              <td>{{ item.quantity }}</td>
+
+              <td>{{ item.purchasePrice }}</td>
+
+              <td>{{ item.salePrice }}</td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
     </div>
+
+
+    <div class="footer-actions">
+
+      <button class="btn-save"
+              (click)="guardarCompra()">
+
+        Guardar Datos
+
+      </button>
+
+
+      <button class="btn-exit"
+              (click)="regresar()">
+
+        Volver
+
+      </button>
+
+    </div>
+
   </div>
 
-  <div class="footer-actions">
-    <button class="btn-save" (click)="guardarCompra()">
-      Guardar Datos
-    </button>
-    <button class="btn-exit" (click)="regresar()">
-      Volver
-    </button>
+
+
+  <!-- CARRITO -->
+  <div class="carrito-lateral">
+
+    <h3>🛒 Carrito de compras</h3>
+
+
+    <div class="producto-carrito"
+         *ngFor="let item of tablaTemporal">
+
+      <div>
+
+        <strong>
+          {{ obtenerNombre(item.medicineId) }}
+        </strong>
+
+        <p>
+          Cantidad: {{ item.quantity }}
+        </p>
+
+      </div>
+
+
+      <div class="precio">
+
+        ${{ item.purchasePrice * item.quantity }}
+
+      </div>
+
+    </div>
+
+
+    <div class="total-carrito">
+
+      TOTAL:
+
+      ${{
+        tablaTemporal.reduce(
+          (acc, item) =>
+            acc + (item.purchasePrice * item.quantity),
+          0
+        )
+      }}
+
+    </div>
+
+<button class="btn-guardar-carrito"
+        (click)="guardarCompraConMensaje()">
+
+  Guardar compra
+
+</button>
   </div>
+
 </div>

@@ -1,0 +1,48 @@
+<div class="contenedor">
+
+  <h2>Historial de Compras</h2>
+
+  <button
+  class="btn-limpiar"
+  (click)="limpiarHistorial()"
+>
+   Limpiar historial
+</button>
+
+  <div
+    class="card-compra"
+    *ngFor="let compra of compras"
+  >
+
+    <div class="fecha">
+      📅 {{ compra.fecha || 'Sin fecha' }}
+    </div>
+
+    <div
+      class="producto"
+      *ngFor="let producto of compra.productos"
+    >
+
+      <h3>
+        {{ producto.nombre || 'Medicamento' }}
+      </h3>
+
+      <p>
+        Cantidad:
+        {{ producto.quantity }}
+      </p>
+
+      <p>
+        Precio:
+        ${{ producto.purchasePrice }}
+      </p>
+
+    </div>
+
+    <div class="total">
+      Total: ${{ compra.total }}
+    </div>
+
+  </div>
+
+</div>

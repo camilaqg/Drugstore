@@ -1,0 +1,60 @@
+.contenedor{
+  padding: 30px;
+}
+
+h2{
+  margin-bottom: 25px;
+}
+
+.card-compra{
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.fecha{
+  color: #4f46e5;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.producto{
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.producto h3{
+  margin: 0;
+  color: #111827;
+}
+
+.producto p{
+  margin: 5px 0;
+  color: #6b7280;
+}
+
+.total{
+  margin-top: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #16a34a;
+}
+.btn-limpiar{
+  background: #444fef;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn-limpiar:hover{
+  background: #2926dc;
+}
