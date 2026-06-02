@@ -37,9 +37,8 @@ export class Login {
     if (this.username === 'admin' && this.password === '1234') {
 
       localStorage.setItem('loggedIn', 'true');
-
-      // GUARDAR NOMBRE DEL USUARIO
       localStorage.setItem('usuario', this.username);
+      localStorage.setItem('rol', 'admin');
 
       this.router.navigate(['/dashboard']);
       return;
@@ -59,9 +58,10 @@ export class Login {
     if (this.username === user.username && this.password === user.password) {
 
       localStorage.setItem('loggedIn', 'true');
-
-      // GUARDAR NOMBRE DEL USUARIO
       localStorage.setItem('usuario', this.username);
+
+      // GUARDAR EL ROL DEL USUARIO
+      localStorage.setItem('rol', user.rol);
 
       this.router.navigate(['/dashboard']);
 

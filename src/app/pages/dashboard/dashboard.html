@@ -11,7 +11,7 @@
     <h1 class="titulo">Bienvenida al sistema</h1>
     <p class="subtitulo">Seleccione un modulo para continuar</p>
   </div>
-  
+
   <!-- usuario -->
   <div class="user-section">
     <span class="admin">{{ usuarioActual }}</span>
@@ -26,7 +26,8 @@
 <!-- tarjetas -->
 <div class="contenedor">
 
-  <!-- inventario -->
+  <!-- INVENTARIO SOLO ADMIN -->
+  @if (rol === 'admin') {
   <div class="card" routerLink="/inventory">
 
     <div class="icono inventario">
@@ -40,9 +41,9 @@
     </p>
 
   </div>
+  }
 
-
-  <!-- compras -->
+  <!-- COMPRAS TODOS -->
   <div class="card" routerLink="/purchases">
 
     <div class="icono compras">
@@ -57,8 +58,8 @@
 
   </div>
 
-
-  <!-- ventas -->
+  <!-- VENTAS SOLO ADMIN -->
+  @if (rol === 'admin') {
   <div class="card" routerLink="/sales">
 
     <div class="icono ventas">
@@ -72,9 +73,10 @@
     </p>
 
   </div>
+  }
 
-
-  <!-- informes -->
+  <!-- INFORMES SOLO ADMIN -->
+  @if (rol === 'admin') {
   <div class="card" routerLink="/reports">
 
     <div class="icono informes">
@@ -88,9 +90,9 @@
     </p>
 
   </div>
+  }
 
-
-  <!-- NUEVA TARJETA HISTORIAL -->
+  <!-- HISTORIAL COMPRAS TODOS -->
   <div class="card" routerLink="/purchase-history">
 
     <div class="icono informes">

@@ -39,19 +39,19 @@ export class RegisterComponent {
       return;
     }
 
-    // GUARDAR USUARIO
+    // GUARDAR USUARIO CON ROL
     const user = {
       name: this.name,
       email: this.email,
       username: this.username,
-      password: this.password
+      password: this.password,
+      rol: 'cliente'
     };
 
     localStorage.setItem('user', JSON.stringify(user));
 
     alert('Usuario registrado correctamente');
 
-    // REDIRIGIR AL LOGIN
     this.router.navigate(['/login']);
   }
 }

@@ -4,28 +4,39 @@ import { RouterLink, Router } from '@angular/router';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink], 
+  imports: [RouterLink],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css' 
+  styleUrl: './dashboard.css'
 })
 export class Dashboard {
 
-  // variable para mostrar el usuario
+  // usuario que inició sesión
   usuarioActual: string = '';
 
-  // router para poder cambiar de pagina
+  // rol del usuario (admin o cliente)
+  rol: string = '';
+
+  // router para cambiar de página
   private router = inject(Router);
 
   constructor() {
 
     // obtener usuario guardado
     this.usuarioActual = localStorage.getItem('usuario') || '';
+
+    // obtener rol guardado
+    this.rol = localStorage.getItem('rol') || '';
   }
 
-  // funcion para salir
+  // función para salir
   salir() {
 
+    // limpiar sesión
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('rol');
+
     // volver al login
-    this.router.navigate(['/login']); 
+    this.router.navigate(['/login']);
   }
 }
