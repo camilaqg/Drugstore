@@ -1,29 +1,33 @@
-<!-- CONTENIDO -->
+<!-- CONTENEDOR PRINCIPAL DEL MÓDULO DE VENTAS -->
 <div class="ventas-container">
 
-  <!-- TITULO -->
+  <!-- TÍTULO PRINCIPAL DE LA VISTA -->
   <div class="titulo-ventas">
     <h2>Registro de Ventas</h2>
   </div>
 
-  <!-- TARJETAS -->
+  <!-- TARJETAS RESUMEN CON INDICADORES DE VENTAS -->
   <div class="resumen">
 
+    <!-- Muestra el valor total vendido durante el día -->
     <div class="tarjeta">
       <p>VENTAS HOY</p>
       <h3>{{ ventasHoy | currency:'COP' }}</h3>
     </div>
 
+    <!-- Muestra la cantidad total de transacciones realizadas -->
     <div class="tarjeta">
       <p>TRANSACCIONES</p>
       <h3>{{ transacciones }}</h3>
     </div>
 
+    <!-- Muestra la cantidad total de productos vendidos -->
     <div class="tarjeta">
       <p>PRODUCTOS VENDIDOS</p>
       <h3>{{ productosVendidos }}</h3>
     </div>
 
+    <!-- Muestra el acumulado de ventas del mes -->
     <div class="tarjeta">
       <p>VENTAS DEL MES</p>
       <h3>{{ ventasMes | currency:'COP' }}</h3>
@@ -31,11 +35,12 @@
 
   </div>
 
-  <!-- FORMULARIO -->
+  <!-- FORMULARIO PARA REGISTRAR UNA NUEVA VENTA -->
   <form class="formulario-venta" [formGroup]="FormularioVentas">
 
     <h3>Nueva Venta</h3>
 
+    <!-- DATOS GENERALES DE LA FACTURA -->
     <div class="fila">
 
       <div class="campo">
@@ -55,28 +60,37 @@
 
     </div>
 
+    <!-- INFORMACIÓN DEL MEDICAMENTO SELECCIONADO -->
     <div class="fila">
 
       <div class="campo">
         <label>Código Medicamento</label>
+
+        <!-- Al seleccionar un código se cargan automáticamente
+             los datos del medicamento -->
         <select formControlName="Codigo" (change)="buscarMedicamento()">
           <option value="">Seleccione...</option>
+
           <option *ngFor="let med of medicamentos" [value]="med.Codigo">
             {{med.Codigo}} - {{med.Medicamento}}
           </option>
+
         </select>
       </div>
 
+      <!-- Nombre del medicamento cargado automáticamente -->
       <div class="campo">
         <label>Medicamento</label>
         <input type="text" formControlName="Medicamento" readonly>
       </div>
 
+      <!-- Laboratorio fabricante -->
       <div class="campo">
         <label>Laboratorio</label>
         <input type="text" formControlName="Laboratorio" readonly>
       </div>
 
+      <!-- Fecha de vencimiento del medicamento -->
       <div class="campo">
         <label>Fecha Caducidad</label>
         <input type="date" formControlName="fechaCaducidad">
@@ -84,35 +98,53 @@
 
     </div>
 
+    <!-- INFORMACIÓN DE CANTIDAD Y VALORES -->
     <div class="fila">
 
       <div class="campo">
         <label>Cantidad</label>
-        <input type="number" formControlName="Cantidad" min="1" (input)="calcularTotalProducto()">
+
+        <!-- Al modificar la cantidad se recalcula el total -->
+        <input type="number"
+               formControlName="Cantidad"
+               min="1"
+               (input)="calcularTotalProducto()">
       </div>
 
+      <!-- Precio unitario del medicamento -->
       <div class="campo">
         <label>Precio Venta</label>
         <input type="number" formControlName="Precio" readonly>
       </div>
 
+      <!-- Valor total del producto seleccionado -->
       <div class="campo total">
         <label>Total</label>
         <input type="number" formControlName="Total" readonly>
       </div>
 
-      <button type="button" class="boton-agregar" (click)="agregarProducto()">+</button>
+      <!-- Agrega el producto al detalle de la venta -->
+      <button
+        type="button"
+        class="boton-agregar"
+        (click)="agregarProducto()">
+
+        +
+
+      </button>
 
     </div>
 
   </form>
 
-  <!-- DETALLE -->
+  <!-- SECCIÓN QUE MUESTRA EL DETALLE DE LOS PRODUCTOS AGREGADOS -->
   <div class="detalle">
 
     <h3>Detalle de Venta</h3>
 
     <table>
+
+      <!-- ENCABEZADOS DE LA TABLA -->
       <thead>
         <tr>
           <th>Código</th>
@@ -125,50 +157,82 @@
         </tr>
       </thead>
 
+      <!-- LISTA DINÁMICA DE PRODUCTOS AGREGADOS -->
       <tbody>
+
         <tr *ngFor="let item of detalleVenta; let i = index">
+
           <td>{{item.Codigo}}</td>
           <td>{{item.Medicamento}}</td>
           <td>{{item.Laboratorio}}</td>
           <td>{{item.Cantidad}}</td>
           <td>{{item.Precio | currency:'COP'}}</td>
           <td>{{item.Total | currency:'COP'}}</td>
+
           <td>
-            <button class="boton-quitar" (click)="quitarProducto(i)">Quitar</button>
+
+            <!-- Elimina un producto específico del detalle -->
+            <button
+              class="boton-quitar"
+              (click)="quitarProducto(i)">
+
+              Quitar
+
+            </button>
+
           </td>
+
         </tr>
+
       </tbody>
+
     </table>
 
+    <!-- Muestra el valor total acumulado de la venta -->
     <div class="total-general">
-      Total: <strong>{{ totalGeneral | currency:'COP' }}</strong>
+
+      Total:
+      <strong>{{ totalGeneral | currency:'COP' }}</strong>
+
     </div>
 
   </div>
 
-  <!-- BOTONES -->
-  <!-- BOTONES -->
+  <!-- BOTONES DE ACCIÓN PRINCIPALES -->
   <div class="botones">
 
-    <button class="boton confirmar" (click)="confirmarVenta()">
+    <!-- Guarda y confirma la venta realizada -->
+    <button
+      class="boton confirmar"
+      (click)="confirmarVenta()">
 
       Confirmar Venta
 
     </button>
 
-    <button type="button" class="boton imprimir" (click)="imprimirVenta()" > <!--AQUI TAMBIEN CAMBIE PARA LA FUNCIONALIDAD DE EL BOTON-->
+    <!-- Genera o imprime el comprobante de venta -->
+    <button
+      type="button"
+      class="boton imprimir"
+      (click)="imprimirVenta()">
 
       Imprimir
 
     </button>
 
-    <button class="boton limpiar" (click)="limpiarFormulario()">
+    <!-- Limpia todos los campos y reinicia el formulario -->
+    <button
+      class="boton limpiar"
+      (click)="limpiarFormulario()">
 
       Limpiar
 
     </button>
 
-    <button class="boton salir" (click)="salir()">
+    <!-- Regresa al usuario al menú principal -->
+    <button
+      class="boton salir"
+      (click)="salir()">
 
       ⟵ Salir
 

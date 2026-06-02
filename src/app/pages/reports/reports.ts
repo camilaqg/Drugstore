@@ -14,13 +14,13 @@ import { SalesService } from '../../services/sales.service';
 
 export class ReportsComponents implements OnInit {
 
-  // FORMULARIO DE FILTROS
+  // Formulario reactivo utilizado para los filtros de búsqueda
   filtroForm: FormGroup;
 
-  // LISTA QUE SE MUESTRA EN LA TABLA
+  // Lista que se muestra en la tabla después de aplicar filtros
   listaVentas: any[] = [];
 
-  // TODAS LAS VENTAS
+  // Lista completa de ventas obtenidas desde el servicio
   todasLasVentas: any[] = [];
 
   constructor(
@@ -29,7 +29,7 @@ export class ReportsComponents implements OnInit {
     private salesService: SalesService
   ) {
 
-    // INICIALIZAR FORMULARIO
+    // Inicialización del formulario con los campos de búsqueda
     this.filtroForm = this.fb.group({
 
       fechaInicial: [''],
@@ -42,33 +42,34 @@ export class ReportsComponents implements OnInit {
 
   ngOnInit(): void {
 
-    // CARGAR VENTAS
+    // Al iniciar el componente se cargan todas las ventas
     this.cargarVentas();
 
   }
 
-  // CARGAR VENTAS DESDE LOCALSTORAGE
+  // Obtiene todas las ventas almacenadas y las muestra en la tabla
   cargarVentas(): void {
 
     this.todasLasVentas = this.salesService.obtenerVentas();
 
-    // MOSTRAR TODAS AL INICIO
+    // Inicialmente se muestran todas las ventas sin filtros
     this.listaVentas = this.todasLasVentas;
 
     console.log(this.listaVentas);
 
   }
 
-  // BUSCAR VENTAS
+  // Realiza la búsqueda según los filtros ingresados por el usuario
   buscarVentas(): void {
 
+    // Obtiene los valores actuales del formulario
     const {
       fechaInicial,
       fechaFinal,
       medicamento
     } = this.filtroForm.value;
 
-    // VALIDAR CAMPOS VACIOS
+    // Valida que al menos un filtro haya sido ingresado
     if (!fechaInicial && !fechaFinal && !medicamento) {
 
       alert('Debes completar al menos un campo para realizar la búsqueda');
@@ -77,35 +78,37 @@ export class ReportsComponents implements OnInit {
 
     }
 
-    // CONVERTIR FECHAS
+    // Convierte las fechas ingresadas en objetos Date
     const inicio = fechaInicial ? new Date(fechaInicial) : null;
     const fin = fechaFinal ? new Date(fechaFinal) : null;
 
-    // AJUSTAR HORAS
+    // Ajusta la fecha inicial al comienzo del día
     if (inicio) {
 
       inicio.setHours(0, 0, 0, 0);
 
     }
 
+    // Ajusta la fecha final al último milisegundo del día
     if (fin) {
 
       fin.setHours(23, 59, 59, 999);
 
     }
 
-    // FILTRAR VENTAS
+    // Filtra las ventas según los criterios seleccionados
     this.listaVentas = this.todasLasVentas.filter(v => {
 
+      // Convierte la fecha de la venta para poder compararla
       const fechaVenta = new Date(v.fechaVenta);
 
-      // VALIDAR FECHAS
+      // Verifica si la venta está dentro del rango de fechas
       const cumpleFecha =
 
         (!inicio || fechaVenta >= inicio) &&
         (!fin || fechaVenta <= fin);
 
-      // VALIDAR MEDICAMENTO
+      // Verifica si el medicamento coincide con la búsqueda
       const cumpleMedicamento =
 
         !medicamento ||
@@ -114,6 +117,7 @@ export class ReportsComponents implements OnInit {
           .toLowerCase()
           .includes(medicamento.toLowerCase());
 
+      // Solo retorna las ventas que cumplen ambos filtros
       return cumpleFecha && cumpleMedicamento;
 
     });
@@ -122,23 +126,25 @@ export class ReportsComponents implements OnInit {
 
   }
 
-  // LIMPIAR FILTROS
+  // Limpia los filtros y restaura la lista completa de ventas
   limpiarFiltros(): void {
 
+    // Reinicia todos los campos del formulario
     this.filtroForm.reset();
 
+    // Vuelve a mostrar todas las ventas
     this.listaVentas = this.todasLasVentas;
 
   }
 
-  // VOLVER AL DASHBOARD
+  // Redirige al usuario al dashboard principal
   volverInicio(): void {
 
     this.router.navigate(['/dashboard']);
 
   }
 
-  // SALIR
+  // Sale de la vista actual y regresa al dashboard
   salir(): void {
 
     this.router.navigate(['/dashboard']);
