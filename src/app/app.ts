@@ -19,7 +19,8 @@ export class App implements OnInit {
   // TEXTO QUE SE MOSTRARÁ ARRIBA
   textoUsuario: string = 'Admin';
 
-  // INDICA SI ES UN USUARIO NORMAL
+  // TRUE = usuario normal
+  // FALSE = administrador
   esUsuario: boolean = false;
 
   constructor(private router: Router) {
@@ -41,7 +42,7 @@ export class App implements OnInit {
         localStorage.getItem('usuario') || 'Admin';
 
       this.esUsuario =
-        localStorage.getItem('usuario') !== null;
+        localStorage.getItem('rol') !== 'admin';
 
     } else {
 
@@ -71,7 +72,7 @@ export class App implements OnInit {
           localStorage.getItem('usuario') || 'Admin';
 
         this.esUsuario =
-          localStorage.getItem('usuario') !== null;
+          localStorage.getItem('rol') !== 'admin';
 
       } else {
 
@@ -88,8 +89,9 @@ export class App implements OnInit {
 
   logout() {
 
-    localStorage.removeItem('admin');
+    localStorage.removeItem('loggedIn');
     localStorage.removeItem('usuario');
+    localStorage.removeItem('rol');
 
     this.router.navigate(['/']);
   }
