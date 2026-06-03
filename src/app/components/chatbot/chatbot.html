@@ -1,4 +1,4 @@
-<!-- BOTON FLOTANTE -->
+<!-- Botón flotante que abre y cierra el chat -->
 <button
   class="boton-chat"
   (click)="abierto = !abierto">
@@ -7,27 +7,28 @@
 
 </button>
 
-<!-- CHAT -->
+<!-- Contenedor principal del chat -->
 <div
   class="chat-container"
   *ngIf="abierto">
 
-  <!-- HEADER -->
+  <!-- Encabezado del chat -->
   <div class="chat-header">
 
+    <!-- Título del asistente -->
     <h3>Asistente Virtual</h3>
 
+    <!-- Botón para cerrar el chat -->
     <button
       (click)="abierto = false">
-
     </button>
 
   </div>
 
-  <!-- MENSAJES -->
+  <!-- Área donde se muestran los mensajes -->
   <div class="chat-body">
 
-    <!-- MENSAJES DEL CHAT -->
+    <!-- Recorre y muestra todos los mensajes -->
     <div
       *ngFor="let m of mensajes"
       [ngClass]="m.bot ? 'mensaje-bot' : 'mensaje-user'">
@@ -38,15 +39,17 @@
 
   </div>
 
-  <!-- INPUT -->
+  <!-- Sección para escribir y enviar mensajes -->
   <div class="chat-footer">
 
+    <!-- Campo de texto del usuario -->
     <input
       type="text"
       [(ngModel)]="mensaje"
       placeholder="Escribe un mensaje..."
       (keyup.enter)="enviarMensaje()">
 
+    <!-- Botón para enviar el mensaje -->
     <button
       (click)="enviarMensaje()">
 

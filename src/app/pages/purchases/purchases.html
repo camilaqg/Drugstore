@@ -1,20 +1,28 @@
+<!-- Contenedor principal que organiza el formulario y el carrito -->
 <div class="layout-compras">
 
-  <!-- CONTENIDO ORIGINAL -->
+  <!-- ========================= -->
+  <!-- SECCIÓN DE REGISTRO DE COMPRAS -->
+  <!-- ========================= -->
   <div class="purchase-container">
 
+    <!-- Título principal del módulo -->
     <h2>Registro de Compras</h2>
 
+    <!-- Tarjeta con los datos generales de la compra -->
     <div class="card">
+
       <p class="section-title">DATOS DE LA COMPRA</p>
 
       <div class="grid-row">
 
+        <!-- Fecha en la que se realiza la compra -->
         <div class="field">
           <label>FECHA</label>
           <input type="date" [(ngModel)]="newPurchase.date">
         </div>
 
+        <!-- Nombre del proveedor -->
         <div class="field">
           <label>PROVEEDOR</label>
           <input type="text"
@@ -22,6 +30,7 @@
                  placeholder="Nombre del proveedor">
         </div>
 
+        <!-- Número de factura asociada a la compra -->
         <div class="field">
           <label>N° FACTURA</label>
           <input type="text"
@@ -32,13 +41,14 @@
       </div>
     </div>
 
-
+    <!-- Tarjeta para buscar y agregar medicamentos -->
     <div class="card">
 
       <p class="section-title">BUSCAR MEDICAMENTO</p>
 
       <div class="grid-row">
 
+        <!-- Lista desplegable con los medicamentos registrados -->
         <div class="field">
 
           <label>SELECCIONAR</label>
@@ -51,6 +61,7 @@
               Seleccione un producto
             </option>
 
+            <!-- Muestra todos los medicamentos disponibles -->
             <option *ngFor="let med of listaMedicamentos"
                     [value]="med.id">
 
@@ -62,56 +73,67 @@
 
         </div>
 
-
+        <!-- Muestra automáticamente el nombre del medicamento -->
         <div class="field">
+
           <label>NOMBRE</label>
 
           <input type="text"
                  [value]="medEncontrado?.name || ''"
                  readonly>
+
         </div>
 
-
+        <!-- Muestra automáticamente el laboratorio -->
         <div class="field">
+
           <label>LABORATORIO</label>
 
           <input type="text"
                  [value]="medEncontrado?.laboratory || ''"
                  readonly>
+
         </div>
 
       </div>
 
-
+      <!-- Datos relacionados con la compra del medicamento -->
       <div class="grid-row" style="margin-top: 25px;">
 
+        <!-- Cantidad a comprar -->
         <div class="field">
+
           <label>CANTIDAD</label>
 
           <input type="number"
                  min="0"
                  [(ngModel)]="newPurchase.quantity">
+
         </div>
 
-
+        <!-- Precio de compra -->
         <div class="field">
+
           <label>PRECIO COMPRA</label>
 
           <input type="number"
                  min="0"
                  [(ngModel)]="newPurchase.precioCompra">
+
         </div>
 
-
+        <!-- Precio de venta -->
         <div class="field">
+
           <label>PRECIO VENTA</label>
 
           <input type="number"
                  min="0"
                  [(ngModel)]="newPurchase.salePrice">
+
         </div>
 
-
+        <!-- Botón para agregar el producto a la compra actual -->
         <div class="field-button">
 
           <button type="button"
@@ -128,7 +150,7 @@
 
     </div>
 
-
+    <!-- Tabla con el detalle de la compra -->
     <div class="card">
 
       <p class="section-title">
@@ -139,6 +161,7 @@
 
         <table>
 
+          <!-- Encabezados de la tabla -->
           <thead>
 
             <tr>
@@ -155,6 +178,7 @@
 
           <tbody>
 
+            <!-- Mensaje cuando no hay productos agregados -->
             <tr *ngIf="tablaTemporal.length === 0">
 
               <td colspan="7"
@@ -166,7 +190,7 @@
 
             </tr>
 
-
+            <!-- Muestra cada producto agregado a la compra -->
             <tr *ngFor="let item of tablaTemporal">
 
               <td>{{ item.medicineId }}</td>
@@ -199,9 +223,10 @@
 
     </div>
 
-
+    <!-- Botones principales de la compra -->
     <div class="footer-actions">
 
+      <!-- Guarda la compra realizada -->
       <button class="btn-save"
               (click)="guardarCompra()">
 
@@ -209,7 +234,7 @@
 
       </button>
 
-
+      <!-- Regresa al menú principal -->
       <button class="btn-exit"
               (click)="regresar()">
 
@@ -221,30 +246,33 @@
 
   </div>
 
-
-
-  <!-- CARRITO -->
+  <!-- ========================= -->
+  <!-- CARRITO LATERAL -->
+  <!-- ========================= -->
   <div class="carrito-lateral">
 
+    <!-- Título del carrito -->
     <h3>🛒 Carrito de compras</h3>
 
-
+    <!-- Muestra los productos agregados al carrito -->
     <div class="producto-carrito"
          *ngFor="let item of tablaTemporal">
 
       <div>
 
+        <!-- Nombre del medicamento -->
         <strong>
           {{ obtenerNombre(item.medicineId) }}
         </strong>
 
+        <!-- Cantidad seleccionada -->
         <p>
           Cantidad: {{ item.quantity }}
         </p>
 
       </div>
 
-
+      <!-- Precio total del producto -->
       <div class="precio">
 
         ${{ item.purchasePrice * item.quantity }}
@@ -253,7 +281,7 @@
 
     </div>
 
-
+    <!-- Total general de la compra -->
     <div class="total-carrito">
 
       TOTAL:
@@ -268,12 +296,14 @@
 
     </div>
 
-<button class="btn-guardar-carrito"
-        (click)="guardarCompraConMensaje()">
+    <!-- Botón para guardar la compra desde el carrito -->
+    <button class="btn-guardar-carrito"
+            (click)="guardarCompraConMensaje()">
 
-  Guardar compra
+      Guardar compra
 
-</button>
+    </button>
+
   </div>
 
 </div>

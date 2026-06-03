@@ -18,23 +18,27 @@
 
     <div class="LinksNav">
 
-      <a
-        class="btn-fondo"
-        routerLink="/inventory"
-        routerLinkActive="activo">
+      @if (!esUsuario) {
+        <a
+          class="btn-fondo"
+          routerLink="/inventory"
+          routerLinkActive="activo">
 
-        Inventario
+          Inventario
 
-      </a>
+        </a>
+      }
 
-      <a
-        class="btn-fondo"
-        routerLink="/sales"
-        routerLinkActive="activo">
+      @if (!esUsuario) {
+        <a
+          class="btn-fondo"
+          routerLink="/sales"
+          routerLinkActive="activo">
 
-        Ventas
+          Ventas
 
-      </a>
+        </a>
+      }
 
       <a
         class="btn-fondo"
@@ -45,14 +49,16 @@
 
       </a>
 
-      <a
-        class="btn-fondo"
-        routerLink="/reports"
-        routerLinkActive="activo">
+      @if (!esUsuario) {
+        <a
+          class="btn-fondo"
+          routerLink="/reports"
+          routerLinkActive="activo">
 
-        Informes
+          Informes
 
-      </a>
+        </a>
+      }
 
     </div>
 

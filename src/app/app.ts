@@ -6,7 +6,7 @@ import { ChatbotComponent } from './components/chatbot/chatbot';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive,ChatbotComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ChatbotComponent],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
@@ -16,8 +16,11 @@ export class App implements OnInit {
 
   mostrarLayout = false;
 
-  // TEXTO QUE SE MOSTRARA ARRIBA
+  // TEXTO QUE SE MOSTRARÁ ARRIBA
   textoUsuario: string = 'Admin';
+
+  // INDICA SI ES UN USUARIO NORMAL
+  esUsuario: boolean = false;
 
   constructor(private router: Router) {
 
@@ -37,9 +40,13 @@ export class App implements OnInit {
       this.textoUsuario =
         localStorage.getItem('usuario') || 'Admin';
 
+      this.esUsuario =
+        localStorage.getItem('usuario') !== null;
+
     } else {
 
       this.textoUsuario = 'Admin';
+      this.esUsuario = false;
 
     }
 
@@ -63,9 +70,13 @@ export class App implements OnInit {
         this.textoUsuario =
           localStorage.getItem('usuario') || 'Admin';
 
+        this.esUsuario =
+          localStorage.getItem('usuario') !== null;
+
       } else {
 
         this.textoUsuario = 'Admin';
+        this.esUsuario = false;
 
       }
 
