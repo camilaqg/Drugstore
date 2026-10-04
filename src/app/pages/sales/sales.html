@@ -12,25 +12,25 @@
     <!-- Muestra el valor total vendido durante el día -->
     <div class="tarjeta">
       <p>VENTAS HOY</p>
-      <h3>{{ ventasHoy | currency:'COP' }}</h3>
+      <h3>{{ ventasHoy() | currency:'COP' }}</h3>
     </div>
 
     <!-- Muestra la cantidad total de transacciones realizadas -->
     <div class="tarjeta">
       <p>TRANSACCIONES</p>
-      <h3>{{ transacciones }}</h3>
+      <h3>{{ transacciones() }}</h3>
     </div>
 
     <!-- Muestra la cantidad total de productos vendidos -->
     <div class="tarjeta">
       <p>PRODUCTOS VENDIDOS</p>
-      <h3>{{ productosVendidos }}</h3>
+      <h3>{{ productosVendidos() }}</h3>
     </div>
 
     <!-- Muestra el acumulado de ventas del mes -->
     <div class="tarjeta">
       <p>VENTAS DEL MES</p>
-      <h3>{{ ventasMes | currency:'COP' }}</h3>
+      <h3>{{ ventasMes() | currency:'COP' }}</h3>
     </div>
 
   </div>
@@ -71,9 +71,11 @@
         <select formControlName="Codigo" (change)="buscarMedicamento()">
           <option value="">Seleccione...</option>
 
-          <option *ngFor="let med of medicamentos" [value]="med.Codigo">
-            {{med.Codigo}} - {{med.Medicamento}}
-          </option>
+          @for (med of medicamentos; track med.Codigo) {
+            <option [value]="med.Codigo">
+              {{ med.Codigo }} - {{ med.Medicamento }}
+            </option>
+          }
 
         </select>
       </div>
@@ -160,29 +162,33 @@
       <!-- LISTA DINÁMICA DE PRODUCTOS AGREGADOS -->
       <tbody>
 
-        <tr *ngFor="let item of detalleVenta; let i = index">
+        @for (item of detalleVenta(); track $index; let i = $index) {
 
-          <td>{{item.Codigo}}</td>
-          <td>{{item.Medicamento}}</td>
-          <td>{{item.Laboratorio}}</td>
-          <td>{{item.Cantidad}}</td>
-          <td>{{item.Precio | currency:'COP'}}</td>
-          <td>{{item.Total | currency:'COP'}}</td>
+          <tr>
 
-          <td>
+            <td>{{ item.Codigo }}</td>
+            <td>{{ item.Medicamento }}</td>
+            <td>{{ item.Laboratorio }}</td>
+            <td>{{ item.Cantidad }}</td>
+            <td>{{ item.Precio | currency:'COP' }}</td>
+            <td>{{ item.Total | currency:'COP' }}</td>
 
-            <!-- Elimina un producto específico del detalle -->
-            <button
-              class="boton-quitar"
-              (click)="quitarProducto(i)">
+            <td>
 
-              Quitar
+              <!-- Elimina un producto específico del detalle -->
+              <button
+                class="boton-quitar"
+                (click)="quitarProducto(i)">
 
-            </button>
+                Quitar
 
-          </td>
+              </button>
 
-        </tr>
+            </td>
+
+          </tr>
+
+        }
 
       </tbody>
 
@@ -192,7 +198,7 @@
     <div class="total-general">
 
       Total:
-      <strong>{{ totalGeneral | currency:'COP' }}</strong>
+      <strong>{{ totalGeneral() | currency:'COP' }}</strong>
 
     </div>
 

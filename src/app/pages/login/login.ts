@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -13,60 +14,89 @@ import { RouterLink } from '@angular/router';
 })
 export class Login {
 
-  username: string = '';
-  password: string = '';
+  readonly username = signal('');
+  readonly password = signal('');
 
-  errorCampos: boolean = false;
-  errorCredenciales: boolean = false;
+  readonly errorCampos = signal(false);
+  readonly errorCredenciales = signal(false);
 
-  constructor(private router: Router) { }
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   login() {
 
     // LIMPIAR ERRORES
-    this.errorCampos = false;
-    this.errorCredenciales = false;
+    this.errorCampos.set(false);
+    this.errorCredenciales.set(false);
 
     // VALIDAR CAMPOS VACÍOS
-    if (this.username === '' || this.password === '') {
-      this.errorCampos = true;
+    if (this.username() === '' || this.password() === '') {
+      this.errorCampos.set(true);
       return;
     }
 
-    // LOGIN ADMIN
-    if (this.username === 'admin' && this.password === '1234') {
+    // DATOS QUE ESPERA EL BACKEND
+    const datos = {
+      usuario: this.username(),
+      contrasena: this.password()
+    };
 
-      localStorage.setItem('loggedIn', 'true');
-      localStorage.setItem('usuario', this.username);
-      localStorage.setItem('rol', 'admin');
+    // CONECTAR CON EL BACKEND
+    this.authService.login(datos).subscribe({
 
-      this.router.navigate(['/dashboard']);
-      return;
-    }
+      next: (respuesta) => {
 
-    // OBTENER USUARIO REGISTRADO
-    const userGuardado = localStorage.getItem('user');
+        // GUARDAR EL TOKEN
+        localStorage.setItem(
+          'access_token',
+          respuesta.access_token
+        );
 
-    if (!userGuardado) {
-      this.errorCredenciales = true;
-      return;
-    }
+        // GUARDAR ESTADO DEL LOGIN
+        localStorage.setItem('loggedIn', 'true');
 
-    const user = JSON.parse(userGuardado);
+        // GUARDAR NOMBRE DE USUARIO
+        localStorage.setItem(
+          'usuario',
+          this.username()
+        );
 
-    // VALIDAR USUARIO REGISTRADO
-    if (this.username === user.username && this.password === user.password) {
+        // PROBAR /auth/me
+        this.authService.me().subscribe({
 
-      localStorage.setItem('loggedIn', 'true');
-      localStorage.setItem('usuario', this.username);
+          next: (usuario) => {
 
-      // GUARDAR EL ROL DEL USUARIO
-      localStorage.setItem('rol', user.rol);
+            console.log(
+              'Usuario autenticado:',
+              usuario
+            );
 
-      this.router.navigate(['/dashboard']);
+            this.router.navigate(['/dashboard']);
+          },
 
-    } else {
-      this.errorCredenciales = true;
-    }
+          error: (error) => {
+
+            console.error(
+              'Error en /auth/me:',
+              error
+            );
+
+          }
+
+        });
+
+      },
+
+      error: (error) => {
+
+        console.error(
+          'Error al iniciar sesión:',
+          error
+        );
+
+        this.errorCredenciales.set(true);
+      }
+
+    });
   }
 }

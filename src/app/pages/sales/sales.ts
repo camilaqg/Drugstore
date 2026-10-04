@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -14,51 +14,61 @@ import { SalesService } from '../../services/sales.service';
 })
 export class SalesComponent implements OnInit {
 
+  // Inyección moderna de Angular 21
+  private readonly form = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly salesService = inject(SalesService);
+
   // Formulario principal de ventas
-  FormularioVentas: FormGroup;
+  FormularioVentas: FormGroup = this.form.group({
+    fechaVenta: ['', Validators.required],
+    Cliente: ['', Validators.required],
+    Factura: ['', Validators.required],
+    Codigo: ['', Validators.required],
+    Medicamento: ['', Validators.required],
+    Laboratorio: ['', Validators.required],
+    fechaCaducidad: [''],
+    Cantidad: [1, [Validators.required, Validators.min(1)]],
+    Precio: [0, Validators.required],
+    Total: [0]
+  });
 
   // Lista de productos agregados
-  detalleVenta: any[] = [];
+  readonly detalleVenta = signal<any[]>([]);
 
   // Total general
-  totalGeneral = 0;
+  readonly totalGeneral = signal(0);
 
   // Validar impresión
-  ventaConfirmada = false;
+  readonly ventaConfirmada = signal(false);
 
   // Estadísticas
-  ventasHoy = 0;
-  transacciones = 0;
-  productosVendidos = 0;
-  ventasMes = 0;
+  readonly ventasHoy = signal(0);
+  readonly transacciones = signal(0);
+  readonly productosVendidos = signal(0);
+  readonly ventasMes = signal(0);
 
   // Medicamentos
   medicamentos = [
-    { Codigo: '001', Medicamento: 'Acetaminofén', Laboratorio: 'Genfar', Precio: 1500 },
-    { Codigo: '002', Medicamento: 'Ibuprofeno', Laboratorio: 'MK', Precio: 2000 },
-    { Codigo: '003', Medicamento: 'Amoxicilina', Laboratorio: 'La Santé', Precio: 5000 }
+    {
+      Codigo: '001',
+      Medicamento: 'Acetaminofén',
+      Laboratorio: 'Genfar',
+      Precio: 1500
+    },
+    {
+      Codigo: '002',
+      Medicamento: 'Ibuprofeno',
+      Laboratorio: 'MK',
+      Precio: 2000
+    },
+    {
+      Codigo: '003',
+      Medicamento: 'Amoxicilina',
+      Laboratorio: 'La Santé',
+      Precio: 5000
+    }
   ];
-
-  constructor(
-    private form: FormBuilder,
-    private router: Router,
-    private salesService: SalesService
-  ) {
-
-    this.FormularioVentas = this.form.group({
-      fechaVenta: ['', Validators.required],
-      Cliente: ['', Validators.required],
-      Factura: ['', Validators.required],
-      Codigo: ['', Validators.required],
-      Medicamento: ['', Validators.required],
-      Laboratorio: ['', Validators.required],
-      fechaCaducidad: [''],
-      Cantidad: [1, [Validators.required, Validators.min(1)]],
-      Precio: [0, Validators.required],
-      Total: [0]
-    });
-
-  }
 
   ngOnInit() {
 
@@ -68,10 +78,10 @@ export class SalesComponent implements OnInit {
 
       const stats = JSON.parse(data);
 
-      this.ventasHoy = stats.ventasHoy;
-      this.transacciones = stats.transacciones;
-      this.productosVendidos = stats.productosVendidos;
-      this.ventasMes = stats.ventasMes;
+      this.ventasHoy.set(stats.ventasHoy);
+      this.transacciones.set(stats.transacciones);
+      this.productosVendidos.set(stats.productosVendidos);
+      this.ventasMes.set(stats.ventasMes);
     }
   }
 
@@ -127,12 +137,15 @@ export class SalesComponent implements OnInit {
 
     data.Total = data.Cantidad * data.Precio;
 
-    this.detalleVenta.push({ ...data });
+    this.detalleVenta.update(lista => [
+      ...lista,
+      { ...data }
+    ]);
 
     this.calcularTotal();
 
     // Deshabilitar impresión
-    this.ventaConfirmada = false;
+    this.ventaConfirmada.set(false);
 
     // Limpiar solo campos del producto
     this.FormularioVentas.patchValue({
@@ -148,26 +161,30 @@ export class SalesComponent implements OnInit {
   // Quitar producto
   quitarProducto(i: number) {
 
-    this.detalleVenta.splice(i, 1);
+    this.detalleVenta.update(lista =>
+      lista.filter((_, index) => index !== i)
+    );
 
     this.calcularTotal();
 
-    this.ventaConfirmada = false;
+    this.ventaConfirmada.set(false);
   }
 
   // Calcular total general
   calcularTotal() {
 
-    this.totalGeneral = this.detalleVenta.reduce(
-      (sum, item) => sum + item.Total,
-      0
+    this.totalGeneral.set(
+      this.detalleVenta().reduce(
+        (sum, item) => sum + item.Total,
+        0
+      )
     );
   }
 
   // Confirmar venta
   confirmarVenta() {
 
-    if (this.detalleVenta.length === 0) {
+    if (this.detalleVenta().length === 0) {
 
       alert('Rellena todos los datos para confirmar la venta');
 
@@ -175,29 +192,31 @@ export class SalesComponent implements OnInit {
     }
 
     // Guardar ventas
-    this.detalleVenta.forEach(venta => {
+    this.detalleVenta().forEach(venta => {
 
       this.salesService.addSale(venta);
     });
 
     // Actualizar estadísticas
-    this.transacciones += 1;
+    this.transacciones.update(valor => valor + 1);
 
-    this.ventasHoy += this.totalGeneral;
+    this.ventasHoy.update(valor => valor + this.totalGeneral());
 
-    this.ventasMes += this.totalGeneral;
+    this.ventasMes.update(valor => valor + this.totalGeneral());
 
-    this.detalleVenta.forEach(item => {
+    this.detalleVenta().forEach(item => {
 
-      this.productosVendidos += item.Cantidad;
+      this.productosVendidos.update(
+        valor => valor + item.Cantidad
+      );
     });
 
     // Guardar estadísticas
     const stats = {
-      ventasHoy: this.ventasHoy,
-      transacciones: this.transacciones,
-      productosVendidos: this.productosVendidos,
-      ventasMes: this.ventasMes
+      ventasHoy: this.ventasHoy(),
+      transacciones: this.transacciones(),
+      productosVendidos: this.productosVendidos(),
+      ventasMes: this.ventasMes()
     };
 
     localStorage.setItem(
@@ -206,18 +225,17 @@ export class SalesComponent implements OnInit {
     );
 
     // HABILITAR IMPRESIÓN
-    this.ventaConfirmada = true;
+    this.ventaConfirmada.set(true);
 
     alert('Venta guardada');
 
-    console.log(this.detalleVenta);
-
+    console.log(this.detalleVenta());
   }
 
   // Imprimir venta
-  imprimirVenta() { //AQUI REALICE EL CAMBIO PARA EL BOTON 
+  imprimirVenta() {
 
-    if (!this.ventaConfirmada) {
+    if (!this.ventaConfirmada()) {
 
       alert('El boton se habilitaria cuando la venta este confirmada');
 
@@ -236,11 +254,11 @@ export class SalesComponent implements OnInit {
 
     this.FormularioVentas.reset();
 
-    this.detalleVenta = [];
+    this.detalleVenta.set([]);
 
-    this.totalGeneral = 0;
+    this.totalGeneral.set(0);
 
-    this.ventaConfirmada = false;
+    this.ventaConfirmada.set(false);
   }
 
   // Salir
@@ -248,5 +266,4 @@ export class SalesComponent implements OnInit {
 
     this.router.navigate(['/dashboard']);
   }
-
 }
