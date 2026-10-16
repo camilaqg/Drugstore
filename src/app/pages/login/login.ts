@@ -1,3 +1,4 @@
+
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -30,14 +31,17 @@ export class Login {
     this.errorCredenciales.set(false);
 
     // VALIDAR CAMPOS VACÍOS
-    if (this.username() === '' || this.password() === '') {
+    if (
+      this.username().trim() === '' ||
+      this.password() === ''
+    ) {
       this.errorCampos.set(true);
       return;
     }
 
     // DATOS QUE ESPERA EL BACKEND
     const datos = {
-      usuario: this.username(),
+      usuario: this.username().trim(),
       contrasena: this.password()
     };
 
@@ -58,10 +62,10 @@ export class Login {
         // GUARDAR NOMBRE DE USUARIO
         localStorage.setItem(
           'usuario',
-          this.username()
+          this.username().trim()
         );
 
-        // PROBAR /auth/me
+        // CONSULTAR LOS DATOS DEL USUARIO AUTENTICADO
         this.authService.me().subscribe({
 
           next: (usuario) => {
@@ -71,7 +75,15 @@ export class Login {
               usuario
             );
 
+            // GUARDAR EL ROL DEL USUARIO
+            localStorage.setItem(
+              'rol',
+              usuario.rol
+            );
+
+            // IR AL DASHBOARD
             this.router.navigate(['/dashboard']);
+
           },
 
           error: (error) => {
@@ -80,6 +92,15 @@ export class Login {
               'Error en /auth/me:',
               error
             );
+
+            // LIMPIAR LOS DATOS DE LA SESIÓN
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('rol');
+
+            // MOSTRAR ERROR DE CREDENCIALES
+            this.errorCredenciales.set(true);
 
           }
 
@@ -91,7 +112,12 @@ export class Login {
 
         console.error(
           'Error al iniciar sesión:',
-          error
+          error.error
+        );
+
+        console.log(
+          'Mensaje del backend:',
+          error.error?.message
         );
 
         this.errorCredenciales.set(true);

@@ -1,64 +1,97 @@
-import { Routes } from '@angular/router';
-import { Login } from './pages/login/login';
-import { Dashboard } from './pages/dashboard/dashboard';
-import { Inventory } from './pages/inventory/inventory';
-import { SalesComponent } from './pages/sales/sales';
-import { Purchases } from './pages/purchases/purchases';
-import { ReportsComponents } from './pages/reports/reports';
-import { RegisterComponent } from './pages/register/register';
-import { PurchaseHistory } from './pages/purchase-history/purchase-history';
 
+import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
+
+  // INICIAR SESIÓN
   {
-    path: '',
-    component: Login
+    path: 'login',
+    title: 'Iniciar sesión · Droguería Pili',
+    loadComponent: () =>
+      import('./pages/login/login').then(m => m.Login)
   },
 
+  // DASHBOARD: ADMIN Y CLIENTE
   {
     path: 'dashboard',
-    component: Dashboard,
-    canActivate: [authGuard]
+    title: 'Dashboard · Droguería Pili',
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'cliente'] },
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard').then(m => m.Dashboard)
   },
 
+  // INVENTARIO: SOLO ADMIN
   {
     path: 'inventory',
-    component: Inventory,
-    canActivate: [authGuard]
+    title: 'Inventario · Droguería Pili',
+    canActivate: [roleGuard],
+    data: { roles: ['admin'] },
+    loadComponent: () =>
+      import('./pages/inventory/inventory').then(m => m.Inventory)
   },
 
+  // VENTAS: SOLO ADMIN
   {
     path: 'sales',
-    component: SalesComponent,
-    canActivate: [authGuard]
+    title: 'Ventas · Droguería Pili',
+    canActivate: [roleGuard],
+    data: { roles: ['admin'] },
+    loadComponent: () =>
+      import('./pages/sales/sales').then(m => m.SalesComponent)
   },
 
+  // COMPRAS: ADMIN Y CLIENTE
   {
     path: 'purchases',
-    component: Purchases,
-    canActivate: [authGuard]
+    title: 'Compras · Droguería Pili',
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'cliente'] },
+    loadComponent: () =>
+      import('./pages/purchases/purchases').then(m => m.Purchases)
   },
 
+  // INFORMES: SOLO ADMIN
   {
     path: 'reports',
-    component: ReportsComponents,
-    canActivate: [authGuard]
+    title: 'Informes · Droguería Pili',
+    canActivate: [roleGuard],
+    data: { roles: ['admin'] },
+    loadComponent: () =>
+      import('./pages/reports/reports').then(m => m.ReportsComponents)
   },
 
+  // REGISTRO
   {
     path: 'register',
-    component: RegisterComponent
+    title: 'Registro · Droguería Pili',
+    loadComponent: () =>
+      import('./pages/register/register').then(m => m.RegisterComponent)
   },
 
+  // HISTORIAL DE COMPRAS: ADMIN Y CLIENTE
   {
     path: 'purchase-history',
-    component: PurchaseHistory,
-    canActivate: [authGuard]
+    title: 'Historial de compras · Droguería Pili',
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'cliente'] },
+    loadComponent: () =>
+      import('./pages/purchase-history/purchase-history')
+        .then(m => m.PurchaseHistory)
   },
 
+  // RUTA INICIAL
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'login'
+  },
+
+  // RUTAS NO ENCONTRADAS
   {
     path: '**',
-    redirectTo: ''
+    redirectTo: 'login'
   }
 ];
