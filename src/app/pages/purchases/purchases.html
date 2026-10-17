@@ -62,12 +62,11 @@
             </option>
 
             <!-- Muestra todos los medicamentos disponibles -->
-            <option *ngFor="let med of listaMedicamentos"
-                    [value]="med.id">
-
-              {{ med.id }} - {{ med.name }}
-
-            </option>
+            @for (med of listaMedicamentos(); track med.id) {
+              <option [value]="med.id">
+                {{ med.id }} - {{ med.name }}
+              </option>
+            }
 
           </select>
 
@@ -79,7 +78,7 @@
           <label>NOMBRE</label>
 
           <input type="text"
-                 [value]="medEncontrado?.name || ''"
+                 [value]="medEncontrado()?.name || ''"
                  readonly>
 
         </div>
@@ -90,7 +89,7 @@
           <label>LABORATORIO</label>
 
           <input type="text"
-                 [value]="medEncontrado?.laboratory || ''"
+                 [value]="medEncontrado()?.laboratory || ''"
                  readonly>
 
         </div>
@@ -118,7 +117,7 @@
 
           <input type="number"
                  min="0"
-                 [(ngModel)]="newPurchase.precioCompra">
+                 [(ngModel)]="newPurchase.purchasePrice">
 
         </div>
 
@@ -179,41 +178,47 @@
           <tbody>
 
             <!-- Mensaje cuando no hay productos agregados -->
-            <tr *ngIf="tablaTemporal.length === 0">
+            @if (tablaTemporal().length === 0) {
+              <tr>
 
-              <td colspan="7"
-                  style="text-align: center; padding: 20px;">
+                <td colspan="7"
+                    style="text-align: center; padding: 20px;">
 
-                No hay productos en la lista
+                  No hay productos en la lista
 
-              </td>
+                </td>
 
-            </tr>
+              </tr>
+            }
 
             <!-- Muestra cada producto agregado a la compra -->
-            <tr *ngFor="let item of tablaTemporal">
+            @for (item of tablaTemporal(); track item.medicineId) {
 
-              <td>{{ item.medicineId }}</td>
+              <tr>
 
-              <td>
-                {{ obtenerNombre(item.medicineId) }}
-              </td>
+                <td>{{ item.medicineId }}</td>
 
-              <td>
-                {{ obtenerLab(item.medicineId) }}
-              </td>
+                <td>
+                  {{ obtenerNombre(item.medicineId) }}
+                </td>
 
-              <td>
-                {{ obtenerDesc(item.medicineId) }}
-              </td>
+                <td>
+                  {{ obtenerLab(item.medicineId) }}
+                </td>
 
-              <td>{{ item.quantity }}</td>
+                <td>
+                  {{ obtenerDesc(item.medicineId) }}
+                </td>
 
-              <td>{{ item.purchasePrice }}</td>
+                <td>{{ item.quantity }}</td>
 
-              <td>{{ item.salePrice }}</td>
+                <td>{{ item.purchasePrice }}</td>
 
-            </tr>
+                <td>{{ item.salePrice }}</td>
+
+              </tr>
+
+            }
 
           </tbody>
 
@@ -255,44 +260,39 @@
     <h3>🛒 Carrito de compras</h3>
 
     <!-- Muestra los productos agregados al carrito -->
-    <div class="producto-carrito"
-         *ngFor="let item of tablaTemporal">
+    @for (item of tablaTemporal(); track item.medicineId) {
 
-      <div>
+      <div class="producto-carrito">
 
-        <!-- Nombre del medicamento -->
-        <strong>
-          {{ obtenerNombre(item.medicineId) }}
-        </strong>
+        <div>
 
-        <!-- Cantidad seleccionada -->
-        <p>
-          Cantidad: {{ item.quantity }}
-        </p>
+          <!-- Nombre del medicamento -->
+          <strong>
+            {{ obtenerNombre(item.medicineId) }}
+          </strong>
+
+          <!-- Cantidad seleccionada -->
+          <p>
+            Cantidad: {{ item.quantity }}
+          </p>
+
+        </div>
+
+        <!-- Precio total del producto -->
+        <div class="precio">
+
+          ${{ item.purchasePrice * item.quantity }}
+
+        </div>
 
       </div>
 
-      <!-- Precio total del producto -->
-      <div class="precio">
-
-        ${{ item.purchasePrice * item.quantity }}
-
-      </div>
-
-    </div>
+    }
 
     <!-- Total general de la compra -->
     <div class="total-carrito">
 
-      TOTAL:
-
-      ${{
-        tablaTemporal.reduce(
-          (acc, item) =>
-            acc + (item.purchasePrice * item.quantity),
-          0
-        )
-      }}
+      TOTAL: ${{ total() }}
 
     </div>
 
