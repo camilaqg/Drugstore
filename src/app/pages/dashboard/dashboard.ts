@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 
 @Component({
@@ -10,33 +10,45 @@ import { RouterLink, Router } from '@angular/router';
 })
 export class Dashboard {
 
-  // usuario que inició sesión
-  usuarioActual: string = '';
+  // Usuario que inició sesión
+  readonly usuarioActual = signal('');
 
-  // rol del usuario (admin o cliente)
-  rol: string = '';
+  // Rol del usuario
+  readonly rol = signal('');
 
-  // router para cambiar de página
-  private router = inject(Router);
+  // Router para cambiar de página
+  private readonly router = inject(Router);
 
   constructor() {
 
-    // obtener usuario guardado
-    this.usuarioActual = localStorage.getItem('usuario') || '';
+    // Verificar que estamos en el navegador
+    if (typeof localStorage !== 'undefined') {
 
-    // obtener rol guardado
-    this.rol = localStorage.getItem('rol') || '';
+      // Obtener usuario guardado
+      this.usuarioActual.set(
+        localStorage.getItem('usuario') || ''
+      );
+
+      // Obtener rol guardado
+      this.rol.set(
+        localStorage.getItem('rol') || ''
+      );
+    }
   }
 
-  // función para salir
+  // Función para salir
   salir() {
 
-    // limpiar sesión
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('usuario');
-    localStorage.removeItem('rol');
+    if (typeof localStorage !== 'undefined') {
 
-    // volver al login
-    this.router.navigate(['/login']);
+      // Limpiar sesión
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('usuario');
+      localStorage.removeItem('rol');
+      localStorage.removeItem('access_token');
+    }
+
+    // Volver al login
+    this.router.navigate(['/']);
   }
 }

@@ -1,43 +1,28 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { Sale } from '../models/sale';
+
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { CrearVenta, Medicamento, Sale } from '../models/sale';
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class SalesService {
 
-  // LISTA DE VENTAS
-  private _sales = new BehaviorSubject<Sale[]>(this.obtenerVentas());
+  private readonly http = inject(HttpClient);
 
-  // OBSERVABLE
-  sales$ = this._sales.asObservable();
+  private readonly apiVentas = 'http://localhost:3000/venta';
+  private readonly apiMedicamentos = 'http://localhost:3000/medicamento';
 
-  constructor() { }
-
-  // OBTENER VENTAS DESDE LOCALSTORAGE
-  obtenerVentas(): Sale[] {
-
-    return JSON.parse(localStorage.getItem('ventas') || '[]');
-
+  obtenerVentas(): Observable<Sale[]> {
+    return this.http.get<Sale[]>(this.apiVentas);
   }
 
-  // AGREGAR VENTA
-  addSale(sale: Sale): void {
-
-    // OBTENER VENTAS ACTUALES
-    const current = this.obtenerVentas();
-
-    // AGREGAR NUEVA VENTA
-    current.push(sale);
-
-    // GUARDAR EN LOCALSTORAGE
-    localStorage.setItem('ventas', JSON.stringify(current));
-
-    // ACTUALIZAR BEHAVIORSUBJECT
-    this._sales.next(current);
-
+  obtenerMedicamentos(): Observable<Medicamento[]> {
+    return this.http.get<Medicamento[]>(this.apiMedicamentos);
   }
 
+  crearVenta(datos: CrearVenta): Observable<Sale> {
+    return this.http.post<Sale>(this.apiVentas, datos);
+  }
 }

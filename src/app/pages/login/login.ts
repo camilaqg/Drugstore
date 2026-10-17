@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -13,60 +15,114 @@ import { RouterLink } from '@angular/router';
 })
 export class Login {
 
-  username: string = '';
-  password: string = '';
+  readonly username = signal('');
+  readonly password = signal('');
 
-  errorCampos: boolean = false;
-  errorCredenciales: boolean = false;
+  readonly errorCampos = signal(false);
+  readonly errorCredenciales = signal(false);
 
-  constructor(private router: Router) { }
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   login() {
 
     // LIMPIAR ERRORES
-    this.errorCampos = false;
-    this.errorCredenciales = false;
+    this.errorCampos.set(false);
+    this.errorCredenciales.set(false);
 
     // VALIDAR CAMPOS VACÍOS
-    if (this.username === '' || this.password === '') {
-      this.errorCampos = true;
+    if (
+      this.username().trim() === '' ||
+      this.password() === ''
+    ) {
+      this.errorCampos.set(true);
       return;
     }
 
-    // LOGIN ADMIN
-    if (this.username === 'admin' && this.password === '1234') {
+    // DATOS QUE ESPERA EL BACKEND
+    const datos = {
+      usuario: this.username().trim(),
+      contrasena: this.password()
+    };
 
-      localStorage.setItem('loggedIn', 'true');
-      localStorage.setItem('usuario', this.username);
-      localStorage.setItem('rol', 'admin');
+    // CONECTAR CON EL BACKEND
+    this.authService.login(datos).subscribe({
 
-      this.router.navigate(['/dashboard']);
-      return;
-    }
+      next: (respuesta) => {
 
-    // OBTENER USUARIO REGISTRADO
-    const userGuardado = localStorage.getItem('user');
+        // GUARDAR EL TOKEN
+        localStorage.setItem(
+          'access_token',
+          respuesta.access_token
+        );
 
-    if (!userGuardado) {
-      this.errorCredenciales = true;
-      return;
-    }
+        // GUARDAR ESTADO DEL LOGIN
+        localStorage.setItem('loggedIn', 'true');
 
-    const user = JSON.parse(userGuardado);
+        // GUARDAR NOMBRE DE USUARIO
+        localStorage.setItem(
+          'usuario',
+          this.username().trim()
+        );
 
-    // VALIDAR USUARIO REGISTRADO
-    if (this.username === user.username && this.password === user.password) {
+        // CONSULTAR LOS DATOS DEL USUARIO AUTENTICADO
+        this.authService.me().subscribe({
 
-      localStorage.setItem('loggedIn', 'true');
-      localStorage.setItem('usuario', this.username);
+          next: (usuario) => {
 
-      // GUARDAR EL ROL DEL USUARIO
-      localStorage.setItem('rol', user.rol);
+            console.log(
+              'Usuario autenticado:',
+              usuario
+            );
 
-      this.router.navigate(['/dashboard']);
+            // GUARDAR EL ROL DEL USUARIO
+            localStorage.setItem(
+              'rol',
+              usuario.rol
+            );
 
-    } else {
-      this.errorCredenciales = true;
-    }
+            // IR AL DASHBOARD
+            this.router.navigate(['/dashboard']);
+
+          },
+
+          error: (error) => {
+
+            console.error(
+              'Error en /auth/me:',
+              error
+            );
+
+            // LIMPIAR LOS DATOS DE LA SESIÓN
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('rol');
+
+            // MOSTRAR ERROR DE CREDENCIALES
+            this.errorCredenciales.set(true);
+
+          }
+
+        });
+
+      },
+
+      error: (error) => {
+
+        console.error(
+          'Error al iniciar sesión:',
+          error.error
+        );
+
+        console.log(
+          'Mensaje del backend:',
+          error.error?.message
+        );
+
+        this.errorCredenciales.set(true);
+      }
+
+    });
   }
 }

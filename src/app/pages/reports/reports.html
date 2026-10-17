@@ -1,3 +1,4 @@
+
 <div class="informes-container">
 
   <!-- TITULO -->
@@ -27,26 +28,27 @@
         <!-- MEDICAMENTO -->
         <div class="campo">
           <label>MEDICAMENTO</label>
-
-          <input type="text" formControlName="medicamento" placeholder="Buscar medicamento">
-
+          <input
+            type="text"
+            formControlName="medicamento"
+            placeholder="Buscar medicamento">
         </div>
 
         <!-- BOTONES -->
         <div class="botones-filtro">
 
-          <!-- BUSCAR -->
-          <button type="button" class="buscar" (click)="buscarVentas()">
-
+          <button
+            type="button"
+            class="buscar"
+            (click)="buscarVentas()">
             Buscar
-
           </button>
 
-          <!-- LIMPIAR -->
-          <button type="button" class="limpiar" (click)="limpiarFiltros()">
-
+          <button
+            type="button"
+            class="limpiar"
+            (click)="limpiarFiltros()">
             Limpiar
-
           </button>
 
         </div>
@@ -64,55 +66,58 @@
 
       <!-- CABECERA -->
       <thead>
-
         <tr>
-
           <th>FECHA</th>
           <th>FACTURA</th>
           <th>CLIENTE</th>
           <th>PRODUCTO</th>
           <th>CANTIDAD</th>
           <th>TOTAL</th>
-
         </tr>
-
       </thead>
 
       <!-- CUERPO -->
       <tbody>
 
         <!-- MOSTRAR VENTAS -->
-        <tr *ngFor="let v of listaVentas">
+        <ng-container *ngFor="let v of listaVentas">
 
-          <td>
+          <!-- MOSTRAR CADA PRODUCTO DE LA VENTA -->
+          <tr *ngFor="let detalle of (v.detalles ?? []); let primero = first">
 
-            {{ v.fechaVenta | date:'dd/MM/yyyy' }}
+            <td>
+              {{ v.fecha | date:'dd/MM/yyyy' }}
+            </td>
 
-          </td>
+            <td>
+              {{ v.factura }}
+            </td>
 
-          <td>{{ v.Factura }}</td>
+            <td>
+              {{ v.cliente }}
+            </td>
 
-          <td>{{ v.Cliente }}</td>
+            <td>
+              {{ detalle.medicamentoId }}
+            </td>
 
-          <td>{{ v.Medicamento }}</td>
+            <td>
+              {{ detalle.cantidad }}
+            </td>
 
-          <td>{{ v.Cantidad }}</td>
+            <td>
+              {{ primero ? (v.total | currency:'COP':'symbol':'1.0-0') : '' }}
+            </td>
 
-          <td>
+          </tr>
 
-            {{ v.Total | currency:'COP' }}
-
-          </td>
-
-        </tr>
+        </ng-container>
 
         <!-- MENSAJE SI NO HAY RESULTADOS -->
         <tr *ngIf="listaVentas.length === 0">
 
           <td colspan="6" class="sin-resultados">
-
             No se encontraron ventas con los filtros seleccionados
-
           </td>
 
         </tr>
@@ -126,10 +131,10 @@
   <!-- VOLVER -->
   <div class="volver">
 
-    <button type="button" (click)="volverInicio()">
-
+    <button
+      type="button"
+      (click)="volverInicio()">
       ⟵ Volver al Inicio
-
     </button>
 
   </div>

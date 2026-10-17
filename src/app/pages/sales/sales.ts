@@ -1,9 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import {Component,OnInit,inject,signal,PLATFORM_ID} from '@angular/core';
+import {FormGroup,FormBuilder,Validators,ReactiveFormsModule} from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SalesService } from '../../services/sales.service';
+import { Medicamento, CrearVenta } from '../../models/sale';
+
+interface ProductoSeleccionado {
+  medicamentoId: string;
+  Codigo: string;
+  Medicamento: string;
+  Laboratorio: string;
+  Cantidad: number;
+  Precio: number;
+  Total: number;
+}
 
 @Component({
   selector: 'app-ventas',
@@ -14,97 +25,141 @@ import { SalesService } from '../../services/sales.service';
 })
 export class SalesComponent implements OnInit {
 
-  // Formulario principal de ventas
-  FormularioVentas: FormGroup;
+  private readonly form = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly salesService = inject(SalesService);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  // Lista de productos agregados
-  detalleVenta: any[] = [];
-
-  // Total general
-  totalGeneral = 0;
-
-  // Validar impresión
-  ventaConfirmada = false;
-
-  // Estadísticas
-  ventasHoy = 0;
-  transacciones = 0;
-  productosVendidos = 0;
-  ventasMes = 0;
-
-  // Medicamentos
-  medicamentos = [
-    { Codigo: '001', Medicamento: 'Acetaminofén', Laboratorio: 'Genfar', Precio: 1500 },
-    { Codigo: '002', Medicamento: 'Ibuprofeno', Laboratorio: 'MK', Precio: 2000 },
-    { Codigo: '003', Medicamento: 'Amoxicilina', Laboratorio: 'La Santé', Precio: 5000 }
-  ];
-
-  constructor(
-    private form: FormBuilder,
-    private router: Router,
-    private salesService: SalesService
-  ) {
-
-    this.FormularioVentas = this.form.group({
-      fechaVenta: ['', Validators.required],
-      Cliente: ['', Validators.required],
-      Factura: ['', Validators.required],
-      Codigo: ['', Validators.required],
-      Medicamento: ['', Validators.required],
-      Laboratorio: ['', Validators.required],
-      fechaCaducidad: [''],
-      Cantidad: [1, [Validators.required, Validators.min(1)]],
-      Precio: [0, Validators.required],
-      Total: [0]
-    });
-
+  // Comprueba si el código se está ejecutando en el navegador.
+  private esNavegador(): boolean {
+    return isPlatformBrowser(this.platformId);
   }
 
-  ngOnInit() {
+  FormularioVentas: FormGroup = this.form.group({
+    fechaVenta: ['', Validators.required],
+    Cliente: ['', Validators.required],
+    Factura: ['', Validators.required],
+    Codigo: ['', Validators.required],
+    Medicamento: ['', Validators.required],
+    Laboratorio: ['', Validators.required],
+    fechaCaducidad: [''],
+    Cantidad: [1, [Validators.required, Validators.min(1)]],
+    Precio: [0, [Validators.required, Validators.min(1)]],
+    Total: [0]
+  });
+
+  readonly detalleVenta = signal<ProductoSeleccionado[]>([]);
+  readonly totalGeneral = signal(0);
+  readonly ventaConfirmada = signal(false);
+
+  readonly ventasHoy = signal(0);
+  readonly transacciones = signal(0);
+  readonly productosVendidos = signal(0);
+  readonly ventasMes = signal(0);
+
+  medicamentos: Medicamento[] = [];
+  cargandoMedicamentos = false;
+  guardandoVenta = false;
+
+  ngOnInit(): void {
+    this.cargarEstadisticas();
+    this.cargarMedicamentos();
+  }
+
+  cargarEstadisticas(): void {
+    // localStorage solo existe en el navegador.
+    if (!this.esNavegador()) {
+      return;
+    }
 
     const data = localStorage.getItem('estadisticasVentas');
 
-    if (data) {
+    if (!data) {
+      return;
+    }
 
+    try {
       const stats = JSON.parse(data);
 
-      this.ventasHoy = stats.ventasHoy;
-      this.transacciones = stats.transacciones;
-      this.productosVendidos = stats.productosVendidos;
-      this.ventasMes = stats.ventasMes;
+      this.ventasHoy.set(stats.ventasHoy ?? 0);
+      this.transacciones.set(stats.transacciones ?? 0);
+      this.productosVendidos.set(stats.productosVendidos ?? 0);
+      this.ventasMes.set(stats.ventasMes ?? 0);
+    } catch {
+      console.error('No se pudieron cargar las estadísticas.');
     }
   }
 
-  // Buscar medicamento
-  buscarMedicamento() {
+  cargarMedicamentos(): void {
+    this.cargandoMedicamentos = true;
 
-    const codigo = this.FormularioVentas.get('Codigo')?.value;
+    this.salesService.obtenerMedicamentos().subscribe({
+      next: (datos) => {
+        this.medicamentos = datos.filter(
+          medicamento => medicamento.estado === 'Activo'
+        );
 
-    const med = this.medicamentos.find(m => m.Codigo === codigo);
+        this.cargandoMedicamentos = false;
+      },
+      error: (error) => {
+        this.cargandoMedicamentos = false;
 
-    if (med) {
+        console.error('Error al consultar medicamentos:', error);
 
-      this.FormularioVentas.patchValue({
-        Medicamento: med.Medicamento,
-        Laboratorio: med.Laboratorio,
-        Precio: med.Precio
-      });
-
-      this.calcularTotalProducto();
-    }
+        if (this.esNavegador()) {
+          alert(
+            'No se pudieron cargar los medicamentos. ' +
+            'Verifica que el backend esté funcionando.'
+          );
+        }
+      }
+    });
   }
 
-  // Calcular total producto
-  calcularTotalProducto() {
+  buscarMedicamento(): void {
+    const codigo = String(
+      this.FormularioVentas.get('Codigo')?.value ?? ''
+    ).trim();
 
-    let cantidad = this.FormularioVentas.get('Cantidad')?.value;
+    const medicamento = this.medicamentos.find(
+      item => item.id === codigo
+    );
 
-    const precio = this.FormularioVentas.get('Precio')?.value;
+    if (!medicamento) {
+      alert('No se encontró un medicamento con ese código.');
+      return;
+    }
 
-    if (cantidad < 1) {
+    if (medicamento.estado !== 'Activo') {
+      alert('El medicamento no está activo.');
+      return;
+    }
 
+    if (medicamento.stock <= 0) {
+      alert('El medicamento no tiene existencias disponibles.');
+      return;
+    }
+
+    this.FormularioVentas.patchValue({
+      Medicamento: medicamento.nombre,
+      Laboratorio: medicamento.laboratorio,
+      Precio: medicamento.precioVenta
+    });
+
+    this.calcularTotalProducto();
+  }
+
+  calcularTotalProducto(): void {
+    let cantidad = Number(
+      this.FormularioVentas.get('Cantidad')?.value
+    );
+
+    const precio = Number(
+      this.FormularioVentas.get('Precio')?.value
+    );
+
+    if (!Number.isFinite(cantidad) || cantidad < 1) {
       cantidad = 1;
-
       this.FormularioVentas.get('Cantidad')?.setValue(1);
     }
 
@@ -113,28 +168,90 @@ export class SalesComponent implements OnInit {
     });
   }
 
-  // Agregar producto
-  agregarProducto() {
+  agregarProducto(): void {
+    // Validamos los campos del producto, no todo el formulario.
+    const codigoControl = this.FormularioVentas.get('Codigo');
+    const medicamentoControl = this.FormularioVentas.get('Medicamento');
+    const cantidadControl = this.FormularioVentas.get('Cantidad');
+    const precioControl = this.FormularioVentas.get('Precio');
 
-    const data = this.FormularioVentas.value;
+    if (
+      codigoControl?.invalid ||
+      medicamentoControl?.invalid ||
+      cantidadControl?.invalid ||
+      precioControl?.invalid
+    ) {
+      codigoControl?.markAsTouched();
+      medicamentoControl?.markAsTouched();
+      cantidadControl?.markAsTouched();
+      precioControl?.markAsTouched();
 
-    if (!data.Medicamento || data.Cantidad <= 0 || data.Precio <= 0) {
-
-      alert('Completa los datos');
-
+      alert('Busca un medicamento y completa su cantidad.');
       return;
     }
 
-    data.Total = data.Cantidad * data.Precio;
+    const data = this.FormularioVentas.getRawValue();
+    const codigo = String(data.Codigo).trim();
 
-    this.detalleVenta.push({ ...data });
+    const medicamento = this.medicamentos.find(
+      item => item.id === codigo
+    );
+
+    const cantidad = Number(data.Cantidad);
+    const precio = Number(data.Precio);
+
+    if (!medicamento) {
+      alert('Busca un medicamento válido antes de agregarlo.');
+      return;
+    }
+
+    if (medicamento.estado !== 'Activo') {
+      alert('El medicamento no está activo.');
+      return;
+    }
+
+    // Descuenta del stock disponible las unidades ya agregadas
+    // en esta venta, para evitar superar las existencias.
+    const cantidadAgregada = this.detalleVenta()
+      .filter(item => item.medicamentoId === medicamento.id)
+      .reduce((suma, item) => suma + item.Cantidad, 0);
+
+    const disponible = medicamento.stock - cantidadAgregada;
+
+    if (!Number.isInteger(cantidad) || cantidad < 1) {
+      alert('La cantidad debe ser un número entero mayor que cero.');
+      return;
+    }
+
+    if (cantidad > disponible) {
+      alert(
+        `Solo quedan ${disponible} unidades disponibles de ` +
+        medicamento.nombre + ' para esta venta.'
+      );
+      return;
+    }
+
+    if (precio <= 0 || precio !== medicamento.precioVenta) {
+      alert('El precio no coincide con el precio del medicamento.');
+      return;
+    }
+
+    const producto: ProductoSeleccionado = {
+      medicamentoId: medicamento.id,
+      Codigo: medicamento.id,
+      Medicamento: medicamento.nombre,
+      Laboratorio: medicamento.laboratorio,
+      Cantidad: cantidad,
+      Precio: precio,
+      Total: cantidad * precio
+    };
+
+    this.detalleVenta.update(lista => [...lista, producto]);
 
     this.calcularTotal();
+    this.ventaConfirmada.set(false);
 
-    // Deshabilitar impresión
-    this.ventaConfirmada = false;
-
-    // Limpiar solo campos del producto
+    // Limpiamos solo los campos del producto.
     this.FormularioVentas.patchValue({
       Codigo: '',
       Medicamento: '',
@@ -145,108 +262,157 @@ export class SalesComponent implements OnInit {
     });
   }
 
-  // Quitar producto
-  quitarProducto(i: number) {
-
-    this.detalleVenta.splice(i, 1);
+  quitarProducto(i: number): void {
+    this.detalleVenta.update(
+      lista => lista.filter((_, index) => index !== i)
+    );
 
     this.calcularTotal();
-
-    this.ventaConfirmada = false;
+    this.ventaConfirmada.set(false);
   }
 
-  // Calcular total general
-  calcularTotal() {
-
-    this.totalGeneral = this.detalleVenta.reduce(
-      (sum, item) => sum + item.Total,
-      0
+  calcularTotal(): void {
+    this.totalGeneral.set(
+      this.detalleVenta().reduce(
+        (sum, item) => sum + item.Total,
+        0
+      )
     );
   }
 
-  // Confirmar venta
-  confirmarVenta() {
-
-    if (this.detalleVenta.length === 0) {
-
-      alert('Rellena todos los datos para confirmar la venta');
-
+  confirmarVenta(): void {
+    if (this.guardandoVenta) {
       return;
     }
 
-    // Guardar ventas
-    this.detalleVenta.forEach(venta => {
+    const fecha = this.FormularioVentas.get('fechaVenta');
+    const cliente = this.FormularioVentas.get('Cliente');
+    const factura = this.FormularioVentas.get('Factura');
 
-      this.salesService.addSale(venta);
-    });
+    if (fecha?.invalid || cliente?.invalid || factura?.invalid) {
+      fecha?.markAsTouched();
+      cliente?.markAsTouched();
+      factura?.markAsTouched();
 
-    // Actualizar estadísticas
-    this.transacciones += 1;
+      alert('Completa la fecha, el cliente y la factura.');
+      return;
+    }
 
-    this.ventasHoy += this.totalGeneral;
+    if (this.detalleVenta().length === 0) {
+      alert('Agrega al menos un producto a la venta.');
+      return;
+    }
 
-    this.ventasMes += this.totalGeneral;
+    const formulario = this.FormularioVentas.getRawValue();
 
-    this.detalleVenta.forEach(item => {
-
-      this.productosVendidos += item.Cantidad;
-    });
-
-    // Guardar estadísticas
-    const stats = {
-      ventasHoy: this.ventasHoy,
-      transacciones: this.transacciones,
-      productosVendidos: this.productosVendidos,
-      ventasMes: this.ventasMes
+    const datosVenta: CrearVenta = {
+      cliente: String(formulario.Cliente).trim(),
+      factura: String(formulario.Factura).trim(),
+      fecha: formulario.fechaVenta,
+      total: this.totalGeneral(),
+      detalles: this.detalleVenta().map(item => ({
+        medicamentoId: item.medicamentoId,
+        cantidad: item.Cantidad,
+        precio: item.Precio,
+        total: item.Total
+      }))
     };
 
-    localStorage.setItem(
-      'estadisticasVentas',
-      JSON.stringify(stats)
-    );
-
-    // HABILITAR IMPRESIÓN
-    this.ventaConfirmada = true;
-
-    alert('Venta guardada');
-
-    console.log(this.detalleVenta);
-
-  }
-
-  // Imprimir venta
-  imprimirVenta() { //AQUI REALICE EL CAMBIO PARA EL BOTON 
-
-    if (!this.ventaConfirmada) {
-
-      alert('El boton se habilitaria cuando la venta este confirmada');
-
+    if (
+      !datosVenta.fecha ||
+      !datosVenta.cliente ||
+      !datosVenta.factura
+    ) {
+      alert('La fecha, el cliente y la factura son obligatorios.');
       return;
     }
 
-    // Imprimir
-    window.print();
+    this.guardandoVenta = true;
 
-    // Limpiar después de imprimir
-    this.limpiarFormulario();
+    this.salesService.crearVenta(datosVenta).subscribe({
+      next: (ventaGuardada) => {
+        this.guardandoVenta = false;
+
+        // Actualizamos las estadísticas en pantalla.
+        this.transacciones.update(valor => valor + 1);
+        this.ventasHoy.update(valor => valor + ventaGuardada.total);
+        this.ventasMes.update(valor => valor + ventaGuardada.total);
+
+        this.detalleVenta().forEach(item => {
+          this.productosVendidos.update(
+            valor => valor + item.Cantidad
+          );
+        });
+
+        const estadisticas = {
+          ventasHoy: this.ventasHoy(),
+          transacciones: this.transacciones(),
+          productosVendidos: this.productosVendidos(),
+          ventasMes: this.ventasMes()
+        };
+
+        // Guardamos estadísticas solo en el navegador.
+        if (this.esNavegador()) {
+          localStorage.setItem(
+            'estadisticasVentas',
+            JSON.stringify(estadisticas)
+          );
+        }
+
+        this.ventaConfirmada.set(true);
+
+        alert(
+          `Venta ${ventaGuardada.factura} guardada correctamente.`
+        );
+      },
+      error: (error) => {
+        this.guardandoVenta = false;
+
+        console.error('Error al guardar la venta:', error);
+
+        const mensaje =
+          error.error?.message ??
+          'No se pudo guardar la venta. Verifica el backend y los datos.';
+
+        alert(
+          Array.isArray(mensaje) ? mensaje.join('\n') : mensaje
+        );
+      }
+    });
   }
 
-  // Limpiar formulario
-  limpiarFormulario() {
+  imprimirVenta(): void {
+    if (!this.ventaConfirmada()) {
+      alert('Primero debes confirmar la venta.');
+      return;
+    }
 
-    this.FormularioVentas.reset();
-
-    this.detalleVenta = [];
-
-    this.totalGeneral = 0;
-
-    this.ventaConfirmada = false;
+    if (this.esNavegador()) {
+      window.print();
+      this.limpiarFormulario();
+    }
   }
 
-  // Salir
-  salir() {
+  limpiarFormulario(): void {
+    this.FormularioVentas.reset({
+      fechaVenta: '',
+      Cliente: '',
+      Factura: '',
+      Codigo: '',
+      Medicamento: '',
+      Laboratorio: '',
+      fechaCaducidad: '',
+      Cantidad: 1,
+      Precio: 0,
+      Total: 0
+    });
 
+    this.detalleVenta.set([]);
+    this.totalGeneral.set(0);
+    this.ventaConfirmada.set(false);
+  }
+
+  salir(): void {
     this.router.navigate(['/dashboard']);
   }
-
 }

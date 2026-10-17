@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UsuarioService } from '../../services/usuario.service';
 
 @Component({
   selector: 'app-register',
@@ -11,47 +12,58 @@ import { Router } from '@angular/router';
 })
 export class RegisterComponent {
 
-  name = '';
-  email = '';
-  username = '';
-  password = '';
-  confirmPassword = '';
+  readonly name = signal('');
+  readonly email = signal('');
+  readonly username = signal('');
+  readonly password = signal('');
+  readonly confirmPassword = signal('');
 
-  constructor(private router: Router) { }
+  private readonly router = inject(Router);
+  private readonly usuarioService = inject(UsuarioService);
 
   register() {
 
-    // VALIDAR CAMPOS VACÍOS
-    if (!this.name || !this.email || !this.username || !this.password || !this.confirmPassword) {
+    if (
+      !this.name() ||
+      !this.email() ||
+      !this.username() ||
+      !this.password() ||
+      !this.confirmPassword()
+    ) {
       alert('Todos los campos son obligatorios');
       return;
     }
 
-    // VALIDAR LONGITUD DE CONTRASEÑA
-    if (this.password.length < 6) {
-      alert('La contraseña debe tener mínimo 6 caracteres');
+    if (this.password().length < 8) {
+      alert('La contraseña debe tener mínimo 8 caracteres');
       return;
     }
 
-    // VALIDAR QUE COINCIDAN
-    if (this.password !== this.confirmPassword) {
+    if (this.password() !== this.confirmPassword()) {
       alert('Las contraseñas no coinciden');
       return;
     }
 
-    // GUARDAR USUARIO CON ROL
-    const user = {
-      name: this.name,
-      email: this.email,
-      username: this.username,
-      password: this.password,
+    const usuario = {
+      nombre: this.name(),
+      correo: this.email(),
+      usuario: this.username(),
+      contrasena: this.password(),
       rol: 'cliente'
     };
 
-    localStorage.setItem('user', JSON.stringify(user));
+    this.usuarioService.crear(usuario).subscribe({
+      next: () => {
+        alert('Usuario registrado correctamente');
 
-    alert('Usuario registrado correctamente');
+        this.router.navigate(['/login']);
+      },
 
-    this.router.navigate(['/login']);
+      error: (error) => {
+        console.error('Error al registrar usuario:', error);
+
+        alert('No se pudo registrar el usuario');
+      }
+    });
   }
 }
