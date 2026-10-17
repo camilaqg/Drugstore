@@ -71,11 +71,13 @@
         <select formControlName="Codigo" (change)="buscarMedicamento()">
           <option value="">Seleccione...</option>
 
-          @for (med of medicamentos; track med.Codigo) {
-            <option [value]="med.Codigo">
-              {{ med.Codigo }} - {{ med.Medicamento }}
-            </option>
+
+          @for (med of medicamentos; track med.id) {
+          <option [value]="med.id">
+            {{ med.id }} - {{ med.nombre }}
+          </option>
           }
+
 
         </select>
       </div>
@@ -107,10 +109,7 @@
         <label>Cantidad</label>
 
         <!-- Al modificar la cantidad se recalcula el total -->
-        <input type="number"
-               formControlName="Cantidad"
-               min="1"
-               (input)="calcularTotalProducto()">
+        <input type="number" formControlName="Cantidad" min="1" (input)="calcularTotalProducto()">
       </div>
 
       <!-- Precio unitario del medicamento -->
@@ -126,10 +125,7 @@
       </div>
 
       <!-- Agrega el producto al detalle de la venta -->
-      <button
-        type="button"
-        class="boton-agregar"
-        (click)="agregarProducto()">
+      <button type="button" class="boton-agregar" (click)="agregarProducto()">
 
         +
 
@@ -164,29 +160,27 @@
 
         @for (item of detalleVenta(); track $index; let i = $index) {
 
-          <tr>
+        <tr>
 
-            <td>{{ item.Codigo }}</td>
-            <td>{{ item.Medicamento }}</td>
-            <td>{{ item.Laboratorio }}</td>
-            <td>{{ item.Cantidad }}</td>
-            <td>{{ item.Precio | currency:'COP' }}</td>
-            <td>{{ item.Total | currency:'COP' }}</td>
+          <td>{{ item.Codigo }}</td>
+          <td>{{ item.Medicamento }}</td>
+          <td>{{ item.Laboratorio }}</td>
+          <td>{{ item.Cantidad }}</td>
+          <td>{{ item.Precio | currency:'COP' }}</td>
+          <td>{{ item.Total | currency:'COP' }}</td>
 
-            <td>
+          <td>
 
-              <!-- Elimina un producto específico del detalle -->
-              <button
-                class="boton-quitar"
-                (click)="quitarProducto(i)">
+            <!-- Elimina un producto específico del detalle -->
+            <button class="boton-quitar" (click)="quitarProducto(i)">
 
-                Quitar
+              Quitar
 
-              </button>
+            </button>
 
-            </td>
+          </td>
 
-          </tr>
+        </tr>
 
         }
 
@@ -208,37 +202,28 @@
   <div class="botones">
 
     <!-- Guarda y confirma la venta realizada -->
-    <button
-      class="boton confirmar"
-      (click)="confirmarVenta()">
+    <button class="boton confirmar" (click)="confirmarVenta()">
 
       Confirmar Venta
 
     </button>
 
     <!-- Genera o imprime el comprobante de venta -->
-    <button
-      type="button"
-      class="boton imprimir"
-      (click)="imprimirVenta()">
+    <button type="button" class="boton imprimir" (click)="imprimirVenta()">
 
       Imprimir
 
     </button>
 
     <!-- Limpia todos los campos y reinicia el formulario -->
-    <button
-      class="boton limpiar"
-      (click)="limpiarFormulario()">
+    <button class="boton limpiar" (click)="limpiarFormulario()">
 
       Limpiar
 
     </button>
 
     <!-- Regresa al usuario al menú principal -->
-    <button
-      class="boton salir"
-      (click)="salir()">
+    <button class="boton salir" (click)="salir()">
 
       ⟵ Salir
 

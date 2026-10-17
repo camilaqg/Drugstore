@@ -1,4 +1,3 @@
-
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { PLATFORM_ID } from '@angular/core';
@@ -24,18 +23,19 @@ export const roleGuard: CanActivateFn = (route) => {
   // Obtener el rol del usuario
   const rol = localStorage.getItem('rol');
 
+  // Si no existe el rol, regresar al login
+  if (!rol) {
+    return router.createUrlTree(['/login']);
+  }
+
   // Obtener los roles permitidos para la ruta
   const roles = route.data['roles'];
 
   // Comprobar si el rol está autorizado
-  if (
-    rol &&
-    Array.isArray(roles) &&
-    roles.includes(rol)
-  ) {
+  if (Array.isArray(roles) && roles.includes(rol)) {
     return true;
   }
 
-  // Si no tiene permiso, regresar al dashboard
+  // Si tiene un rol, pero no permiso, regresar al dashboard
   return router.createUrlTree(['/dashboard']);
 };
