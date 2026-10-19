@@ -1,4 +1,4 @@
-@if (mostrarLayout) {
+@if (mostrarLayout()) {
 
 <header class="header">
 
@@ -18,7 +18,7 @@
 
     <div class="LinksNav">
 
-      @if (!esUsuario) {
+      @if (!esUsuario()) {
         <a
           class="btn-fondo"
           routerLink="/inventory"
@@ -29,7 +29,7 @@
         </a>
       }
 
-      @if (!esUsuario) {
+      @if (!esUsuario()) {
         <a
           class="btn-fondo"
           routerLink="/sales"
@@ -49,7 +49,7 @@
 
       </a>
 
-      @if (!esUsuario) {
+      @if (!esUsuario()) {
         <a
           class="btn-fondo"
           routerLink="/reports"
@@ -71,7 +71,7 @@
       class="admin"
       (click)="irAlMenu()">
 
-      {{ textoUsuario }}
+      {{ textoUsuario() }}
 
     </span>
 
@@ -100,7 +100,7 @@
 <app-chatbot></app-chatbot>
 
 <!-- FOOTER -->
-@if (mostrarLayout) {
+@if (mostrarLayout()) {
 
 <footer class="footer">
 
