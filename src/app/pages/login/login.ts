@@ -24,13 +24,12 @@ export class Login {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
 
-  login() {
+  login(): void {
 
-    // LIMPIAR ERRORES
     this.errorCampos.set(false);
     this.errorCredenciales.set(false);
 
-    // VALIDAR CAMPOS VACÍOS
+    // Validar campos vacíos
     if (
       this.username().trim() === '' ||
       this.password() === ''
@@ -39,67 +38,56 @@ export class Login {
       return;
     }
 
-    // DATOS QUE ESPERA EL BACKEND
+    // Datos que espera el backend
     const datos = {
       usuario: this.username().trim(),
       contrasena: this.password()
     };
 
-    // CONECTAR CON EL BACKEND
+    // Iniciar sesión
     this.authService.login(datos).subscribe({
 
       next: (respuesta) => {
 
-        // GUARDAR EL TOKEN
+        // Guardar el token
         localStorage.setItem(
           'access_token',
           respuesta.access_token
         );
 
-        // GUARDAR ESTADO DEL LOGIN
+        // Guardar estado del login
         localStorage.setItem('loggedIn', 'true');
 
-        // GUARDAR NOMBRE DE USUARIO
+        // Guardar nombre de usuario
         localStorage.setItem(
           'usuario',
           this.username().trim()
         );
 
-        // CONSULTAR LOS DATOS DEL USUARIO AUTENTICADO
+        // Consultar datos del usuario autenticado
         this.authService.me().subscribe({
 
           next: (usuario) => {
 
-            console.log(
-              'Usuario autenticado:',
-              usuario
-            );
-
-            // GUARDAR EL ROL DEL USUARIO
+            // Guardar el rol del usuario
             localStorage.setItem(
               'rol',
               usuario.rol
             );
 
-            // IR AL DASHBOARD
+            // Ir al Dashboard
             this.router.navigate(['/dashboard']);
 
           },
 
-          error: (error) => {
+          error: () => {
 
-            console.error(
-              'Error en /auth/me:',
-              error
-            );
-
-            // LIMPIAR LOS DATOS DE LA SESIÓN
+            // Limpiar los datos de la sesión
             localStorage.removeItem('access_token');
             localStorage.removeItem('loggedIn');
             localStorage.removeItem('usuario');
             localStorage.removeItem('rol');
 
-            // MOSTRAR ERROR DE CREDENCIALES
             this.errorCredenciales.set(true);
 
           }
@@ -108,19 +96,11 @@ export class Login {
 
       },
 
-      error: (error) => {
+      error: () => {
 
-        console.error(
-          'Error al iniciar sesión:',
-          error.error
-        );
-
-        console.log(
-          'Mensaje del backend:',
-          error.error?.message
-        );
-
+        // Mostrar error sin imprimir información en consola
         this.errorCredenciales.set(true);
+
       }
 
     });

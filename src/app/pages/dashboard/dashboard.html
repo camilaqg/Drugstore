@@ -20,11 +20,9 @@
   <div class="user-section">
     <span class="admin">{{ usuarioActual() }}</span>
 
-```
 <button class="logout" (click)="salir()">
   Salir
 </button>
-```
 
   </div>
 
@@ -38,7 +36,6 @@
 
 @if (rol() === 'admin') { <div class="card" routerLink="/inventory">
 
-```
   <div class="icono inventario">
     <img src="iconos/cajita.png" alt="inventario">
   </div>
@@ -50,15 +47,12 @@
   </p>
 
 </div>
-```
 
 }
 
   <!-- COMPRAS TODOS -->
 
   <div class="card" routerLink="/purchases">
-
-```
 <div class="icono compras">
   <img src="iconos/carrito.png" alt="compras">
 </div>
@@ -68,7 +62,6 @@
 <p>
   Aqui registra las compras de la drogueria
 </p>
-```
 
   </div>
 
@@ -76,7 +69,6 @@
 
 @if (rol() === 'admin') { <div class="card" routerLink="/sales">
 
-```
   <div class="icono ventas">
     <img src="iconos/venta.png" alt="ventas">
   </div>
@@ -88,7 +80,6 @@
   </p>
 
 </div>
-```
 
 }
 
@@ -96,7 +87,6 @@
 
 @if (rol() === 'admin') { <div class="card" routerLink="/reports">
 
-```
   <div class="icono informes">
     <img src="iconos/informe.png" alt="informes">
   </div>
@@ -108,15 +98,12 @@
   </p>
 
 </div>
-```
 
 }
 
   <!-- HISTORIAL COMPRAS TODOS -->
 
   <div class="card" routerLink="/purchase-history">
-
-```
 <div class="icono informes">
   <img src="iconos/informe.png" alt="historial">
 </div>
@@ -126,7 +113,6 @@
 <p>
   Ver compras realizadas
 </p>
-```
 
   </div>
 
