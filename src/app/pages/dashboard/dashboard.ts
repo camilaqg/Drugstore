@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,6 +19,9 @@ export class Dashboard {
 
   // Router para cambiar de página
   private readonly router = inject(Router);
+
+  // Camino único de cierre de sesión
+  private readonly authService = inject(AuthService);
 
   constructor() {
 
@@ -39,14 +43,8 @@ export class Dashboard {
   // Función para salir
   salir() {
 
-    if (typeof localStorage !== 'undefined') {
-
-      // Limpiar sesión
-      localStorage.removeItem('loggedIn');
-      localStorage.removeItem('usuario');
-      localStorage.removeItem('rol');
-      localStorage.removeItem('access_token');
-    }
+    // Mismo camino único que App: borra las 4 claves, incluido access_token
+    this.authService.cerrarSesion();
 
     // Volver al login
     this.router.navigate(['/']);

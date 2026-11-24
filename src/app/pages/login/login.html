@@ -63,6 +63,12 @@
             </p>
           }
 
+          @if (errorServidor()) {
+            <p style="color:#0f0f0f; margin-top:5px; text-align: center;">
+              *Error de conexión con el servidor. Intentá de nuevo más tarde.*
+            </p>
+          }
+
         </div>
 
         <!-- boton -->

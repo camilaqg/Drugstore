@@ -2,11 +2,13 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { AuthService } from '../services/auth.service';
 
-export const roleGuard: CanActivateFn = (route) => {
+export const roleGuard: CanActivateFn = async (route) => {
 
   const router = inject(Router);
   const platformId = inject(PLATFORM_ID);
+  const authService = inject(AuthService);
 
   // Si estamos en el servidor, dejamos continuar
   if (!isPlatformBrowser(platformId)) {
@@ -20,10 +22,15 @@ export const roleGuard: CanActivateFn = (route) => {
     return router.createUrlTree(['/login']);
   }
 
-  // Obtener el rol del usuario
-  const rol = localStorage.getItem('rol');
+  // El rol que decide el acceso viene SIEMPRE del backend (respuesta de
+  // GET /auth/me, confirmada por AuthService). El valor guardado en
+  // localStorage es solo para mostrar en las pantallas, nunca para
+  // autorizar, porque es manipulable desde las devtools.
+  // Si el backend no confirma un rol (token vencido/inválido o error
+  // de conexión), volvemos al login. El backend, además, vuelve a
+  // validar el rol en cada llamada protegida.
+  const rol = await authService.rolConfirmado();
 
-  // Si no existe el rol, regresar al login
   if (!rol) {
     return router.createUrlTree(['/login']);
   }

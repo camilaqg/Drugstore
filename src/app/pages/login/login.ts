@@ -1,10 +1,10 @@
-
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +20,7 @@ export class Login {
 
   readonly errorCampos = signal(false);
   readonly errorCredenciales = signal(false);
+  readonly errorServidor = signal(false);
 
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -28,6 +29,7 @@ export class Login {
 
     this.errorCampos.set(false);
     this.errorCredenciales.set(false);
+    this.errorServidor.set(false);
 
     // Validar campos vacíos
     if (
@@ -69,7 +71,12 @@ export class Login {
 
           next: (usuario) => {
 
-            // Guardar el rol del usuario
+            // Confirmar ante el AuthService el rol que devolvió el
+            // backend (es el que autoriza, ver role.guard.ts)
+            this.authService.recordarRol(usuario.rol);
+
+            // Guardar el rol en localStorage: SOLO para mostrar en
+            // las pantallas, nunca para autorizar
             localStorage.setItem(
               'rol',
               usuario.rol
@@ -82,13 +89,14 @@ export class Login {
 
           error: () => {
 
-            // Limpiar los datos de la sesión
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('loggedIn');
-            localStorage.removeItem('usuario');
-            localStorage.removeItem('rol');
+            // Limpiar los datos de la sesión (token incluido)
+            this.authService.cerrarSesion();
 
-            this.errorCredenciales.set(true);
+            // Si falla /auth/me después de un login exitoso, no son
+            // credenciales inválidas: es un problema del servidor o
+            // de conexión (el caso 401 de sesión vencida lo REDIRIGE
+            // y limpia el interceptor)
+            this.errorServidor.set(true);
 
           }
 
@@ -96,10 +104,18 @@ export class Login {
 
       },
 
-      error: () => {
+      error: (error: unknown) => {
 
-        // Mostrar error sin imprimir información en consola
-        this.errorCredenciales.set(true);
+        // Distinguir credenciales inválidas (401 del backend) de un
+        // problema de conexión o del servidor
+        if (
+          error instanceof HttpErrorResponse &&
+          error.status === 401
+        ) {
+          this.errorCredenciales.set(true);
+        } else {
+          this.errorServidor.set(true);
+        }
 
       }
 

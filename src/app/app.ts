@@ -8,6 +8,7 @@ import {
 } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { ChatbotComponent } from './components/chatbot/chatbot';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -33,6 +34,7 @@ export class App implements OnInit {
   readonly esUsuario = signal(false);
 
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   ngOnInit() {
     // Estado inicial
@@ -56,7 +58,9 @@ export class App implements OnInit {
       )
     );
 
-    // Mostrar nombre real solo en compras
+    // Mostrar nombre real solo en compras. El rol de localStorage
+    // se usa acá solo para MOSTRAR, nunca para autorizar: el rol que
+    // decide el acceso lo confirma el backend (ver role.guard.ts).
     if (url.includes('/purchases')) {
       this.textoUsuario.set(localStorage.getItem('usuario') || 'Admin');
       this.esUsuario.set(localStorage.getItem('rol') !== 'admin');
@@ -67,9 +71,9 @@ export class App implements OnInit {
   }
 
   logout() {
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('usuario');
-    localStorage.removeItem('rol');
+    // Camino único de cierre de sesión (AuthService): borra también
+    // access_token, así el guard ya no ve sesión válida tras "Salir"
+    this.authService.cerrarSesion();
 
     this.router.navigate(['/']);
   }
