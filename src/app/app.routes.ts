@@ -41,12 +41,12 @@ export const routes: Routes = [
       import('./pages/sales/sales').then(m => m.SalesComponent)
   },
 
-  // COMPRAS: ADMIN Y CLIENTE
+  // COMPRAS: SOLO ADMIN (muestra costos de compra)
   {
     path: 'purchases',
     title: 'Compras · Droguería Pili',
     canActivate: [roleGuard],
-    data: { roles: ['admin', 'cliente'] },
+    data: { roles: ['admin'] },
     loadComponent: () =>
       import('./pages/purchases/purchases').then(m => m.Purchases)
   },
@@ -69,12 +69,12 @@ export const routes: Routes = [
       import('./pages/register/register').then(m => m.RegisterComponent)
   },
 
-  // HISTORIAL DE COMPRAS: ADMIN Y CLIENTE
+  // HISTORIAL DE COMPRAS: SOLO ADMIN (muestra costos de compra)
   {
     path: 'purchase-history',
     title: 'Historial de compras · Droguería Pili',
     canActivate: [roleGuard],
-    data: { roles: ['admin', 'cliente'] },
+    data: { roles: ['admin'] },
     loadComponent: () =>
       import('./pages/purchase-history/purchase-history')
         .then(m => m.PurchaseHistory)

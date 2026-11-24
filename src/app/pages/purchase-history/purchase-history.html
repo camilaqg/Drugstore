@@ -1,48 +1,109 @@
+<!-- Historial de compras leído de GET /compra -->
 <div class="contenedor">
 
   <h2>Historial de Compras</h2>
 
+  <!-- Botón volver -->
   <button
-  class="btn-limpiar"
-  (click)="limpiarHistorial()"
->
-   Limpiar historial
-</button>
-
-  <div
-    class="card-compra"
-    *ngFor="let compra of compras"
+    class="btn-volver"
+    (click)="volver()"
   >
+    Volver
+  </button>
 
-    <div class="fecha">
-       {{ compra.fecha || 'Sin fecha' }}
+  <!-- Estado de error -->
+  @if (mensajeError(); as error) {
+    <div class="aviso-error" role="alert">
+      {{ error }}
+
+      <button type="button"
+              class="btn-reintentar"
+              (click)="cargarHistorial()">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Estado de carga -->
+  @if (cargando()) {
+    <p class="texto-estado">Cargando historial de compras...</p>
+  }
+
+  <!-- Lista vacía -->
+  @if (!cargando() && !mensajeError() && compras().length === 0) {
+    <p class="texto-estado">No hay compras registradas todavía.</p>
+  }
+
+  <!-- Una tarjeta por compra registrada en el backend -->
+  @for (compra of compras(); track compra.id) {
+
+    <div class="card-compra">
+
+      <div class="fecha">
+        {{ compra.fecha || 'Sin fecha' }}
+      </div>
+
+      <div class="cabecera-compra">
+        <p>
+          <strong>Proveedor:</strong>
+          {{ compra.proveedor || 'Sin proveedor' }}
+        </p>
+
+        <p>
+          <strong>N° factura:</strong>
+          {{ compra.numeroFactura }}
+        </p>
+      </div>
+
+      <table class="tabla-detalles">
+
+        <thead>
+
+          <tr>
+            <th>MEDICAMENTO</th>
+            <th>CANTIDAD</th>
+            <th>P. COMPRA</th>
+            <th>P. VENTA</th>
+            <th>TOTAL</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (detalle of compra.detalles; track detalle.id) {
+
+            <tr>
+
+              <td>
+                {{ obtenerNombre(detalle.medicamentoId) }}
+                <span class="codigo-detalle">
+                  ({{ detalle.medicamentoId }})
+                </span>
+              </td>
+
+              <td>{{ detalle.cantidad }}</td>
+
+              <td>${{ detalle.precioCompra }}</td>
+
+              <td>${{ detalle.precioVenta }}</td>
+
+              <td>${{ detalle.total }}</td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+      <div class="total">
+        Total: ${{ compra.total }}
+      </div>
+
     </div>
 
-    <div
-      class="producto"
-      *ngFor="let producto of compra.productos"
-    >
-
-      <h3>
-        {{ producto.nombre || 'Medicamento' }}
-      </h3>
-
-      <p>
-        Cantidad:
-        {{ producto.quantity }}
-      </p>
-
-      <p>
-        Precio:
-        ${{ producto.purchasePrice }}
-      </p>
-
-    </div>
-
-    <div class="total">
-      Total: ${{ compra.total }}
-    </div>
-
-  </div>
+  }
 
 </div>

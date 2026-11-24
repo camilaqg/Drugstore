@@ -9,6 +9,31 @@
     <!-- Título principal del módulo -->
     <h2>Registro de Compras</h2>
 
+    <!-- Avisos inline que reemplazan los alert() -->
+    @if (mensajeError(); as error) {
+      <div class="aviso aviso-error" role="alert">
+        {{ error }}
+      </div>
+    }
+
+    @if (mensajeExito(); as exito) {
+      <div class="aviso aviso-exito" role="status">
+        {{ exito }}
+      </div>
+    }
+
+    @if (errorCarga(); as errorCargando) {
+      <div class="aviso aviso-error" role="alert">
+        {{ errorCargando }}
+
+        <button type="button"
+                class="btn-reintentar"
+                (click)="cargarCatalogo()">
+          Reintentar
+        </button>
+      </div>
+    }
+
     <!-- Tarjeta con los datos generales de la compra -->
     <div class="card">
 
@@ -35,36 +60,40 @@
           <label>N° FACTURA</label>
           <input type="text"
                  [(ngModel)]="newPurchase.invoiceNumber"
-                 placeholder="Numero de factura">
+                 placeholder="Número de factura">
         </div>
 
       </div>
     </div>
 
-    <!-- Tarjeta para buscar y agregar medicamentos -->
+    <!-- Tarjeta para buscar y agregar medicamentos del catálogo -->
     <div class="card">
 
       <p class="section-title">BUSCAR MEDICAMENTO</p>
 
+      @if (cargandoCatalogo()) {
+        <p class="texto-estado">Cargando catálogo de medicamentos...</p>
+      }
+
       <div class="grid-row">
 
-        <!-- Lista desplegable con los medicamentos registrados -->
+        <!-- Lista desplegable con los medicamentos del backend -->
         <div class="field">
 
           <label>SELECCIONAR</label>
 
           <select class="form-select"
                   [(ngModel)]="newPurchase.medicineId"
-                  (change)="buscarMed()">
+                  (change)="buscarMed()" [disabled]="cargandoCatalogo()">
 
             <option value="">
               Seleccione un producto
             </option>
 
-            <!-- Muestra todos los medicamentos disponibles -->
+            <!-- Muestra todos los medicamentos del catálogo -->
             @for (med of listaMedicamentos(); track med.id) {
               <option [value]="med.id">
-                {{ med.id }} - {{ med.name }}
+                {{ med.id }} - {{ med.nombre }}
               </option>
             }
 
@@ -78,7 +107,7 @@
           <label>NOMBRE</label>
 
           <input type="text"
-                 [value]="medEncontrado()?.name || ''"
+                 [value]="medEncontrado()?.nombre || ''"
                  readonly>
 
         </div>
@@ -89,28 +118,34 @@
           <label>LABORATORIO</label>
 
           <input type="text"
-                 [value]="medEncontrado()?.laboratory || ''"
+                 [value]="medEncontrado()?.laboratorio || ''"
                  readonly>
 
         </div>
 
       </div>
 
+      <!-- Stock actual del medicamento elegido -->
+      @if (avisoStock(); as aviso) {
+        <p class="aviso-stock">{{ aviso }}</p>
+      }
+
       <!-- Datos relacionados con la compra del medicamento -->
       <div class="grid-row" style="margin-top: 25px;">
 
-        <!-- Cantidad a comprar -->
+        <!-- Cantidad a comprar (entera >= 1) -->
         <div class="field">
 
           <label>CANTIDAD</label>
 
           <input type="number"
-                 min="0"
+                 min="1"
+                 step="1"
                  [(ngModel)]="newPurchase.quantity">
 
         </div>
 
-        <!-- Precio de compra -->
+        <!-- Precio de compra (>= 0) -->
         <div class="field">
 
           <label>PRECIO COMPRA</label>
@@ -121,7 +156,7 @@
 
         </div>
 
-        <!-- Precio de venta -->
+        <!-- Precio de venta (>= 0) -->
         <div class="field">
 
           <label>PRECIO VENTA</label>
@@ -167,10 +202,11 @@
               <th>ID</th>
               <th>NOMBRE</th>
               <th>LABORATORIO</th>
-              <th>DESCRIPCION</th>
               <th>CANT</th>
               <th>P. COMPRA</th>
               <th>P. VENTA</th>
+              <th>TOTAL</th>
+              <th></th>
             </tr>
 
           </thead>
@@ -181,7 +217,7 @@
             @if (tablaTemporal().length === 0) {
               <tr>
 
-                <td colspan="7"
+                <td colspan="8"
                     style="text-align: center; padding: 20px;">
 
                   No hay productos en la lista
@@ -191,30 +227,33 @@
               </tr>
             }
 
-            <!-- Muestra cada producto agregado a la compra -->
-            @for (item of tablaTemporal(); track item.medicineId) {
+            <!-- Una fila por línea: se usa el id propio de línea
+                 (lineaId) para permitir el mismo medicamento dos veces -->
+            @for (item of tablaTemporal(); track item.lineaId) {
 
               <tr>
 
-                <td>{{ item.medicineId }}</td>
+                <td>{{ item.medicamentoId }}</td>
+
+                <td>{{ item.nombre }}</td>
+
+                <td>{{ item.laboratorio }}</td>
+
+                <td>{{ item.cantidad }}</td>
+
+                <td>{{ item.precioCompra }}</td>
+
+                <td>{{ item.precioVenta }}</td>
+
+                <td>{{ item.cantidad * item.precioCompra }}</td>
 
                 <td>
-                  {{ obtenerNombre(item.medicineId) }}
+                  <button type="button"
+                          class="btn-quitar"
+                          (click)="quitarItem(item.lineaId)">
+                    Quitar
+                  </button>
                 </td>
-
-                <td>
-                  {{ obtenerLab(item.medicineId) }}
-                </td>
-
-                <td>
-                  {{ obtenerDesc(item.medicineId) }}
-                </td>
-
-                <td>{{ item.quantity }}</td>
-
-                <td>{{ item.purchasePrice }}</td>
-
-                <td>{{ item.salePrice }}</td>
 
               </tr>
 
@@ -231,11 +270,12 @@
     <!-- Botones principales de la compra -->
     <div class="footer-actions">
 
-      <!-- Guarda la compra realizada -->
+      <!-- Guarda la compra en el backend -->
       <button class="btn-save"
-              (click)="guardarCompra()">
+              (click)="guardarCompra()"
+              [disabled]="guardando()">
 
-        Guardar Datos
+        {{ guardando() ? 'Guardando...' : 'Guardar Datos' }}
 
       </button>
 
@@ -259,8 +299,8 @@
     <!-- Título del carrito -->
     <h3>🛒 Carrito de compras</h3>
 
-    <!-- Muestra los productos agregados al carrito -->
-    @for (item of tablaTemporal(); track item.medicineId) {
+    <!-- Productos agregados al carrito (mismo id de línea) -->
+    @for (item of tablaTemporal(); track item.lineaId) {
 
       <div class="producto-carrito">
 
@@ -268,12 +308,12 @@
 
           <!-- Nombre del medicamento -->
           <strong>
-            {{ obtenerNombre(item.medicineId) }}
+            {{ item.nombre }}
           </strong>
 
           <!-- Cantidad seleccionada -->
           <p>
-            Cantidad: {{ item.quantity }}
+            Cantidad: {{ item.cantidad }}
           </p>
 
         </div>
@@ -281,7 +321,7 @@
         <!-- Precio total del producto -->
         <div class="precio">
 
-          ${{ item.purchasePrice * item.quantity }}
+          ${{ item.precioCompra * item.cantidad }}
 
         </div>
 
@@ -298,9 +338,10 @@
 
     <!-- Botón para guardar la compra desde el carrito -->
     <button class="btn-guardar-carrito"
-            (click)="guardarCompraConMensaje()">
+            (click)="guardarCompra()"
+            [disabled]="guardando()">
 
-      Guardar compra
+      {{ guardando() ? 'Guardando...' : 'Guardar compra' }}
 
     </button>
 
