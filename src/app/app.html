@@ -52,6 +52,17 @@
       @if (!esUsuario()) {
         <a
           class="btn-fondo"
+          routerLink="/usuarios"
+          routerLinkActive="activo">
+
+          Usuarios
+
+        </a>
+      }
+
+      @if (!esUsuario()) {
+        <a
+          class="btn-fondo"
           routerLink="/reports"
           routerLinkActive="activo">
 

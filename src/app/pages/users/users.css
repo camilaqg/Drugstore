@@ -1,0 +1,226 @@
+/* CONTENEDOR: mismo estilo visual que el módulo de inventario */
+.users-container{
+  background:#f4f6fb;
+  min-height:100vh;
+  font-family:Arial, Helvetica, sans-serif;
+  padding:20px 40px;
+}
+
+/* TARJETAS */
+.tarjeta-blanca{
+  background:white;
+  margin-bottom:20px;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 5px 12px rgba(0,0,0,0.07);
+}
+
+.titulo-gris{
+  font-size:13px;
+  color:#777;
+  margin-bottom:15px;
+  font-weight:bold;
+}
+
+/* FORMULARIO DE EDICIÓN INLINE */
+.grid-formulario{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  align-items: flex-end;
+  margin-bottom:15px;
+}
+
+.campo{
+  display:flex;
+  flex-direction:column;
+}
+
+.campo.grande input{
+  width:260px;
+}
+
+.campo label{
+  font-size:12px;
+  margin-bottom:4px;
+}
+
+.campo input{
+  padding:6px;
+  border-radius:6px;
+  border:1px solid #ddd;
+  background:#f8f9fb;
+  width:160px;
+  font-size:13px;
+}
+
+/* AYUDA DEL CAMPO DE CONTRASEÑA */
+.ayuda-campo{
+  font-size:11px;
+  color:#999;
+  margin-top:2px;
+}
+
+/* TABLA */
+.tabla-scroll{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+thead{
+  background:#4f54d3;
+  color:white;
+}
+
+thead th{
+  padding:10px;
+}
+
+tbody td{
+  padding:10px;
+  border-bottom:1px solid #eee;
+  text-align:center;
+}
+
+tbody tr:hover{
+  background:#f2f2f2;
+}
+
+/* SELECT DE CAMBIO DE ROL EN LÍNEA */
+.select-rol{
+  padding:6px;
+  border-radius:6px;
+  border:1px solid #ddd;
+  background:#f8f9fb;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.select-rol:disabled{
+  background:#e9eaf3;
+  color:#777;
+  cursor:not-allowed;
+}
+
+/* BOTONES DE ACCIÓN POR FILA */
+.acciones{
+  white-space:nowrap;
+}
+
+.btn-accion{
+  padding:6px 12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:13px;
+  margin:0 3px;
+}
+
+.btn-editar{
+  background:#4f54d3;
+  color:white;
+}
+
+.btn-eliminar{
+  background:#ff6b6b;
+  color:white;
+}
+
+/* BOTONES */
+.botones-abajo{
+  padding:20px 0;
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  padding:10px 18px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* COLORES */
+.btn-mod{
+  background:#4f54d3;
+  color:white;
+}
+
+.btn-del{
+  background:#ff6b6b;
+  color:white;
+}
+
+.btn-clear{
+  background:#ebe6e2;
+  color:#444;
+}
+
+.btn-exit{
+  background:#fcfafa;
+  color:#111;
+  border:1px solid #ddd;
+}
+
+button:hover{
+  opacity:0.9;
+}
+
+/* RESPONSIVE PARA QUE SE VEA BIEN EN DISPOSITIVOS MÓVILES */
+@media(max-width:768px){
+
+  .grid-formulario{
+    flex-direction:column;
+  }
+
+}
+
+/* MENSAJES INLINE (reemplazan a los alert() y confirm() del módulo) */
+.bloque-mensaje{
+  background:white;
+  padding:12px 16px;
+  border-radius:8px;
+  margin-bottom:14px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+  box-shadow:0 4px 10px rgba(0,0,0,0.06);
+}
+
+.bloque-mensaje p{
+  margin:0;
+  font-size:14px;
+  flex:1 1 auto;
+}
+
+.bloque-error{
+  border-left:5px solid #d9534f;
+}
+
+.bloque-exito{
+  border-left:5px solid #1e9b6c;
+}
+
+.bloque-confirmar{
+  border-left:5px solid #f0ad4e;
+}
+
+.botones-confirmacion{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+/* ESTADOS DE CARGA, ERROR Y LISTA VACÍA */
+.estado-lista{
+  text-align:center;
+  color:#666;
+  font-size:14px;
+  padding:24px 0;
+}

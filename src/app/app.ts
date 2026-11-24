@@ -58,10 +58,11 @@ export class App implements OnInit {
       )
     );
 
-    // Mostrar nombre real solo en compras. El rol de localStorage
-    // se usa acá solo para MOSTRAR, nunca para autorizar: el rol que
-    // decide el acceso lo confirma el backend (ver role.guard.ts).
-    if (url.includes('/purchases')) {
+    // Mostrar nombre real solo en compras y en la gestión de usuarios.
+    // El rol de localStorage se usa acá solo para MOSTRAR, nunca para
+    // autorizar: el rol que decide el acceso lo confirma el backend
+    // (ver role.guard.ts).
+    if (url.includes('/purchases') || url.includes('/usuarios')) {
       this.textoUsuario.set(localStorage.getItem('usuario') || 'Admin');
       this.esUsuario.set(localStorage.getItem('rol') !== 'admin');
     } else {

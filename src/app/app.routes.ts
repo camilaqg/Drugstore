@@ -51,6 +51,16 @@ export const routes: Routes = [
       import('./pages/purchases/purchases').then(m => m.Purchases)
   },
 
+  // GESTIÓN DE USUARIOS: SOLO ADMIN (pantalla nueva, T12)
+  {
+    path: 'usuarios',
+    title: 'Usuarios · Droguería Pili',
+    canActivate: [roleGuard],
+    data: { roles: ['admin'] },
+    loadComponent: () =>
+      import('./pages/users/users').then(m => m.Users)
+  },
+
   // INFORMES: SOLO ADMIN
   {
     path: 'reports',

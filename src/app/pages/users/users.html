@@ -1,0 +1,197 @@
+<!-- Contenedor principal del módulo de gestión de usuarios -->
+<div class="users-container">
+
+  <!-- Bloque de error al cargar la lista del backend -->
+  @if (errorCarga()) {
+    <div class="bloque-mensaje bloque-error" role="alert">
+      <p>{{ errorCarga() }}</p>
+      <button type="button" class="btn btn-clear" (click)="reintentar()">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Mensaje de éxito tras cambiar rol, editar o eliminar -->
+  @if (mensajeExito()) {
+    <div class="bloque-mensaje bloque-exito" role="status">
+      <p>{{ mensajeExito() }}</p>
+    </div>
+  }
+
+  <!-- Mensaje de error de validaciones o del backend -->
+  @if (mensajeError()) {
+    <div class="bloque-mensaje bloque-error" role="alert">
+      <p>{{ mensajeError() }}</p>
+    </div>
+  }
+
+  <!-- Confirmación inline para eliminar (reemplaza al confirm()) -->
+  @if (pendienteEliminar(); as pend) {
+    <div class="bloque-mensaje bloque-confirmar" role="alertdialog">
+      <p>
+        ¿Desea eliminar el usuario <strong>{{ pend.usuario }}</strong>
+        ({{ pend.nombre }})? Esta acción no se puede deshacer.
+      </p>
+      <div class="botones-confirmacion">
+        <button type="button" class="btn btn-del" (click)="confirmarEliminar()">
+          Sí, eliminar
+        </button>
+        <button type="button" class="btn btn-clear" (click)="cancelarEliminar()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Encabezado de la página -->
+  <div class="header-seccion">
+
+    <h2>Gestión de Usuarios</h2>
+
+    <!-- Panel de edición inline: aparece solo cuando hay un usuario
+         seleccionado. NO hay creación de usuarios acá: el alta es el
+         registro público y siempre nace 'cliente'. -->
+    @if (editandoId() !== null) {
+      <section class="tarjeta-blanca">
+
+        <p class="titulo-gris">EDITAR USUARIO</p>
+
+        <div class="grid-formulario">
+
+          <div class="campo grande">
+            <label>NOMBRE</label>
+            <input type="text" [(ngModel)]="formularioEdicion.nombre">
+          </div>
+
+          <div class="campo grande">
+            <label>CORREO</label>
+            <input type="email" [(ngModel)]="formularioEdicion.correo">
+          </div>
+
+          <!-- Contraseña opcional: vacía = no cambiar. El servidor la
+               hashea y exige mínimo 8 caracteres. -->
+          <div class="campo grande">
+            <label>NUEVA CONTRASEÑA (OPCIONAL)</label>
+            <input type="password" [(ngModel)]="formularioEdicion.contrasena">
+            <span class="ayuda-campo">
+              Mínimo 8 caracteres. Si la deja vacía no se cambia.
+            </span>
+          </div>
+
+        </div>
+
+        <div class="botones-confirmacion">
+          <button type="button" class="btn btn-mod" (click)="guardarEdicion()">
+            Guardar cambios
+          </button>
+          <button type="button" class="btn btn-clear" (click)="cancelarEdicion()">
+            Cancelar
+          </button>
+        </div>
+
+      </section>
+    }
+
+  </div>
+
+  <!-- Tarjeta con la lista de usuarios cargada desde el backend -->
+  <section class="tarjeta-blanca">
+
+    <p class="titulo-gris">USUARIOS REGISTRADOS</p>
+
+    <!-- Estado de carga -->
+    @if (cargando()) {
+      <p class="estado-lista">Cargando usuarios...</p>
+    }
+
+    <!-- Estado de error con opción de reintentar -->
+    @else if (errorCarga()) {
+      <p class="estado-lista">
+        No se puede mostrar la lista. Revise el mensaje de error de arriba
+        y reintente.
+      </p>
+    }
+
+    <!-- Estado de lista vacía -->
+    @else if (usuarios().length === 0) {
+      <p class="estado-lista">No hay usuarios registrados todavía.</p>
+    }
+
+    <!-- Contenedor con desplazamiento para la tabla -->
+    @else {
+      <div class="tabla-scroll">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>NOMBRE</th>
+              <th>CORREO</th>
+              <th>USUARIO</th>
+              <th>ROL</th>
+              <th>ACCIONES</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <!-- Recorre la lista y muestra cada usuario -->
+            @for (u of usuarios(); track u.id) {
+              <tr>
+
+                <td>{{ u.nombre }}</td>
+                <td>{{ u.correo }}</td>
+                <td>{{ u.usuario }}</td>
+
+                <!-- Cambio de rol en línea: al elegir otro rol se hace
+                     PATCH con el rol nuevo y se confirma en línea. -->
+                <td>
+                  <select
+                    class="select-rol"
+                    [ngModel]="u.rol"
+                    (ngModelChange)="cambiarRol(u, $event)"
+                    [disabled]="cargando()">
+
+                    <option value="admin">admin</option>
+                    <option value="cliente">cliente</option>
+
+                  </select>
+                </td>
+
+                <!-- Editar y eliminar por fila -->
+                <td class="acciones">
+                  <button
+                    type="button"
+                    class="btn-accion btn-editar"
+                    (click)="editar(u)">
+                    Editar
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn-accion btn-eliminar"
+                    (click)="borrar(u)">
+                    Eliminar
+                  </button>
+                </td>
+
+              </tr>
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+    }
+
+  </section>
+
+  <!-- Botón para regresar al menú principal -->
+  <div class="botones-abajo">
+    <button class="btn btn-exit" (click)="irAlMenu()">
+      Salir
+    </button>
+  </div>
+
+</div>
