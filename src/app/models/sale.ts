@@ -1,4 +1,3 @@
-
 export interface DetalleVenta {
   id?: number;
   medicamentoId: string;
@@ -7,18 +6,17 @@ export interface DetalleVenta {
   total: number;
 }
 
+// El backend recalcula precio y total desde el medicamento,
+// así que el cliente solo envía el código y la cantidad.
 export interface CrearDetalleVenta {
   medicamentoId: string;
   cantidad: number;
-  precio: number;
-  total: number;
 }
 
 export interface CrearVenta {
   cliente: string;
   factura: string;
   fecha: string;
-  total: number;
   detalles: CrearDetalleVenta[];
 }
 
@@ -28,6 +26,8 @@ export interface Sale {
   cliente: string;
   factura: string;
   fecha: string;
+  // El total de la respuesta lo calcula el servidor; el cliente
+  // solo lo muestra.
   total: number;
   detalles?: DetalleVenta[];
 }
