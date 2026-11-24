@@ -52,6 +52,54 @@ body {
 .tarjeta:nth-child(3) h3 { color: #f39c12; }
 .tarjeta:nth-child(4) h3 { color: #9b59b6; }
 
+/* ====== AVISOS INLINE ====== */
+.aviso {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  font-size: 13px;
+}
+
+.aviso-error {
+  background: #fdecea;
+  color: #b03a2e;
+  border: 1px solid #f5b7b1;
+}
+
+.aviso-exito {
+  background: #eafaf1;
+  color: #1e8449;
+  border: 1px solid #a9dfbf;
+}
+
+.total-servidor strong {
+  color: #1e8449;
+}
+
+.aviso-cerrar {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: inherit;
+}
+
+/* Stock disponible bajo el selector de medicamento */
+.nota-stock {
+  font-size: 12px;
+  color: #555;
+  margin: -5px 0 15px;
+}
+
+.nota-bajo-stock {
+  color: #b9770e;
+  font-weight: bold;
+}
+
 /* ====== FORMULARIO ====== */
 .formulario-venta {
   background: white;

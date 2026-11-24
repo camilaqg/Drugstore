@@ -6,6 +6,25 @@
     <h2>Registro de Ventas</h2>
   </div>
 
+  <!-- AVISO INLINE DE ERROR (reemplaza los alert) -->
+  @if (mensajeError(); as texto) {
+  <div class="aviso aviso-error" role="alert">
+    <span>{{ texto }}</span>
+    <button type="button" class="aviso-cerrar" (click)="limpiarAvisos()" aria-label="Cerrar aviso">✕</button>
+  </div>
+  }
+
+  <!-- AVISO INLINE DE ÉXITO CON EL TOTAL DEL SERVIDOR -->
+  @if (mensajeExito(); as texto) {
+  <div class="aviso aviso-exito" role="status">
+    <span>{{ texto }}</span>
+    @if (totalServidor(); as total) {
+    <span class="total-servidor">Total registrado por el servidor: <strong>{{ total | currency:'COP' }}</strong></span>
+    }
+    <button type="button" class="aviso-cerrar" (click)="limpiarAvisos()" aria-label="Cerrar aviso">✕</button>
+  </div>
+  }
+
   <!-- TARJETAS RESUMEN CON INDICADORES DE VENTAS -->
   <div class="resumen">
 
@@ -72,9 +91,11 @@
           <option value="">Seleccione...</option>
 
 
+          <!-- El stock se muestra en cada opción y los de estado
+               "Bajo stock" se marcan para poder venderlos igual -->
           @for (med of medicamentos; track med.id) {
           <option [value]="med.id">
-            {{ med.id }} - {{ med.nombre }}
+            {{ med.id }} - {{ med.nombre }} — Stock: {{ med.stock }}{{ med.estado === 'Bajo stock' ? ' (Bajo stock)' : '' }}
           </option>
           }
 
@@ -94,13 +115,15 @@
         <input type="text" formControlName="Laboratorio" readonly>
       </div>
 
-      <!-- Fecha de vencimiento del medicamento -->
-      <div class="campo">
-        <label>Fecha Caducidad</label>
-        <input type="date" formControlName="fechaCaducidad">
-      </div>
-
     </div>
+
+    <!-- Stock disponible del medicamento elegido, descontando las
+         unidades ya agregadas en la venta actual -->
+    @if (medicamentoSeleccionado(); as med) {
+    <p class="nota-stock" [class.nota-bajo-stock]="med.estado === 'Bajo stock'">
+      {{ avisoStockDisponible() }}
+    </p>
+    }
 
     <!-- INFORMACIÓN DE CANTIDAD Y VALORES -->
     <div class="fila">
@@ -108,8 +131,11 @@
       <div class="campo">
         <label>Cantidad</label>
 
-        <!-- Al modificar la cantidad se recalcula el total -->
-        <input type="number" formControlName="Cantidad" min="1" (input)="calcularTotalProducto()">
+        <!-- Al modificar la cantidad se recalcula el total; el máximo
+             es el stock disponible para no llegar al rechazo del backend -->
+        <input type="number" formControlName="Cantidad" min="1"
+               [max]="medicamentoSeleccionado() ? stockDisponible(medicamentoSeleccionado()!) : null"
+               (input)="calcularTotalProducto()">
       </div>
 
       <!-- Precio unitario del medicamento -->
@@ -188,7 +214,9 @@
 
     </table>
 
-    <!-- Muestra el valor total acumulado de la venta -->
+    <!-- Muestra el valor total acumulado de la venta. Es solo el
+         cálculo local para mostrar: el total oficial lo calcula el
+         servidor al confirmar la venta -->
     <div class="total-general">
 
       Total:

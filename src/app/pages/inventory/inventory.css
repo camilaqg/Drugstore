@@ -107,18 +107,19 @@ tbody tr:hover{
   font-size:12px;
 }
 
-/* COLORES POR ESTADO */
-.etiqueta-estado[data-status="Disponible"]{
+/* COLORES POR ESTADO. Valores reales del backend: deriva el estado
+   a partir del stock (0 → Sin stock, < 20 → Bajo stock, resto → Activo). */
+.etiqueta-estado[data-status="Activo"]{
   background:#dff5ec;
   color:#1e9b6c;
 }
 
-.etiqueta-estado[data-status="Bajo"]{
+.etiqueta-estado[data-status="Bajo stock"]{
   background:#fff3cd;
   color:#856404;
 }
 
-.etiqueta-estado[data-status="Agotado"]{
+.etiqueta-estado[data-status="Sin stock"]{
   background:#ffe3e3;
   color:#d9534f;
 }
@@ -176,4 +177,73 @@ button:hover{
     flex-direction:column;
   }
 
+}
+
+/* MENSAJES INLINE (reemplazan a los alert() y confirm() del módulo) */
+.bloque-mensaje{
+  background:white;
+  padding:12px 16px;
+  border-radius:8px;
+  margin-bottom:14px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+  box-shadow:0 4px 10px rgba(0,0,0,0.06);
+}
+
+.bloque-mensaje p{
+  margin:0;
+  font-size:14px;
+  flex:1 1 auto;
+}
+
+.bloque-error{
+  border-left:5px solid #d9534f;
+}
+
+.bloque-exito{
+  border-left:5px solid #1e9b6c;
+}
+
+.bloque-confirmar{
+  border-left:5px solid #f0ad4e;
+}
+
+.botones-confirmacion{
+  display:flex;
+  gap:10px;
+}
+
+/* ESTADOS DE CARGA, ERROR Y LISTA VACÍA DEL INVENTARIO */
+.estado-lista{
+  text-align:center;
+  color:#666;
+  font-size:14px;
+  padding:24px 0;
+}
+
+/* FILA SELECCIONADA EN LA TABLA */
+tbody tr.fila-seleccionada{
+  background:#e8e9fb;
+}
+
+/* CÓDIGO FIJO EN MODO EDICIÓN Y AYUDA DEL CAMPO */
+.campo input:disabled{
+  background:#e9eaf3;
+  color:#777;
+  cursor:not-allowed;
+}
+
+.ayuda-campo{
+  font-size:11px;
+  color:#999;
+  margin-top:2px;
+}
+
+.caja-busqueda{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
 }

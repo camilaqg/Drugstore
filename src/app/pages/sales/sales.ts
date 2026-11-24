@@ -42,15 +42,26 @@ export class SalesComponent implements OnInit {
     Codigo: ['', Validators.required],
     Medicamento: ['', Validators.required],
     Laboratorio: ['', Validators.required],
-    fechaCaducidad: [''],
+    // Nota: fechaCaducidad se quitó del formulario porque el detalle de
+    // venta no tiene ese campo en el backend: nunca se guarda ni se envía.
     Cantidad: [1, [Validators.required, Validators.min(1)]],
     Precio: [0, [Validators.required, Validators.min(1)]],
     Total: [0]
   });
 
   readonly detalleVenta = signal<ProductoSeleccionado[]>([]);
+  // El total local es solo para mostrar en pantalla: la venta la
+  // calcula el servidor (recalcula precios, totales y descuenta stock).
   readonly totalGeneral = signal(0);
   readonly ventaConfirmada = signal(false);
+
+  // Avisos inline que reemplazan los alert(): error y éxito.
+  readonly mensajeError = signal<string | null>(null);
+  readonly mensajeExito = signal<string | null>(null);
+  // Total que devolvió el servidor tras confirmar la venta.
+  readonly totalServidor = signal<number | null>(null);
+  // Medicamento elegido en el selector, para mostrar su stock.
+  readonly medicamentoSeleccionado = signal<Medicamento | null>(null);
 
   readonly ventasHoy = signal(0);
   readonly transacciones = signal(0);
@@ -95,8 +106,10 @@ export class SalesComponent implements OnInit {
 
     this.salesService.obtenerMedicamentos().subscribe({
       next: (datos) => {
+        // Se venden también los de estado "Bajo stock": solo quedan fuera
+        // los que no tienen existencias (o los estados SIN stock).
         this.medicamentos = datos.filter(
-          medicamento => medicamento.estado === 'Activo'
+          medicamento => medicamento.stock > 0
         );
 
         this.cargandoMedicamentos = false;
@@ -106,17 +119,27 @@ export class SalesComponent implements OnInit {
 
         console.error('Error al consultar medicamentos:', error);
 
-        if (this.esNavegador()) {
-          alert(
-            'No se pudieron cargar los medicamentos. ' +
-            'Verifica que el backend esté funcionando.'
-          );
-        }
+        this.mostrarError(
+          'No se pudieron cargar los medicamentos. ' +
+          'Verifica que el backend esté funcionando.'
+        );
       }
     });
   }
 
+  // Stock que queda disponible para agregar un medicamento,
+  // descontando las unidades ya agregadas en esta venta.
+  stockDisponible(medicamento: Medicamento): number {
+    const cantidadAgregada = this.detalleVenta()
+      .filter(item => item.medicamentoId === medicamento.id)
+      .reduce((suma, item) => suma + item.Cantidad, 0);
+
+    return medicamento.stock - cantidadAgregada;
+  }
+
   buscarMedicamento(): void {
+    this.limpiarAvisos();
+
     const codigo = String(
       this.FormularioVentas.get('Codigo')?.value ?? ''
     ).trim();
@@ -126,19 +149,18 @@ export class SalesComponent implements OnInit {
     );
 
     if (!medicamento) {
-      alert('No se encontró un medicamento con ese código.');
-      return;
-    }
-
-    if (medicamento.estado !== 'Activo') {
-      alert('El medicamento no está activo.');
+      this.mostrarError('No se encontró un medicamento con ese código.');
+      this.medicamentoSeleccionado.set(null);
       return;
     }
 
     if (medicamento.stock <= 0) {
-      alert('El medicamento no tiene existencias disponibles.');
+      this.mostrarError('El medicamento no tiene existencias disponibles.');
+      this.medicamentoSeleccionado.set(null);
       return;
     }
+
+    this.medicamentoSeleccionado.set(medicamento);
 
     this.FormularioVentas.patchValue({
       Medicamento: medicamento.nombre,
@@ -147,6 +169,21 @@ export class SalesComponent implements OnInit {
     });
 
     this.calcularTotalProducto();
+  }
+
+  // Aviso inline del stock disponible del medicamento elegido.
+  avisoStockDisponible(): string | null {
+    const medicamento = this.medicamentoSeleccionado();
+
+    if (!medicamento) {
+      return null;
+    }
+
+    if (medicamento.estado === 'Bajo stock') {
+      return `Bajo stock: quedan ${this.stockDisponible(medicamento)} unidades disponibles.`;
+    }
+
+    return `Stock disponible: ${this.stockDisponible(medicamento)} unidades.`;
   }
 
   calcularTotalProducto(): void {
@@ -186,7 +223,7 @@ export class SalesComponent implements OnInit {
       cantidadControl?.markAsTouched();
       precioControl?.markAsTouched();
 
-      alert('Busca un medicamento y completa su cantidad.');
+      this.mostrarError('Busca un medicamento y completa su cantidad.');
       return;
     }
 
@@ -201,30 +238,24 @@ export class SalesComponent implements OnInit {
     const precio = Number(data.Precio);
 
     if (!medicamento) {
-      alert('Busca un medicamento válido antes de agregarlo.');
+      this.mostrarError('Busca un medicamento válido antes de agregarlo.');
       return;
     }
 
-    if (medicamento.estado !== 'Activo') {
-      alert('El medicamento no está activo.');
+    if (medicamento.stock <= 0) {
+      this.mostrarError('El medicamento no tiene existencias disponibles.');
       return;
     }
 
-    // Descuenta del stock disponible las unidades ya agregadas
-    // en esta venta, para evitar superar las existencias.
-    const cantidadAgregada = this.detalleVenta()
-      .filter(item => item.medicamentoId === medicamento.id)
-      .reduce((suma, item) => suma + item.Cantidad, 0);
-
-    const disponible = medicamento.stock - cantidadAgregada;
+    const disponible = this.stockDisponible(medicamento);
 
     if (!Number.isInteger(cantidad) || cantidad < 1) {
-      alert('La cantidad debe ser un número entero mayor que cero.');
+      this.mostrarError('La cantidad debe ser un número entero mayor que cero.');
       return;
     }
 
     if (cantidad > disponible) {
-      alert(
+      this.mostrarError(
         `Solo quedan ${disponible} unidades disponibles de ` +
         medicamento.nombre + ' para esta venta.'
       );
@@ -232,7 +263,7 @@ export class SalesComponent implements OnInit {
     }
 
     if (precio <= 0 || precio !== medicamento.precioVenta) {
-      alert('El precio no coincide con el precio del medicamento.');
+      this.mostrarError('El precio no coincide con el precio del medicamento.');
       return;
     }
 
@@ -250,6 +281,7 @@ export class SalesComponent implements OnInit {
 
     this.calcularTotal();
     this.ventaConfirmada.set(false);
+    this.limpiarAvisos();
 
     // Limpiamos solo los campos del producto.
     this.FormularioVentas.patchValue({
@@ -269,6 +301,17 @@ export class SalesComponent implements OnInit {
 
     this.calcularTotal();
     this.ventaConfirmada.set(false);
+    this.limpiarAvisos();
+  }
+
+  mostrarError(mensaje: string): void {
+    this.mensajeExito.set(null);
+    this.mensajeError.set(mensaje);
+  }
+
+  limpiarAvisos(): void {
+    this.mensajeError.set(null);
+    this.mensajeExito.set(null);
   }
 
   calcularTotal(): void {
@@ -285,6 +328,8 @@ export class SalesComponent implements OnInit {
       return;
     }
 
+    this.limpiarAvisos();
+
     const fecha = this.FormularioVentas.get('fechaVenta');
     const cliente = this.FormularioVentas.get('Cliente');
     const factura = this.FormularioVentas.get('Factura');
@@ -294,27 +339,27 @@ export class SalesComponent implements OnInit {
       cliente?.markAsTouched();
       factura?.markAsTouched();
 
-      alert('Completa la fecha, el cliente y la factura.');
+      this.mostrarError('Completa la fecha, el cliente y la factura.');
       return;
     }
 
     if (this.detalleVenta().length === 0) {
-      alert('Agrega al menos un producto a la venta.');
+      this.mostrarError('Agrega al menos un producto a la venta.');
       return;
     }
 
     const formulario = this.FormularioVentas.getRawValue();
 
+    // El servidor recalcula precio, total y descuenta stock; el
+    // usuarioId sale del token JWT. Por eso el cliente solo envía
+    // cliente, factura, fecha y el detalle con código y cantidad.
     const datosVenta: CrearVenta = {
       cliente: String(formulario.Cliente).trim(),
       factura: String(formulario.Factura).trim(),
       fecha: formulario.fechaVenta,
-      total: this.totalGeneral(),
       detalles: this.detalleVenta().map(item => ({
         medicamentoId: item.medicamentoId,
-        cantidad: item.Cantidad,
-        precio: item.Precio,
-        total: item.Total
+        cantidad: item.Cantidad
       }))
     };
 
@@ -323,7 +368,7 @@ export class SalesComponent implements OnInit {
       !datosVenta.cliente ||
       !datosVenta.factura
     ) {
-      alert('La fecha, el cliente y la factura son obligatorios.');
+      this.mostrarError('La fecha, el cliente y la factura son obligatorios.');
       return;
     }
 
@@ -359,10 +404,20 @@ export class SalesComponent implements OnInit {
           );
         }
 
-        this.ventaConfirmada.set(true);
+        // El total que se muestra es el que devolvió el servidor.
+        this.totalServidor.set(ventaGuardada.total);
 
-        alert(
-          `Venta ${ventaGuardada.factura} guardada correctamente.`
+        // Punto 7: se limpia el carrito y se recarga el catálogo para
+        // que el stock mostrado refleje el descuento (los datos vienen
+        // del backend y se mantienen actualizados). ventaConfirmada se
+        // vuelve a marcar para que la impresión del comprobante siga
+        // funcionando hasta la próxima acción.
+        this.limpiarCarrito();
+        this.ventaConfirmada.set(true);
+        this.cargarMedicamentos();
+
+        this.mensajeExito.set(
+          `Venta ${ventaGuardada.factura} registrada correctamente.`
         );
       },
       error: (error) => {
@@ -370,12 +425,23 @@ export class SalesComponent implements OnInit {
 
         console.error('Error al guardar la venta:', error);
 
-        const mensaje =
-          error.error?.message ??
-          'No se pudo guardar la venta. Verifica el backend y los datos.';
+        // Fallo de red: no hay respuesta del backend.
+        if (error.status === 0) {
+          this.mostrarError(
+            'No se pudo conectar con el servidor. ' +
+            'Verifica tu conexión e inténtalo de nuevo.'
+          );
+          return;
+        }
 
-        alert(
-          Array.isArray(mensaje) ? mensaje.join('\n') : mensaje
+        // El resto de errores (409 stock/factura, 404, 403...) llega
+        // con el mensaje exacto del backend y se muestra tal cual.
+        const mensaje = error.error?.message;
+
+        this.mostrarError(
+          Array.isArray(mensaje)
+            ? mensaje.join('\n')
+            : (mensaje ?? 'No se pudo guardar la venta. Verifica el backend y los datos.')
         );
       }
     });
@@ -383,7 +449,7 @@ export class SalesComponent implements OnInit {
 
   imprimirVenta(): void {
     if (!this.ventaConfirmada()) {
-      alert('Primero debes confirmar la venta.');
+      this.mostrarError('Primero debes confirmar la venta.');
       return;
     }
 
@@ -393,22 +459,30 @@ export class SalesComponent implements OnInit {
     }
   }
 
-  limpiarFormulario(): void {
-    this.FormularioVentas.reset({
-      fechaVenta: '',
+  // Limpia el carrito y los campos del producto sin deshabilitar la
+  // impresión (se usa tras confirmar una venta).
+  private limpiarCarrito(): void {
+    this.FormularioVentas.patchValue({
       Cliente: '',
       Factura: '',
       Codigo: '',
       Medicamento: '',
       Laboratorio: '',
-      fechaCaducidad: '',
       Cantidad: 1,
       Precio: 0,
       Total: 0
     });
 
+    this.medicamentoSeleccionado.set(null);
     this.detalleVenta.set([]);
     this.totalGeneral.set(0);
+  }
+
+  limpiarFormulario(): void {
+    this.limpiarCarrito();
+    this.totalServidor.set(null);
+    this.limpiarAvisos();
+    this.FormularioVentas.get('fechaVenta')?.reset('');
     this.ventaConfirmada.set(false);
   }
 
