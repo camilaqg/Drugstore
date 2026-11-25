@@ -71,23 +71,24 @@ html.motion-ready [data-reveal='push'] {
 
 /* ---------------------------------------------------------------------------
    2. Viewport reveals (below the fold).
-   `is-pending` is stamped by the controller before paint; `is-in` starts the
-   transition. `will-change` exists only while the element waits for its turn
-   and is removed once the transition has settled.
+   `is-pending` is stamped by the controller only where the user cannot see it;
+   `is-in` starts the transition. No `will-change` here: the browser promotes a
+   transform/opacity transition by itself, and pre-promoting an element that
+   waits off screen holds a layer for as long as it stays there.
    ------------------------------------------------------------------------- */
 [data-reveal='io'].is-pending {
   opacity: 0;
   transform: translateY(var(--shift-md));
-  will-change: transform, opacity;
 }
 
-[data-reveal='io'].is-pending.is-in {
+[data-reveal='io'].is-in {
   opacity: 1;
   transform: translateY(0);
   transition:
-    opacity var(--dur-reveal) var(--motion-enter),
-    transform var(--dur-reveal) var(--motion-enter);
-  transition-delay: calc(var(--i, 0) * var(--stagger-step));
+    opacity var(--dur-reveal) var(--motion-enter)
+      calc(var(--i, 0) * var(--stagger-step)),
+    transform var(--dur-reveal) var(--motion-enter)
+      calc(var(--i, 0) * var(--stagger-step));
 }
 
 /* ---------------------------------------------------------------------------

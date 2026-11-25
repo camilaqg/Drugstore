@@ -11,20 +11,20 @@ import { DestroyRef, Injectable, afterNextRender, inject } from '@angular/core';
  * Invariants this file must keep (odd/tasks/motion-system.md, S7-S20):
  * - Never hides content before it knows the browser is running. The hidden
  *   start state (`is-pending`) is applied here, never in a stylesheet.
- * - `is-pending` is stamped inside a MutationObserver microtask, which runs
- *   before paint: a revealed block never flashes visible first.
- * - No geometry reads at all. IntersectionObserver answers the only question
- *   we have, so there is no read/write interleaving to get wrong.
- * - `will-change` arrives with `is-pending` and leaves with it, once the
- *   transition has settled. It is never left on a resting element.
+ * - Hiding is only safe where the user cannot see the element: either it is
+ *   off screen, or we are inside a MutationObserver microtask (which runs
+ *   after the DOM change and before paint). An element that is already on
+ *   screen during the post-paint boot scan is shown, never revealed.
+ * - No geometry reads interleaved with writes: one batched read pass, then
+ *   the writes.
+ * - No `will-change`. Transform and opacity transitions are promoted by the
+ *   browser while they run, and pre-promoting a waiting element would hold a
+ *   layer for as long as it stays off screen (restraint.md B8, fluidity.md F5).
  * - Reduced motion tears the observers down and releases every hidden state.
  */
 const REVEAL = '[data-reveal="io"]';
 const PENDING = 'is-pending';
 const IN = 'is-in';
-
-/** Safety net for elements removed mid-transition: a stray `will-change`. */
-const SETTLE_CEILING_MS = 2000;
 
 @Injectable({ providedIn: 'root' })
 export class MotionService {
@@ -33,7 +33,6 @@ export class MotionService {
   private observer?: IntersectionObserver;
   private mutations?: MutationObserver;
   private media?: MediaQueryList;
-  private readonly timers = new Set<ReturnType<typeof setTimeout>>();
   private booted = false;
 
   /** Call once from a component constructor (browser render, SSR-safe). */
@@ -90,6 +89,7 @@ export class MotionService {
       rootMargin: '0px 0px -6% 0px',
     });
 
+    // Post-paint scan: only elements the user cannot see may be hidden.
     this.scan(document.body, false);
 
     this.mutations = new MutationObserver(this.onMutations);
@@ -101,15 +101,13 @@ export class MotionService {
     this.mutations?.disconnect();
     this.observer = undefined;
     this.mutations = undefined;
-    for (const timer of this.timers) {
-      clearTimeout(timer);
-    }
-    this.timers.clear();
   }
 
   private stop(): void {
     this.media?.removeEventListener('change', this.onPreferenceChange);
     this.stopObservers();
+    const root = document.documentElement;
+    root.classList.remove('motion-ready', 'reduce');
   }
 
   /** New route content arrives as DOM, not as an Angular event we can hook. */
@@ -121,7 +119,8 @@ export class MotionService {
         }
         const element = node as HTMLElement;
         if (element.matches(REVEAL)) {
-          this.prepare(element, true);
+          // Pre-paint, so hiding even an on-screen element cannot be seen.
+          this.arm(element);
         }
         this.scan(element, true);
       }
@@ -131,46 +130,39 @@ export class MotionService {
   /**
    * @param prePaint true when called from a MutationObserver, which runs as a
    * microtask after the DOM change and therefore before the browser paints.
-   * Hiding there is invisible to the user. The initial scan is post-paint, so
-   * it must never hide something the user can already see.
    */
   private scan(root: ParentNode, prePaint: boolean): void {
     const candidates = Array.from(
       root.querySelectorAll<HTMLElement>(REVEAL),
     ).filter(
       (element) =>
-        !element.classList.contains(PENDING) &&
-        !element.classList.contains(IN),
+        !element.classList.contains(PENDING) && !element.classList.contains(IN),
     );
     if (candidates.length === 0) {
       return;
     }
 
     // S13: every geometry read happens here, before a single style write.
-    const visible = prePaint
-      ? []
-      : candidates.map(
-          (element) =>
-            element.getBoundingClientRect().top < window.innerHeight * 0.94,
-        );
+    const onScreen = candidates.map(
+      (element) =>
+        !prePaint &&
+        element.getBoundingClientRect().top < window.innerHeight * 0.94,
+    );
 
     candidates.forEach((element, index) => {
-      if (visible[index]) {
-        // Already on screen: show it, do not reveal it. A fade here would be a
-        // flash of content disappearing and coming back.
+      if (onScreen[index]) {
+        // Already on screen and already painted: show it, do not reveal it.
+        // A fade here would be content disappearing and coming back.
         element.classList.add(IN);
         return;
       }
-      this.prepare(element, prePaint);
+      this.arm(element);
     });
   }
 
   /** Applies the hidden start state and hands the element to the observer. */
-  private prepare(element: Element, allowHide: boolean): void {
+  private arm(element: HTMLElement): void {
     if (element.classList.contains(PENDING) || element.classList.contains(IN)) {
-      return;
-    }
-    if (!allowHide) {
       return;
     }
     element.classList.add(PENDING);
@@ -186,23 +178,13 @@ export class MotionService {
       this.observer?.unobserve(element);
 
       element.classList.add(IN);
-      element.addEventListener('transitionend', () => this.release(element), {
-        once: true,
-      });
-
-      // Nothing to transition (tokens at 0ms, or a browser that skipped the
-      // transition) still owes us the release so `will-change` never lingers.
-      const timer = setTimeout(() => {
-        this.timers.delete(timer);
-        this.release(element);
-      }, SETTLE_CEILING_MS);
-      this.timers.add(timer);
+      element.addEventListener(
+        'transitionend',
+        () => element.classList.remove(PENDING),
+        { once: true },
+      );
     }
   };
-
-  private release(element: HTMLElement): void {
-    element.classList.remove(PENDING);
-  }
 
   private releasePending(): void {
     for (const element of document.querySelectorAll(REVEAL)) {
