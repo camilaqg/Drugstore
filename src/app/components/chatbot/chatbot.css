@@ -23,13 +23,17 @@
 
   z-index: 1000;
 
-  transition: transform 0.3s ease;
+  transition: transform var(--dur-quick) var(--motion-press);
 
 }
 
-.boton-chat:hover {
+@media (hover: hover) and (pointer: fine) {
 
-  transform: scale(1.1);
+  .boton-chat:hover {
+
+    transform: scale(1.06);
+
+  }
 
 }
 
@@ -209,7 +213,7 @@
 
   cursor: pointer;
 
-  transition: 0.3s;
+  transition: opacity var(--dur-quick) var(--motion-press);
 
 }
 

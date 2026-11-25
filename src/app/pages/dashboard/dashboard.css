@@ -120,14 +120,17 @@ select {
   color: #ff6b6b;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.3s;
+  transition: transform var(--dur-quick) var(--motion-press);
 }
 
-.logout:hover {
-  background: #ff6b6b;
-  color: white;
+/* Colour swap stays instant; only the lift is animated. */
+@media (hover: hover) and (pointer: fine) {
+  .logout:hover {
+    background: #ff6b6b;
+    color: white;
+    transform: translateY(-1px);
+  }
 }
-
 
 /* Contenedor de tarjetas */
 .contenedor {
@@ -142,12 +145,15 @@ select {
   text-align: center;
   cursor: pointer;
   box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-  transition: all 0.3s ease;
+  transition: transform var(--dur-quick) var(--motion-press);
 }
 
-.card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+/* The lift carries the hover state; the shadow stays put so nothing repaints
+   per frame. */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    transform: translateY(-4px);
+  }
 }
 
 .icono {

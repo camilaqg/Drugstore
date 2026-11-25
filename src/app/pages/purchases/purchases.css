@@ -133,8 +133,20 @@ tbody td[colspan]{
   cursor:pointer;
 }
 
-button:hover{
-  opacity:0.9;
+@media (hover: hover) and (pointer: fine){
+  button:hover{
+    opacity:0.9;
+  }
+}
+
+button{
+  transition: opacity var(--dur-quick) var(--motion-press),
+              transform var(--dur-quick) var(--motion-press);
+}
+
+button:active{
+  transform: scale(0.985);
+  transition-duration: var(--dur-instant);
 }
 
 /* RESPONSIVE PARA QUE SE VEA BIEN EN DISPOSITIVOS MÓVILES */

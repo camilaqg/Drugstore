@@ -30,11 +30,13 @@ body {
   border-radius: 14px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   width: 200px;
-  transition: 0.2s;
+  transition: transform var(--dur-quick) var(--motion-press);
 }
 
-.tarjeta:hover {
-  transform: translateY(-4px);
+@media (hover: hover) and (pointer: fine) {
+  .tarjeta:hover {
+    transform: translateY(-4px);
+  }
 }
 
 .tarjeta p {
@@ -169,12 +171,19 @@ body {
   font-size: 20px;
   cursor: pointer;
   align-self: flex-end;
-  transition: 0.2s;
+  transition: transform var(--dur-quick) var(--motion-press);
 }
 
-.boton-agregar:hover {
-  background: #239b56;
-  transform: scale(1.1);
+@media (hover: hover) and (pointer: fine) {
+  .boton-agregar:hover {
+    background: #239b56;
+    transform: scale(1.06);
+  }
+}
+
+.boton-agregar:active {
+  transform: scale(0.985);
+  transition-duration: var(--dur-instant);
 }
 
 /* ====== DETALLE ====== */
@@ -252,11 +261,18 @@ tbody tr:hover {
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  transition: 0.2s;
+  transition: transform var(--dur-quick) var(--motion-press);
 }
 
-.boton:hover {
-  transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .boton:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.boton:active {
+  transform: translateY(0) scale(0.985);
+  transition-duration: var(--dur-instant);
 }
 
 /* COLORES */

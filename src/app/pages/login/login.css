@@ -114,4 +114,16 @@ button {
     cursor: pointer;
     font-size: 18px;
     margin-top: 20px;
+    transition: transform var(--dur-quick) var(--motion-press);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    button:hover {
+        transform: translateY(-1px);
+    }
+}
+
+button:active {
+    transform: translateY(0) scale(0.985);
+    transition-duration: var(--dur-instant);
 }

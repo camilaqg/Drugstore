@@ -1,0 +1,170 @@
+/* ============================================================================
+   Motion layer — Drugstore
+   Tier 1: CSS state classes + IntersectionObserver. No motion library.
+
+   Contract:
+   - Composite properties only: transform, opacity, clip-path.
+   - Nothing here hides content by itself. Hidden start states are applied by
+     JS (`is-pending`) or owned by a keyframe gated on `html.motion-ready`.
+     Without JS the page reads, complete.
+   - Every animated rule below has a row in odd/tasks/motion-system.md.
+   ========================================================================== */
+
+:root {
+  /* Easing vocabulary. Own curves: mechanical departure, long soft landing,
+     no overshoot — a pharmacy counter should not bounce. */
+  --motion-enter: cubic-bezier(0.2, 0.7, 0.25, 1);
+  --motion-press: cubic-bezier(0.3, 0.9, 0.2, 1);
+  --motion-exit: cubic-bezier(0.45, 0, 0.9, 0.35);
+
+  /* Durations */
+  --dur-instant: 90ms;
+  --dur-quick: 140ms;
+  --dur-base: 220ms;
+  --dur-settle: 420ms;
+  --dur-reveal: 520ms;
+  --stagger-step: 60ms;
+
+  /* Amplitudes. Deliberately small: the motion is a settle, not a slide show. */
+  --shift-sm: 8px;
+  --shift-md: 16px;
+  --shift-lg: 24px;
+}
+
+/* ---------------------------------------------------------------------------
+   1. Entrance keyframes (above the fold).
+   The start state lives in the keyframe, not in a persisted class: if
+   `html.motion-ready` is never set (no JS, blocked bundle, failed hydration)
+   the animation simply does not exist and the content is visible.
+   ------------------------------------------------------------------------- */
+@keyframes m-settle {
+  from {
+    opacity: 0;
+    transform: translateY(var(--settle-shift, var(--shift-lg)));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes m-push {
+  from {
+    opacity: 0;
+    transform: translateX(var(--shift-sm));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+html.motion-ready [data-reveal='settle'] {
+  animation: m-settle var(--dur-settle) var(--motion-enter) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger-step));
+}
+
+html.motion-ready [data-reveal='push'] {
+  animation: m-push var(--dur-base) var(--motion-enter) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger-step));
+}
+
+/* ---------------------------------------------------------------------------
+   2. Viewport reveals (below the fold).
+   `is-pending` is stamped by the controller before paint; `is-in` starts the
+   transition. `will-change` exists only while the element waits for its turn
+   and is removed once the transition has settled.
+   ------------------------------------------------------------------------- */
+[data-reveal='io'].is-pending {
+  opacity: 0;
+  transform: translateY(var(--shift-md));
+  will-change: transform, opacity;
+}
+
+[data-reveal='io'].is-pending.is-in {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--dur-reveal) var(--motion-enter),
+    transform var(--dur-reveal) var(--motion-enter);
+  transition-delay: calc(var(--i, 0) * var(--stagger-step));
+}
+
+/* ---------------------------------------------------------------------------
+   3. State messages (inserted by @if). Entry only: the exit is a DOM removal,
+   which CSS cannot animate without extra JS, and these blocks must never
+   linger. Unsupported browsers show them instantly, which is correct.
+   ------------------------------------------------------------------------- */
+.bloque-mensaje,
+.aviso,
+.bloque-confirmar {
+  transition:
+    opacity var(--dur-base) var(--motion-enter),
+    transform var(--dur-base) var(--motion-enter);
+}
+
+@starting-style {
+  .bloque-mensaje,
+  .aviso,
+  .bloque-confirmar {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   4. Reduced motion — Form 1: zero the custom properties.
+   One code path, cannot drift. The media query is the standard path; the
+   `html.reduce` class is the JS-mirrored one, so a runtime toggle and the OS
+   preference land on the same values.
+   ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-instant: 0ms;
+    --dur-quick: 0ms;
+    --dur-base: 0ms;
+    --dur-settle: 0ms;
+    --dur-reveal: 0ms;
+    --stagger-step: 0ms;
+    --shift-sm: 0px;
+    --shift-md: 0px;
+    --shift-lg: 0px;
+  }
+}
+
+html.reduce {
+  --dur-instant: 0ms;
+  --dur-quick: 0ms;
+  --dur-base: 0ms;
+  --dur-settle: 0ms;
+  --dur-reveal: 0ms;
+  --stagger-step: 0ms;
+  --shift-sm: 0px;
+  --shift-md: 0px;
+  --shift-lg: 0px;
+}
+
+/* ---------------------------------------------------------------------------
+   5. Small viewport — a calmer branch, not a compressed desktop one:
+   shorter travel, shorter durations, and the stagger removed entirely so
+   nothing queues behind anything else on a narrow screen.
+   ------------------------------------------------------------------------- */
+@media (max-width: 991px) {
+  :root {
+    --dur-settle: 320ms;
+    --dur-reveal: 320ms;
+    --stagger-step: 0ms;
+    --shift-md: 8px;
+    --shift-lg: 16px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   6. Off-screen work. Only applied where a block genuinely repeats and can sit
+   far below the fold. Never on a reveal target: a `content-visibility: auto`
+   subtree has no box, so the IntersectionObserver would never fire.
+   ------------------------------------------------------------------------- */
+.card-compra {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 260px;
+}

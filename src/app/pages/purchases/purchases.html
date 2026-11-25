@@ -7,7 +7,7 @@
   <div class="purchase-container">
 
     <!-- Título principal del módulo -->
-    <h2>Registro de Compras</h2>
+    <h2 data-reveal="settle">Registro de Compras</h2>
 
     <!-- Avisos inline que reemplazan los alert() -->
     @if (mensajeError(); as error) {
@@ -35,7 +35,7 @@
     }
 
     <!-- Tarjeta con los datos generales de la compra -->
-    <div class="card">
+    <div class="card" data-reveal="io" style="--i: 0">
 
       <p class="section-title">DATOS DE LA COMPRA</p>
 
@@ -67,7 +67,7 @@
     </div>
 
     <!-- Tarjeta para buscar y agregar medicamentos del catálogo -->
-    <div class="card">
+    <div class="card" data-reveal="io" style="--i: 1">
 
       <p class="section-title">BUSCAR MEDICAMENTO</p>
 
@@ -302,7 +302,7 @@
     <!-- Productos agregados al carrito (mismo id de línea) -->
     @for (item of tablaTemporal(); track item.lineaId) {
 
-      <div class="producto-carrito">
+      <div class="producto-carrito" data-reveal="push">
 
         <div>
 

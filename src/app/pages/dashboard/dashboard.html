@@ -1,11 +1,11 @@
 <!-- header principal -->
 
-<div class="header-seccion">
+<div class="header-seccion" data-reveal="settle">
 
   <!-- logo pequeño -->
 
   <div class="logo-pequeno">
-    <img src="iconos/flor.png" alt="logo">
+    <img src="iconos/flor.png" alt="logo" decoding="async">
   </div>
 
   <!-- textos -->
@@ -34,10 +34,10 @@
 
   <!-- INVENTARIO SOLO ADMIN -->
 
-@if (rol() === 'admin') { <div class="card" routerLink="/inventory">
+@if (rol() === 'admin') { <div class="card" routerLink="/inventory" data-reveal="io" style="--i: 0">
 
   <div class="icono inventario">
-    <img src="iconos/cajita.png" alt="inventario">
+    <img src="iconos/cajita.png" alt="inventario" decoding="async">
   </div>
 
   <h3>Inventario</h3>
@@ -52,9 +52,9 @@
 
   <!-- COMPRAS TODOS -->
 
-  <div class="card" routerLink="/purchases">
+  <div class="card" routerLink="/purchases" data-reveal="io" style="--i: 1">
 <div class="icono compras">
-  <img src="iconos/carrito.png" alt="compras">
+  <img src="iconos/carrito.png" alt="compras" decoding="async">
 </div>
 
 <h3>Compras</h3>
@@ -67,10 +67,10 @@
 
   <!-- VENTAS SOLO ADMIN -->
 
-@if (rol() === 'admin') { <div class="card" routerLink="/sales">
+@if (rol() === 'admin') { <div class="card" routerLink="/sales" data-reveal="io" style="--i: 2">
 
   <div class="icono ventas">
-    <img src="iconos/venta.png" alt="ventas">
+    <img src="iconos/venta.png" alt="ventas" decoding="async">
   </div>
 
   <h3>Ventas</h3>
@@ -85,10 +85,10 @@
 
   <!-- INFORMES SOLO ADMIN -->
 
-@if (rol() === 'admin') { <div class="card" routerLink="/reports">
+@if (rol() === 'admin') { <div class="card" routerLink="/reports" data-reveal="io" style="--i: 3">
 
   <div class="icono informes">
-    <img src="iconos/informe.png" alt="informes">
+    <img src="iconos/informe.png" alt="informes" decoding="async">
   </div>
 
   <h3>Informes</h3>
@@ -103,9 +103,9 @@
 
   <!-- HISTORIAL COMPRAS TODOS -->
 
-  <div class="card" routerLink="/purchase-history">
+  <div class="card" routerLink="/purchase-history" data-reveal="io" style="--i: 4">
 <div class="icono informes">
-  <img src="iconos/informe.png" alt="historial">
+  <img src="iconos/informe.png" alt="historial" decoding="async">
 </div>
 
 <h3>Historial Compras</h3>

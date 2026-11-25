@@ -80,7 +80,7 @@
   cursor:pointer;
   font-size:13px;
   font-weight:600;
-  transition:0.3s;
+  transition: transform var(--dur-quick) var(--motion-press);
 }
 
 /* BOTON LIMPIAR */
@@ -93,7 +93,7 @@
   cursor:pointer;
   font-size:13px;
   font-weight:600;
-  transition:0.3s;
+  transition: transform var(--dur-quick) var(--motion-press);
 }
 
 /* HOVER BOTONES */
@@ -164,7 +164,7 @@ tbody td[colspan]{
   border-radius:8px;
   cursor:pointer;
   font-size:13px;
-  transition:0.3s;
+  transition: transform var(--dur-quick) var(--motion-press);
 }
 
 /* HOVER BOTON VOLVER */

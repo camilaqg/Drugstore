@@ -3,7 +3,7 @@
 
   <!-- TÍTULO PRINCIPAL DE LA VISTA -->
   <div class="titulo-ventas">
-    <h2>Registro de Ventas</h2>
+    <h2 data-reveal="settle">Registro de Ventas</h2>
   </div>
 
   <!-- AVISO INLINE DE ERROR (reemplaza los alert) -->
@@ -29,25 +29,25 @@
   <div class="resumen">
 
     <!-- Muestra el valor total vendido durante el día -->
-    <div class="tarjeta">
+    <div class="tarjeta" data-reveal="io" style="--i: 0">
       <p>VENTAS HOY</p>
       <h3>{{ ventasHoy() | currency:'COP' }}</h3>
     </div>
 
     <!-- Muestra la cantidad total de transacciones realizadas -->
-    <div class="tarjeta">
+    <div class="tarjeta" data-reveal="io" style="--i: 1">
       <p>TRANSACCIONES</p>
       <h3>{{ transacciones() }}</h3>
     </div>
 
     <!-- Muestra la cantidad total de productos vendidos -->
-    <div class="tarjeta">
+    <div class="tarjeta" data-reveal="io" style="--i: 2">
       <p>PRODUCTOS VENDIDOS</p>
       <h3>{{ productosVendidos() }}</h3>
     </div>
 
     <!-- Muestra el acumulado de ventas del mes -->
-    <div class="tarjeta">
+    <div class="tarjeta" data-reveal="io" style="--i: 3">
       <p>VENTAS DEL MES</p>
       <h3>{{ ventasMes() | currency:'COP' }}</h3>
     </div>
@@ -55,7 +55,7 @@
   </div>
 
   <!-- FORMULARIO PARA REGISTRAR UNA NUEVA VENTA -->
-  <form class="formulario-venta" [formGroup]="FormularioVentas">
+  <form class="formulario-venta" [formGroup]="FormularioVentas" data-reveal="io">
 
     <h3>Nueva Venta</h3>
 

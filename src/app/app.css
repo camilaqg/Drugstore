@@ -42,12 +42,24 @@ nav{
   font-weight: 500;
   padding: 6px 12px;
   border-radius: 8px;
-  transition: 0.3s;
+  /* Motion layer: compositor properties only. The colour swap is instant on
+     purpose — a transitioned background repaints every frame for nothing. */
+  transition:
+    transform var(--dur-quick) var(--motion-press),
+    opacity var(--dur-quick) var(--motion-press);
 }
 
 /* HOVER */
-.btn-fondo:hover {
-  background: #e0e0f5;
+@media (hover: hover) and (pointer: fine) {
+  .btn-fondo:hover {
+    background: #e0e0f5;
+    transform: translateY(-1px);
+  }
+}
+
+.btn-fondo:active {
+  transform: translateY(0) scale(0.985);
+  transition-duration: var(--dur-instant);
 }
 
 /* ACTIVO (como "Inicio" morado) */
@@ -74,13 +86,14 @@ nav{
   border: none;              
   cursor: pointer;         
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: transform var(--dur-quick) var(--motion-press);
 }
 
-.admin:hover {
-  background: #bff0dd;
-  transform: scale(1.05);    /* 🔥 efecto pro */
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+@media (hover: hover) and (pointer: fine) {
+  .admin:hover {
+    background: #bff0dd;
+    transform: translateY(-1px);
+  }
 }
 
 /* BOTÓN SALIR */
@@ -91,12 +104,15 @@ nav{
   padding: 5px 12px;
   border-radius: 10px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: transform var(--dur-quick) var(--motion-press);
 }
 
 /* HOVER SALIR */
-.salir:hover {
-  background: #f8d7da;
+@media (hover: hover) and (pointer: fine) {
+  .salir:hover {
+    background: #f8d7da;
+    transform: translateY(-1px);
+  }
 }
 /* LOGO NUEVO */
 .logo-container {

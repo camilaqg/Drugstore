@@ -9,6 +9,7 @@ import {
 import { filter } from 'rxjs/operators';
 import { ChatbotComponent } from './components/chatbot/chatbot';
 import { AuthService } from './services/auth.service';
+import { MotionService } from './services/motion.service';
 
 @Component({
   selector: 'app-root',
@@ -35,6 +36,12 @@ export class App implements OnInit {
 
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private readonly motion = inject(MotionService);
+
+  constructor() {
+    // Browser-only, SSR-safe: the controller never runs during server render.
+    this.motion.boot();
+  }
 
   ngOnInit() {
     // Estado inicial
