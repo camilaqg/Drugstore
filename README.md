@@ -34,18 +34,21 @@ backend. Los usuarios registrados desde `/register` se crean siempre con rol
 
 ## URL del backend
 
-Hoy la URL está **escrita en el código**, en el campo `apiUrl` de cada servicio:
+La URL no está escrita en el código: sale de `src/environments/`.
 
-| Archivo | Endpoint |
-| --- | --- |
-| `src/app/services/auth.service.ts:31` | `/auth` |
-| `src/app/services/medicamento.service.ts:22` | `/medicamento` |
-| `src/app/services/venta` (`sales.service.ts:14-15`) | `/venta`, `/medicamento` |
-| `src/app/services/compra.service.ts:18` | `/compra` |
-| `src/app/services/usuario.service.ts:15` | `/usuario` |
+| Archivo | Cuándo se usa | `apiUrl` |
+| --- | --- | --- |
+| `environment.ts` | desarrollo (`npm start`, `ng test`) | `http://localhost:3000` |
+| `environment.prod.ts` | producción (`ng build`) | `/api` |
 
-Para apuntar a otro host hay que editar esos cinco archivos: el proyecto no tiene
-`src/environments/` todavía. Es una limitación conocida, no una decisión de diseño.
+`angular.json` reemplaza el primero por el segundo en la configuración `production`
+(`fileReplacements`), y los cinco servicios leen `environment.apiUrl`. En producción
+la URL es **relativa**: Caddy publica el backend bajo el mismo dominio, en `/api`
+(ver `deploy/Caddyfile` del repositorio del backend), así que no hay CORS ni host en
+el bundle.
+
+Ojo con una cosa: Angular **hornea la URL en el bundle durante el build**. Cambiarla
+exige recompilar y volver a desplegar; tocar una variable en el servidor no hace nada.
 
 ## Scripts
 
@@ -104,6 +107,13 @@ src/app/
 ├── app.routes.ts              # rutas + roles
 └── app.config.ts              # providers HTTP y router
 ```
+
+## Despliegue
+
+En producción corre en un VPS detrás de Caddy, bajo systemd, y se despliega solo con
+cada push a `main` (GitHub Actions). El runbook del servidor y el detalle de secretos
+están en [`deploy/DESPLIEGUE.md`](./deploy/DESPLIEGUE.md); la puesta en marcha completa
+del VPS vive en el repositorio del backend.
 
 ## Limitaciones conocidas
 

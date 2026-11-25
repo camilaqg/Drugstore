@@ -1,0 +1,153 @@
+# CI/CD del frontend Drogueria Pili (Angular SSR, repo Drugstore).
+#
+# verificar: corre en cada push a main (y en los PRs). Instala, corre los tests
+#   unitarios (SIEMPRE en modo no-watch: `ng test` sin esa bandera queda
+#   esperando el navegador y colga el job), compila produccion y, ademas,
+#   afirma que el bundle NO referencia localhost:3000: esa referencia era el
+#   bug que hacia la app indeployeable (la llamaba al backend del propio
+#   servidor). Si alguien vuelve a hardcodear una URL, este paso falla y
+#   avanza.
+#
+# desplegar: solo si verificar esta en verde, el evento es un push a main y la
+#   variable de repositorio DEPLOY_ENABLED esta en `true` (variables si se
+#   pueden usar en `if`; los secretos no). Mientras el VPS no exista, la
+#   variable no se define y este job queda apagado. Sin Docker: rsync + npm
+#   remoto + systemd.
+
+name: CI/CD frontend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Nunca desplegar dos veces a la vez: los pushes que se solapan hacen fila.
+# cancel-in-progress: false porque cada deploy pendiente sigue siendo necesario.
+concurrency:
+  group: despliegue-frontend
+
+jobs:
+  verificar:
+    name: Verificar frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: "Tests unitarios (no-watch: el modo watch colgaria el job)"
+        run: npx ng test --watch=false
+
+      - name: Build de produccion
+        run: npx ng build
+
+      # Pin del fix T1: el bundle de produccion debe llamar al backend por la
+      # ruta relativa /api (mismo origen), nunca a localhost:3000. grep -rl
+      # lista los archivos que SI matchean: si encuentra alguno, el deploy
+      # fracasaria en el VPS, asi que mejor fallar aqui y con mensaje claro.
+      - name: El bundle de produccion no referencia localhost:3000
+        run: |
+          coincidencias=$(grep -rl "localhost:3000" dist/drugstore-system/browser/ || true)
+          if [ -n "$coincidencias" ]; then
+            echo "ERROR: el bundle de produccion referencia localhost:3000 en:"
+            echo "$coincidencias"
+            echo "La URL del backend va en src/environments/environment.prod.ts (/api), nunca hardcodeada."
+            exit 1
+          fi
+          echo "OK: el bundle no referencia localhost:3000."
+
+  desplegar:
+    name: Desplegar al VPS
+    needs: verificar
+    # Solo push a main con el interruptor encendido (los PRs verifican, no despliegan).
+    if: >-
+      vars.DEPLOY_ENABLED == 'true' &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: produccion
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      # Los artefactos NO sobreviven entre jobs: hay que recompilar aqui antes
+      # de sincronizar. Compilar en CI y no en el VPS es deliberado: el VPS
+      # nunca necesita el toolchain de Angular ni el pico de ~1 GB de RAM del
+      # build; solo recibe dist/ y las dependencias de runtime ya instaladas.
+      - name: Build de produccion
+        run: npx ng build
+
+      - name: Configurar SSH (llave dedicada + host pinneado)
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_drogueria_deploy
+          chmod 600 ~/.ssh/id_drogueria_deploy
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      # Se envia SOLO lo que el servidor necesita: dist/ (con su estructura
+      # interna, `dist` sin barra final) y los manifiestos para el npm remoto.
+      # node_modules/ va excluido: en el VPS corre npm ci --omit=dev.
+      - name: Sincronizar dist/ con rsync
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          rsync -az --delete \
+            --exclude node_modules/ \
+            -e "ssh -i ~/.ssh/id_drogueria_deploy -o StrictHostKeyChecking=yes -o BatchMode=yes" \
+            dist package.json package-lock.json \
+            "$VPS_USER@$VPS_HOST:/srv/drogueria/frontend/"
+
+      # Todo en un solo script remoto: las dependencias y el reinicio no deben
+      # quedar a medias si el run se corta entre pasos.
+      - name: Instalar dependencias, reiniciar y verificar salud
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -i ~/.ssh/id_drogueria_deploy \
+              -o StrictHostKeyChecking=yes -o BatchMode=yes \
+              "$VPS_USER@$VPS_HOST" 'bash -s' <<'FIN'
+          set -euo pipefail
+          cd /srv/drogueria/frontend
+
+          # El servidor SSR importa express en runtime: eso vive en
+          # dependencies, no en devDependencies, asi que --omit=dev alcanza.
+          npm ci --omit=dev
+
+          sudo systemctl restart drugstore-frontend
+
+          # Healthcheck: hasta 30s esperando que / responda en el loopback.
+          arriba=0
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4000/ >/dev/null 2>&1; then
+              echo "Frontend arriba tras ${i}s."
+              arriba=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$arriba" -ne 1 ]; then
+            echo "ERROR: el frontend no respondio en 30s. Ultimas 50 lineas del journal:"
+            sudo journalctl -u drugstore-frontend -n 50 --no-pager
+            exit 1
+          fi
+          FIN

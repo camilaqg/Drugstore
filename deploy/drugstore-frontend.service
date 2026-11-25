@@ -1,0 +1,51 @@
+# Unidad de systemd para el frontend Angular 21 SSR (repo Drugstore) en el VPS.
+#
+# Instalar con:
+#   sudo install -m 644 deploy/drugstore-frontend.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#
+# El contenido de estos archivos NO es lo que corre la app: este repo solo
+# compila y publica dist/ (ver .github/workflows/deploy.yml). La unidad solo
+# levanta `node dist/drugstore-system/server/server.mjs`.
+#
+# Sobre las variables de entorno: este servicio NO lleva secretos (la base y
+# los datos viven en el backend; este proceso solo renderiza). La URL de la API
+# tampoco es de runtime sino de BUILD: `src/environments/environment.prod.ts`
+# (apiUrl = /api) queda HORNEADA dentro del bundle de producción cuando CI
+# corre `ng build`. Por eso apuntar el frontend a otro backend exige recompilar
+# y redesplegar: no basta con tocar una variable ni reiniciar el servicio.
+# Ver deploy/DESPLIEGUE.md.
+
+[Unit]
+Description=Frontend Drogueria Pili (Angular SSR)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=drogueria
+Group=drogueria
+WorkingDirectory=/srv/drogueria/frontend
+
+Environment=PORT=4000
+Environment=NODE_ENV=production
+
+ExecStart=/usr/bin/node dist/drugstore-system/server/server.mjs
+Restart=always
+RestartSec=5
+
+# Logs a journald: ver con `journalctl -u drugstore-frontend -f`.
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=drugstore-frontend
+
+# Endurecimiento: el proceso corre sin privilegios extra, con /tmp propio,
+# el sistema de archivos en solo lectura y sin acceso a /home.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/srv/drogueria/frontend
+
+[Install]
+WantedBy=multi-user.target
