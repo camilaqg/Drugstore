@@ -90,6 +90,8 @@
           placeholder="Ej: MED-001">
         @if (editando()) {
           <small class="hint">El código no se puede modificar</small>
+        } @else {
+          <small class="hint">Ej: MED-001. Debe ser único.</small>
         }
       </div>
 
@@ -121,6 +123,7 @@
       <div class="field">
         <label for="campo-venta">Precio venta</label>
         <input id="campo-venta" class="mono" type="number" min="0" [(ngModel)]="formulario.precioVenta">
+        <small class="hint">En pesos, sin decimales.</small>
       </div>
 
     </div>
@@ -223,9 +226,9 @@
         Volver al menú
       </button>
       @if (seleccionadoId(); as sel) {
-        <span class="foot-hint">Seleccionado: <strong class="mono">{{ sel }}</strong></span>
+        <span class="foot-hint">Mostrando {{ listaMeds().length }} de {{ medicamentos().length }} · seleccionado <strong class="mono">{{ sel }}</strong></span>
       } @else {
-        <span class="foot-hint">Elegí una fila para modificarla o eliminarla.</span>
+        <span class="foot-hint">Mostrando {{ listaMeds().length }} de {{ medicamentos().length }} · elegí una fila para modificarla o eliminarla.</span>
       }
     </div>
 
