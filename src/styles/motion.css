@@ -17,18 +17,20 @@
   --motion-press: cubic-bezier(0.3, 0.9, 0.2, 1);
   --motion-exit: cubic-bezier(0.45, 0, 0.9, 0.35);
 
-  /* Durations */
+  /* Durations. Entrance values were raised once (2026-11-25) after the first
+     pass read as too subtle in production; feedback values stay short on
+     purpose — a frequent interaction must never make the user wait. */
   --dur-instant: 90ms;
   --dur-quick: 140ms;
   --dur-base: 220ms;
-  --dur-settle: 420ms;
-  --dur-reveal: 520ms;
-  --stagger-step: 60ms;
+  --dur-settle: 560ms;
+  --dur-reveal: 700ms;
+  --stagger-step: 80ms;
 
-  /* Amplitudes. Deliberately small: the motion is a settle, not a slide show. */
+  /* Amplitudes. */
   --shift-sm: 8px;
-  --shift-md: 16px;
-  --shift-lg: 24px;
+  --shift-md: 32px;
+  --shift-lg: 48px;
 }
 
 /* ---------------------------------------------------------------------------
@@ -152,11 +154,11 @@ html.reduce {
    ------------------------------------------------------------------------- */
 @media (max-width: 991px) {
   :root {
-    --dur-settle: 320ms;
-    --dur-reveal: 320ms;
+    --dur-settle: 380ms;
+    --dur-reveal: 420ms;
     --stagger-step: 0ms;
-    --shift-md: 8px;
-    --shift-lg: 16px;
+    --shift-md: 12px;
+    --shift-lg: 24px;
   }
 }
 
