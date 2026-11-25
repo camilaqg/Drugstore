@@ -1,118 +1,174 @@
 <!-- CONTENEDOR PRINCIPAL DEL MÓDULO DE VENTAS -->
-<div class="ventas-container">
-
-  <!-- TÍTULO PRINCIPAL DE LA VISTA -->
-  <div class="titulo-ventas">
-    <h2 data-reveal="settle">Registro de Ventas</h2>
-  </div>
+<div class="page">
 
   <!-- AVISO INLINE DE ERROR (reemplaza los alert) -->
   @if (mensajeError(); as texto) {
-  <div class="aviso aviso-error" role="alert">
-    <span>{{ texto }}</span>
-    <button type="button" class="aviso-cerrar" (click)="limpiarAvisos()" aria-label="Cerrar aviso">✕</button>
-  </div>
+    <div class="toast toast-danger" role="alert">
+      <p>{{ texto }}</p>
+      <button
+        type="button"
+        class="toast-close"
+        (click)="limpiarAvisos()"
+        aria-label="Cerrar aviso">✕</button>
+    </div>
   }
 
   <!-- AVISO INLINE DE ÉXITO CON EL TOTAL DEL SERVIDOR -->
   @if (mensajeExito(); as texto) {
-  <div class="aviso aviso-exito" role="status">
-    <span>{{ texto }}</span>
-    @if (totalServidor(); as total) {
-    <span class="total-servidor">Total registrado por el servidor: <strong>{{ total | currency:'COP' }}</strong></span>
-    }
-    <button type="button" class="aviso-cerrar" (click)="limpiarAvisos()" aria-label="Cerrar aviso">✕</button>
-  </div>
+    <div class="toast toast-success" role="status">
+      <p>{{ texto }}</p>
+      @if (totalServidor(); as total) {
+        <span class="total-servidor">
+          Total registrado por el servidor:
+          <strong>{{ total | currency:'COP' }}</strong>
+        </span>
+      }
+      <button
+        type="button"
+        class="toast-close"
+        (click)="limpiarAvisos()"
+        aria-label="Cerrar aviso">✕</button>
+    </div>
   }
 
-  <!-- TARJETAS RESUMEN CON INDICADORES DE VENTAS -->
-  <div class="resumen">
+  <!-- TÍTULO Y TARJETAS RESUMEN CON INDICADORES DE VENTAS -->
+  <header class="page-head">
 
-    <!-- Muestra el valor total vendido durante el día -->
-    <div class="tarjeta" data-reveal="io" style="--i: 0">
-      <p>VENTAS HOY</p>
-      <h3>{{ ventasHoy() | currency:'COP' }}</h3>
+    <div class="page-title">
+      <h1 data-reveal="settle">Registro de Ventas</h1>
+      <p>Registrá la venta del mostrador y seguí el acumulado del día.</p>
     </div>
 
-    <!-- Muestra la cantidad total de transacciones realizadas -->
-    <div class="tarjeta" data-reveal="io" style="--i: 1">
-      <p>TRANSACCIONES</p>
-      <h3>{{ transacciones() }}</h3>
+    <div class="stats">
+
+      <!-- Muestra el valor total vendido durante el día -->
+      <div class="stat" data-reveal="io" style="--i: 0">
+        <b class="dinero">{{ ventasHoy() | currency:'COP' }}</b>
+        <span>VENTAS HOY</span>
+      </div>
+
+      <!-- Muestra la cantidad total de transacciones realizadas -->
+      <div class="stat" data-reveal="io" style="--i: 1">
+        <b>{{ transacciones() }}</b>
+        <span>TRANSACCIONES</span>
+      </div>
+
+      <!-- Muestra la cantidad total de productos vendidos -->
+      <div class="stat" data-reveal="io" style="--i: 2">
+        <b>{{ productosVendidos() }}</b>
+        <span>PRODUCTOS VENDIDOS</span>
+      </div>
+
+      <!-- Muestra el acumulado de ventas del mes -->
+      <div class="stat" data-reveal="io" style="--i: 3">
+        <b class="dinero">{{ ventasMes() | currency:'COP' }}</b>
+        <span>VENTAS DEL MES</span>
+      </div>
+
     </div>
 
-    <!-- Muestra la cantidad total de productos vendidos -->
-    <div class="tarjeta" data-reveal="io" style="--i: 2">
-      <p>PRODUCTOS VENDIDOS</p>
-      <h3>{{ productosVendidos() }}</h3>
-    </div>
-
-    <!-- Muestra el acumulado de ventas del mes -->
-    <div class="tarjeta" data-reveal="io" style="--i: 3">
-      <p>VENTAS DEL MES</p>
-      <h3>{{ ventasMes() | currency:'COP' }}</h3>
-    </div>
-
-  </div>
+  </header>
 
   <!-- FORMULARIO PARA REGISTRAR UNA NUEVA VENTA -->
-  <form class="formulario-venta" [formGroup]="FormularioVentas" data-reveal="io">
+  <form class="card" [formGroup]="FormularioVentas" data-reveal="io" aria-labelledby="titulo-nueva-venta">
 
-    <h3>Nueva Venta</h3>
+    <h2 id="titulo-nueva-venta">
+      Nueva Venta
+      <small>El precio unitario lo fija el catálogo y el total oficial lo calcula el servidor.</small>
+    </h2>
 
     <!-- DATOS GENERALES DE LA FACTURA -->
-    <div class="fila">
+    <h3 class="form-section">Factura</h3>
 
-      <div class="campo">
-        <label>Fecha de Venta</label>
-        <input type="date" formControlName="fechaVenta">
+    <div class="form-grid">
+
+      <div class="field">
+        <label for="venta-fecha">Fecha de Venta</label>
+        <input id="venta-fecha" type="date" formControlName="fechaVenta">
       </div>
 
-      <div class="campo">
-        <label>Cliente</label>
-        <input type="text" formControlName="Cliente">
+      <div class="field">
+        <label for="venta-cliente">Cliente</label>
+        <input id="venta-cliente" type="text" formControlName="Cliente">
       </div>
 
-      <div class="campo">
-        <label>N° Factura</label>
-        <input type="text" formControlName="Factura">
+      <div class="field">
+        <label for="venta-factura">N° Factura</label>
+        <input id="venta-factura" class="mono" type="text" formControlName="Factura">
       </div>
 
     </div>
 
     <!-- INFORMACIÓN DEL MEDICAMENTO SELECCIONADO -->
-    <div class="fila">
+    <h3 class="form-section">Producto</h3>
 
-      <div class="campo">
-        <label>Código Medicamento</label>
+    <div class="form-grid">
+
+      <div class="field">
+        <label for="venta-codigo">Código Medicamento</label>
 
         <!-- Al seleccionar un código se cargan automáticamente
              los datos del medicamento -->
-        <select formControlName="Codigo" (change)="buscarMedicamento()">
+        <select id="venta-codigo" class="mono" formControlName="Codigo" (change)="buscarMedicamento()">
           <option value="">Seleccione...</option>
-
 
           <!-- El stock se muestra en cada opción y los de estado
                "Bajo stock" se marcan para poder venderlos igual -->
           @for (med of medicamentos; track med.id) {
-          <option [value]="med.id">
-            {{ med.id }} - {{ med.nombre }} — Stock: {{ med.stock }}{{ med.estado === 'Bajo stock' ? ' (Bajo stock)' : '' }}
-          </option>
+            <option [value]="med.id">
+              {{ med.id }} - {{ med.nombre }} — Stock: {{ med.stock }}{{ med.estado === 'Bajo stock' ? ' (Bajo stock)' : '' }}
+            </option>
           }
-
 
         </select>
       </div>
 
       <!-- Nombre del medicamento cargado automáticamente -->
-      <div class="campo">
-        <label>Medicamento</label>
-        <input type="text" formControlName="Medicamento" readonly>
+      <div class="field">
+        <label for="venta-medicamento">Medicamento</label>
+        <input id="venta-medicamento" type="text" formControlName="Medicamento" readonly>
       </div>
 
       <!-- Laboratorio fabricante -->
-      <div class="campo">
-        <label>Laboratorio</label>
-        <input type="text" formControlName="Laboratorio" readonly>
+      <div class="field">
+        <label for="venta-laboratorio">Laboratorio</label>
+        <input id="venta-laboratorio" type="text" formControlName="Laboratorio" readonly>
+      </div>
+
+      <div class="field">
+        <label for="venta-cantidad">Cantidad</label>
+
+        <!-- Al modificar la cantidad se recalcula el total; el máximo
+             es el stock disponible para no llegar al rechazo del backend -->
+        <input
+          id="venta-cantidad"
+          class="mono"
+          type="number"
+          formControlName="Cantidad"
+          min="1"
+          [max]="medicamentoSeleccionado() ? stockDisponible(medicamentoSeleccionado()!) : null"
+          (input)="calcularTotalProducto()">
+      </div>
+
+      <!-- Precio unitario del medicamento -->
+      <div class="field">
+        <label for="venta-precio">Precio Venta</label>
+        <input id="venta-precio" class="mono" type="number" formControlName="Precio" readonly>
+      </div>
+
+      <!-- Valor total del producto seleccionado -->
+      <div class="field">
+        <label for="venta-total">Total</label>
+        <input id="venta-total" class="mono total-campo" type="number" formControlName="Total" readonly>
+      </div>
+
+      <!-- Agrega el producto al detalle de la venta -->
+      <div class="field field-submit">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="agregarProducto()"
+          aria-label="Agregar producto al detalle">+</button>
       </div>
 
     </div>
@@ -120,41 +176,22 @@
     <!-- Stock disponible del medicamento elegido, descontando las
          unidades ya agregadas en la venta actual -->
     @if (medicamentoSeleccionado(); as med) {
-    <p class="nota-stock" [class.nota-bajo-stock]="med.estado === 'Bajo stock'">
-      {{ avisoStockDisponible() }}
-    </p>
+      <p class="nota-stock" [class.nota-bajo-stock]="med.estado === 'Bajo stock'">
+        {{ avisoStockDisponible() }}
+      </p>
     }
 
-    <!-- INFORMACIÓN DE CANTIDAD Y VALORES -->
-    <div class="fila">
+    <!-- BOTONES DE ACCIÓN PRINCIPALES -->
+    <div class="card-actions">
 
-      <div class="campo">
-        <label>Cantidad</label>
+      <!-- Limpia todos los campos y reinicia el formulario -->
+      <button type="button" class="btn btn-quiet" (click)="limpiarFormulario()">
+        Limpiar
+      </button>
 
-        <!-- Al modificar la cantidad se recalcula el total; el máximo
-             es el stock disponible para no llegar al rechazo del backend -->
-        <input type="number" formControlName="Cantidad" min="1"
-               [max]="medicamentoSeleccionado() ? stockDisponible(medicamentoSeleccionado()!) : null"
-               (input)="calcularTotalProducto()">
-      </div>
-
-      <!-- Precio unitario del medicamento -->
-      <div class="campo">
-        <label>Precio Venta</label>
-        <input type="number" formControlName="Precio" readonly>
-      </div>
-
-      <!-- Valor total del producto seleccionado -->
-      <div class="campo total">
-        <label>Total</label>
-        <input type="number" formControlName="Total" readonly>
-      </div>
-
-      <!-- Agrega el producto al detalle de la venta -->
-      <button type="button" class="boton-agregar" (click)="agregarProducto()">
-
-        +
-
+      <!-- Guarda y confirma la venta realizada -->
+      <button type="button" class="btn btn-primary" (click)="confirmarVenta()">
+        Confirmar Venta
       </button>
 
     </div>
@@ -162,101 +199,86 @@
   </form>
 
   <!-- SECCIÓN QUE MUESTRA EL DETALLE DE LOS PRODUCTOS AGREGADOS -->
-  <div class="detalle">
+  <section class="card" aria-labelledby="titulo-detalle">
 
-    <h3>Detalle de Venta</h3>
+    <h2 id="titulo-detalle">
+      Detalle de Venta
+      <small>El total de abajo es el cálculo local; el servidor recalcula al confirmar.</small>
+    </h2>
 
-    <table>
+    <div class="tabla-scroll">
+      <table>
 
-      <!-- ENCABEZADOS DE LA TABLA -->
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Nombre</th>
-          <th>Laboratorio</th>
-          <th>Cantidad</th>
-          <th>Precio</th>
-          <th>Total</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
+        <!-- ENCABEZADOS DE LA TABLA -->
+        <thead>
+          <tr>
+            <th scope="col">Código</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Laboratorio</th>
+            <th scope="col" class="num">Cantidad</th>
+            <th scope="col" class="num">Precio</th>
+            <th scope="col" class="num">Total</th>
+            <th scope="col" class="accion">Acción</th>
+          </tr>
+        </thead>
 
-      <!-- LISTA DINÁMICA DE PRODUCTOS AGREGADOS -->
-      <tbody>
+        <!-- LISTA DINÁMICA DE PRODUCTOS AGREGADOS -->
+        <tbody>
 
-        @for (item of detalleVenta(); track $index; let i = $index) {
+          @for (item of detalleVenta(); track $index; let i = $index) {
 
-        <tr>
+            <tr>
 
-          <td>{{ item.Codigo }}</td>
-          <td>{{ item.Medicamento }}</td>
-          <td>{{ item.Laboratorio }}</td>
-          <td>{{ item.Cantidad }}</td>
-          <td>{{ item.Precio | currency:'COP' }}</td>
-          <td>{{ item.Total | currency:'COP' }}</td>
+              <td class="mono codigo">{{ item.Codigo }}</td>
+              <td class="nombre">{{ item.Medicamento }}</td>
+              <td>{{ item.Laboratorio }}</td>
+              <td class="num">{{ item.Cantidad }}</td>
+              <td class="num">{{ item.Precio | currency:'COP' }}</td>
+              <td class="num">{{ item.Total | currency:'COP' }}</td>
 
-          <td>
+              <td class="accion">
 
-            <!-- Elimina un producto específico del detalle -->
-            <button class="boton-quitar" (click)="quitarProducto(i)">
+                <!-- Elimina un producto específico del detalle -->
+                <button
+                  type="button"
+                  class="btn btn-danger-soft btn-sm"
+                  (click)="quitarProducto(i)">
+                  Quitar
+                </button>
 
-              Quitar
+              </td>
 
-            </button>
+            </tr>
 
-          </td>
+          }
 
-        </tr>
+        </tbody>
 
-        }
+      </table>
+    </div>
 
-      </tbody>
+    <div class="card-foot">
 
-    </table>
+      <!-- Genera o imprime el comprobante de venta -->
+      <button type="button" class="btn btn-quiet" (click)="imprimirVenta()">
+        Imprimir
+      </button>
 
-    <!-- Muestra el valor total acumulado de la venta. Es solo el
-         cálculo local para mostrar: el total oficial lo calcula el
-         servidor al confirmar la venta -->
-    <div class="total-general">
+      <!-- Regresa al usuario al menú principal -->
+      <button type="button" class="btn btn-quiet" (click)="salir()">
+        ⟵ Salir
+      </button>
 
-      Total:
-      <strong>{{ totalGeneral() | currency:'COP' }}</strong>
+      <!-- Muestra el valor total acumulado de la venta. Es solo el
+           cálculo local para mostrar: el total oficial lo calcula el
+           servidor al confirmar la venta -->
+      <span class="foot-total">
+        Total:
+        <strong>{{ totalGeneral() | currency:'COP' }}</strong>
+      </span>
 
     </div>
 
-  </div>
-
-  <!-- BOTONES DE ACCIÓN PRINCIPALES -->
-  <div class="botones">
-
-    <!-- Guarda y confirma la venta realizada -->
-    <button class="boton confirmar" (click)="confirmarVenta()">
-
-      Confirmar Venta
-
-    </button>
-
-    <!-- Genera o imprime el comprobante de venta -->
-    <button type="button" class="boton imprimir" (click)="imprimirVenta()">
-
-      Imprimir
-
-    </button>
-
-    <!-- Limpia todos los campos y reinicia el formulario -->
-    <button class="boton limpiar" (click)="limpiarFormulario()">
-
-      Limpiar
-
-    </button>
-
-    <!-- Regresa al usuario al menú principal -->
-    <button class="boton salir" (click)="salir()">
-
-      ⟵ Salir
-
-    </button>
-
-  </div>
+  </section>
 
 </div>

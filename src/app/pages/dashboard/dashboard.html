@@ -1,118 +1,129 @@
-<!-- header principal -->
+<div class="page">
 
-<div class="header-seccion" data-reveal="settle">
+  <!-- header principal -->
 
-  <!-- logo pequeño -->
+  <header class="page-head" data-reveal="settle">
 
-  <div class="logo-pequeno">
-    <img src="iconos/flor.png" alt="logo" decoding="async">
-  </div>
+    <!-- logo pequeño -->
 
-  <!-- textos -->
+    <div class="logo-pequeno">
+      <img src="iconos/flor.png" alt="logo" decoding="async">
+    </div>
 
-  <div class="texto-header">
-    <h1 class="titulo">Bienvenida al sistema</h1>
-    <p class="subtitulo">Seleccione un modulo para continuar</p>
-  </div>
+    <!-- textos -->
 
-  <!-- usuario -->
+    <div class="page-title">
+      <h1>Bienvenida al sistema</h1>
+      <p>Seleccione un modulo para continuar</p>
+    </div>
 
-  <div class="user-section">
-    <span class="admin">{{ usuarioActual() }}</span>
+    <!-- usuario -->
 
-<button class="logout" (click)="salir()">
-  Salir
-</button>
+    <div class="user-section">
+      <span class="admin">{{ usuarioActual() }}</span>
 
-  </div>
+      <button class="logout" type="button" (click)="salir()">
+        Salir
+      </button>
+    </div>
 
-</div>
+  </header>
 
-<!-- tarjetas -->
+  <!-- tarjetas -->
 
-<div class="contenedor">
+  <div class="contenedor">
 
-  <!-- INVENTARIO SOLO ADMIN -->
+    <!-- INVENTARIO SOLO ADMIN -->
 
-@if (rol() === 'admin') { <div class="card" routerLink="/inventory" data-reveal="io" style="--i: 0">
+    @if (rol() === 'admin') {
 
-  <div class="icono inventario">
-    <img src="iconos/cajita.png" alt="inventario" decoding="async">
-  </div>
+      <a class="card" routerLink="/inventory" data-reveal="io" style="--i: 0">
 
-  <h3>Inventario</h3>
+        <div class="icono inventario">
+          <img src="iconos/cajita.png" alt="inventario" decoding="async">
+        </div>
 
-  <p>
-    Aqui puede ver y manejar los productos
-  </p>
+        <h3>Inventario</h3>
 
-</div>
+        <p>
+          Aqui puede ver y manejar los productos
+        </p>
 
-}
+      </a>
 
-  <!-- COMPRAS TODOS -->
+    }
 
-  <div class="card" routerLink="/purchases" data-reveal="io" style="--i: 1">
-<div class="icono compras">
-  <img src="iconos/carrito.png" alt="compras" decoding="async">
-</div>
+    <!-- COMPRAS TODOS -->
 
-<h3>Compras</h3>
+    <a class="card" routerLink="/purchases" data-reveal="io" style="--i: 1">
 
-<p>
-  Aqui registra las compras de la drogueria
-</p>
+      <div class="icono compras">
+        <img src="iconos/carrito.png" alt="compras" decoding="async">
+      </div>
 
-  </div>
+      <h3>Compras</h3>
 
-  <!-- VENTAS SOLO ADMIN -->
+      <p>
+        Aqui registra las compras de la drogueria
+      </p>
 
-@if (rol() === 'admin') { <div class="card" routerLink="/sales" data-reveal="io" style="--i: 2">
+    </a>
 
-  <div class="icono ventas">
-    <img src="iconos/venta.png" alt="ventas" decoding="async">
-  </div>
+    <!-- VENTAS SOLO ADMIN -->
 
-  <h3>Ventas</h3>
+    @if (rol() === 'admin') {
 
-  <p>
-    Control de las ventas realizadas
-  </p>
+      <a class="card" routerLink="/sales" data-reveal="io" style="--i: 2">
 
-</div>
+        <div class="icono ventas">
+          <img src="iconos/venta.png" alt="ventas" decoding="async">
+        </div>
 
-}
+        <h3>Ventas</h3>
 
-  <!-- INFORMES SOLO ADMIN -->
+        <p>
+          Control de las ventas realizadas
+        </p>
 
-@if (rol() === 'admin') { <div class="card" routerLink="/reports" data-reveal="io" style="--i: 3">
+      </a>
 
-  <div class="icono informes">
-    <img src="iconos/informe.png" alt="informes" decoding="async">
-  </div>
+    }
 
-  <h3>Informes</h3>
+    <!-- INFORMES SOLO ADMIN -->
 
-  <p>
-    Reportes del negocio
-  </p>
+    @if (rol() === 'admin') {
 
-</div>
+      <a class="card" routerLink="/reports" data-reveal="io" style="--i: 3">
 
-}
+        <div class="icono informes">
+          <img src="iconos/informe.png" alt="informes" decoding="async">
+        </div>
 
-  <!-- HISTORIAL COMPRAS TODOS -->
+        <h3>Informes</h3>
 
-  <div class="card" routerLink="/purchase-history" data-reveal="io" style="--i: 4">
-<div class="icono informes">
-  <img src="iconos/informe.png" alt="historial" decoding="async">
-</div>
+        <p>
+          Reportes del negocio
+        </p>
 
-<h3>Historial Compras</h3>
+      </a>
 
-<p>
-  Ver compras realizadas
-</p>
+    }
+
+    <!-- HISTORIAL COMPRAS TODOS -->
+
+    <a class="card" routerLink="/purchase-history" data-reveal="io" style="--i: 4">
+
+      <div class="icono historial">
+        <img src="iconos/informe.png" alt="historial" decoding="async">
+      </div>
+
+      <h3>Historial Compras</h3>
+
+      <p>
+        Ver compras realizadas
+      </p>
+
+    </a>
 
   </div>
 

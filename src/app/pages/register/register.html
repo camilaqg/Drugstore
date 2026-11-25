@@ -1,6 +1,6 @@
 <div class="container">
 
-    <!-- Lado izquierdo -->
+    <!-- lado izquierdo: marca -->
     <div class="left">
         <div class="card" data-reveal="settle">
 
@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <!-- APARECE EN EL LADO DERECHO -->
+    <!-- lado derecho: registro -->
     <div class="right">
         <div class="register-box" data-reveal="settle" style="--i: 1">
             <h1>Crear cuenta</h1>
@@ -21,7 +21,7 @@
             <form (ngSubmit)="register()">
 
                 <!-- NOMBRE -->
-                <div class="input-group">
+                <div class="field">
                     <label>Nombre completo</label>
                     <input
                         type="text"
@@ -33,7 +33,7 @@
                 </div>
 
                 <!-- CORREO -->
-                <div class="input-group">
+                <div class="field">
                     <label>Correo</label>
                     <input
                         type="email"
@@ -45,7 +45,7 @@
                 </div>
 
                 <!-- USUARIO -->
-                <div class="input-group">
+                <div class="field">
                     <label>Usuario</label>
                     <input
                         type="text"
@@ -57,7 +57,7 @@
                 </div>
 
                 <!-- CONTRASEÑA -->
-                <div class="input-group">
+                <div class="field">
                     <label>Contraseña</label>
                     <input
                         type="password"
@@ -69,14 +69,12 @@
 
                     <!-- VALIDACION PARA LOS CARACTERES -->
                     @if (password().length < 8 && password()) {
-                        <p style="color:#0f0f0f; text-align:center; margin-top:5px;">
-                            *Mínimo 8 caracteres*
-                        </p>
+                        <p class="form-error">*Mínimo 8 caracteres*</p>
                     }
                 </div>
 
                 <!-- CONFIRMAR CONTRASEÑA -->
-                <div class="input-group">
+                <div class="field">
                     <label>Confirmar contraseña</label>
                     <input
                         type="password"
@@ -88,9 +86,7 @@
 
                     <!-- VALIDACIÓN COINCIDENCIA EN LAS CONTRASEÑAS -->
                     @if (password() !== confirmPassword() && confirmPassword()) {
-                        <p style="color:#0f0f0f; text-align:center; margin-top:5px;">
-                            *Las contraseñas no coinciden*
-                        </p>
+                        <p class="form-error">*Las contraseñas no coinciden*</p>
                     }
                 </div>
 

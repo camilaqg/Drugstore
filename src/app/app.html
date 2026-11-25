@@ -1,97 +1,54 @@
 @if (mostrarLayout()) {
 
-<header class="header" data-reveal="settle">
+<header class="topbar" data-reveal="settle">
 
-  <!-- LOGO -->
-  <div class="logo-container">
+  <!-- marca -->
+  <div class="brand">
 
-    <img src="iconos/flor.png" alt="logo" decoding="async">
+    <div class="brand-mark">
+      <img src="iconos/flor.png" alt="" decoding="async">
+    </div>
 
-    <div class="texto-logo">
+    <div class="brand-text">
       <h1>Droguería Pili</h1>
-      <p>SISTEMA DE GESTIÓN</p>
+      <span>Sistema de gestión</span>
     </div>
 
   </div>
 
-  <nav>
+  <!-- navegación -->
+  <nav class="pills" aria-label="Secciones principales">
 
-    <div class="LinksNav">
+    @if (!esUsuario()) {
+      <a routerLink="/inventory" routerLinkActive="activo">Inventario</a>
+    }
 
-      @if (!esUsuario()) {
-        <a
-          class="btn-fondo"
-          routerLink="/inventory"
-          routerLinkActive="activo">
+    @if (!esUsuario()) {
+      <a routerLink="/sales" routerLinkActive="activo">Ventas</a>
+    }
 
-          Inventario
+    <a routerLink="/purchases" routerLinkActive="activo">Compras</a>
 
-        </a>
-      }
+    @if (!esUsuario()) {
+      <a routerLink="/usuarios" routerLinkActive="activo">Usuarios</a>
+    }
 
-      @if (!esUsuario()) {
-        <a
-          class="btn-fondo"
-          routerLink="/sales"
-          routerLinkActive="activo">
-
-          Ventas
-
-        </a>
-      }
-
-      <a
-        class="btn-fondo"
-        routerLink="/purchases"
-        routerLinkActive="activo">
-
-        Compras
-
-      </a>
-
-      @if (!esUsuario()) {
-        <a
-          class="btn-fondo"
-          routerLink="/usuarios"
-          routerLinkActive="activo">
-
-          Usuarios
-
-        </a>
-      }
-
-      @if (!esUsuario()) {
-        <a
-          class="btn-fondo"
-          routerLink="/reports"
-          routerLinkActive="activo">
-
-          Informes
-
-        </a>
-      }
-
-    </div>
+    @if (!esUsuario()) {
+      <a routerLink="/reports" routerLinkActive="activo">Informes</a>
+    }
 
   </nav>
 
-  <!-- USUARIO -->
-  <div class="user">
+  <!-- cuenta -->
+  <div class="account">
 
-    <span
-      class="admin"
-      (click)="irAlMenu()">
-
+    <button class="who" type="button" (click)="irAlMenu()">
+      <span class="dot" aria-hidden="true">{{ textoUsuario().charAt(0) }}</span>
       {{ textoUsuario() }}
+    </button>
 
-    </span>
-
-    <button
-      class="salir"
-      (click)="logout()">
-
+    <button class="signout" type="button" (click)="logout()">
       Salir
-
     </button>
 
   </div>
@@ -101,7 +58,7 @@
 }
 
 <!-- CONTENIDO -->
-<main>
+<main class="app-main">
 
   <router-outlet></router-outlet>
 
@@ -113,12 +70,8 @@
 <!-- FOOTER -->
 @if (mostrarLayout()) {
 
-<footer class="footer">
-
-  <p>
-    © 2026 Droguería Pili Todos los derechos reservados
-  </p>
-
+<footer class="site-footer">
+  <p>© 2026 Droguería Pili — Todos los derechos reservados</p>
 </footer>
 
 }

@@ -1,57 +1,65 @@
-
-<div class="informes-container">
+<div class="page">
 
   <!-- TITULO -->
-  <div class="titulo-informes">
-    <h2 data-reveal="settle">Informes de Venta</h2>
-  </div>
+  <header class="page-head">
+    <div class="page-title">
+      <h1 data-reveal="settle">Informes de Venta</h1>
+      <p>Filtrá el histórico de ventas por fecha o por código de medicamento.</p>
+    </div>
+  </header>
 
   <!-- FORMULARIO -->
   <form [formGroup]="filtroForm">
 
-    <section class="filtros" data-reveal="io">
+    <section class="card" data-reveal="io" aria-labelledby="titulo-filtros">
 
-      <div class="fila-filtros">
+      <h2 id="titulo-filtros">
+        Filtros
+        <small>Completá al menos un campo y buscá: los filtros no se aplican solos.</small>
+      </h2>
+
+      <div class="form-grid">
 
         <!-- FECHA INICIAL -->
-        <div class="campo">
-          <label>FECHA INICIAL</label>
-          <input type="date" formControlName="fechaInicial">
+        <div class="field">
+          <label for="filtro-fecha-inicial">Fecha Inicial</label>
+          <input id="filtro-fecha-inicial" type="date" formControlName="fechaInicial">
         </div>
 
         <!-- FECHA FINAL -->
-        <div class="campo">
-          <label>FECHA FINAL</label>
-          <input type="date" formControlName="fechaFinal">
+        <div class="field">
+          <label for="filtro-fecha-final">Fecha Final</label>
+          <input id="filtro-fecha-final" type="date" formControlName="fechaFinal">
         </div>
 
         <!-- MEDICAMENTO -->
-        <div class="campo">
-          <label>MEDICAMENTO</label>
+        <div class="field">
+          <label for="filtro-medicamento">Medicamento</label>
           <input
+            id="filtro-medicamento"
             type="text"
             formControlName="medicamento"
             placeholder="Buscar medicamento">
         </div>
 
-        <!-- BOTONES -->
-        <div class="botones-filtro">
+      </div>
 
-          <button
-            type="button"
-            class="buscar"
-            (click)="buscarVentas()">
-            Buscar
-          </button>
+      <!-- BOTONES -->
+      <div class="card-actions">
 
-          <button
-            type="button"
-            class="limpiar"
-            (click)="limpiarFiltros()">
-            Limpiar
-          </button>
+        <button
+          type="button"
+          class="btn btn-quiet"
+          (click)="limpiarFiltros()">
+          Limpiar
+        </button>
 
-        </div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="buscarVentas()">
+          Buscar
+        </button>
 
       </div>
 
@@ -60,83 +68,91 @@
   </form>
 
   <!-- RESULTADOS -->
-  <section class="resultados-ventas">
+  <section class="card" aria-labelledby="titulo-resultados">
 
-    <table>
+    <h2 id="titulo-resultados">
+      Resultados
+      <small>Cada fila es un producto vendido; el total se muestra en la primera.</small>
+    </h2>
 
-      <!-- CABECERA -->
-      <thead>
-        <tr>
-          <th>FECHA</th>
-          <th>FACTURA</th>
-          <th>CLIENTE</th>
-          <th>PRODUCTO</th>
-          <th>CANTIDAD</th>
-          <th>TOTAL</th>
-        </tr>
-      </thead>
+    <div class="tabla-scroll">
+      <table>
 
-      <!-- CUERPO -->
-      <tbody>
+        <!-- CABECERA -->
+        <thead>
+          <tr>
+            <th scope="col">Fecha</th>
+            <th scope="col">Factura</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Producto</th>
+            <th scope="col" class="num">Cantidad</th>
+            <th scope="col" class="num">Total</th>
+          </tr>
+        </thead>
 
-        <!-- MOSTRAR VENTAS -->
-        <ng-container *ngFor="let v of listaVentas">
+        <!-- CUERPO -->
+        <tbody>
 
-          <!-- MOSTRAR CADA PRODUCTO DE LA VENTA -->
-          <tr *ngFor="let detalle of (v.detalles ?? []); let primero = first">
+          <!-- MOSTRAR VENTAS -->
+          <ng-container *ngFor="let v of listaVentas">
 
-            <td>
-              {{ v.fecha | date:'dd/MM/yyyy' }}
-            </td>
+            <!-- MOSTRAR CADA PRODUCTO DE LA VENTA -->
+            <tr *ngFor="let detalle of (v.detalles ?? []); let primero = first">
 
-            <td>
-              {{ v.factura }}
-            </td>
+              <td class="fecha">
+                {{ v.fecha | date:'dd/MM/yyyy' }}
+              </td>
 
-            <td>
-              {{ v.cliente }}
-            </td>
+              <td class="mono codigo">
+                {{ v.factura }}
+              </td>
 
-            <td>
-              {{ detalle.medicamentoId }}
-            </td>
+              <td class="nombre">
+                {{ v.cliente }}
+              </td>
 
-            <td>
-              {{ detalle.cantidad }}
-            </td>
+              <td>
+                {{ detalle.medicamentoId }}
+              </td>
 
-            <td>
-              {{ primero ? (v.total | currency:'COP':'symbol':'1.0-0') : '' }}
+              <td class="num">
+                {{ detalle.cantidad }}
+              </td>
+
+              <td class="num">
+                {{ primero ? (v.total | currency:'COP':'symbol':'1.0-0') : '' }}
+              </td>
+
+            </tr>
+
+          </ng-container>
+
+          <!-- MENSAJE SI NO HAY RESULTADOS -->
+          <tr *ngIf="listaVentas.length === 0">
+
+            <td colspan="6" class="sin-resultados">
+              No se encontraron ventas con los filtros seleccionados
             </td>
 
           </tr>
 
-        </ng-container>
+        </tbody>
 
-        <!-- MENSAJE SI NO HAY RESULTADOS -->
-        <tr *ngIf="listaVentas.length === 0">
+      </table>
+    </div>
 
-          <td colspan="6" class="sin-resultados">
-            No se encontraron ventas con los filtros seleccionados
-          </td>
+    <!-- VOLVER -->
+    <div class="card-foot">
 
-        </tr>
+      <button
+        type="button"
+        class="btn btn-quiet"
+        (click)="volverInicio()">
+        ⟵ Volver al Inicio
+      </button>
 
-      </tbody>
-
-    </table>
+    </div>
 
   </section>
-
-  <!-- VOLVER -->
-  <div class="volver">
-
-    <button
-      type="button"
-      (click)="volverInicio()">
-      ⟵ Volver al Inicio
-    </button>
-
-  </div>
 
 </div>

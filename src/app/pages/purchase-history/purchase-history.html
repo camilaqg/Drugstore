@@ -1,23 +1,39 @@
-<!-- Historial de compras leído de GET /compra -->
-<div class="contenedor">
+<!-- Historial de compras leído de GET /compra — dirección Bóveda -->
+<div class="page-historial">
 
-  <h2 data-reveal="settle">Historial de Compras</h2>
+  <!-- Encabezado -->
+  <header class="page-head">
+    <div class="page-title">
+      <h1 data-reveal="settle">Historial de compras</h1>
+      <p>Compras registradas, con su detalle y su total.</p>
+    </div>
 
-  <!-- Botón volver -->
-  <button
-    class="btn-volver"
-    (click)="volver()"
-  >
-    Volver
-  </button>
+    <div class="page-head-side">
+      <div class="stats">
+        <div class="stat">
+          <b>{{ compras().length }}</b>
+          <span>Compras</span>
+        </div>
+      </div>
+
+      <!-- Botón volver -->
+      <button
+        type="button"
+        class="btn btn-quiet"
+        (click)="volver()"
+      >
+        Volver
+      </button>
+    </div>
+  </header>
 
   <!-- Estado de error -->
   @if (mensajeError(); as error) {
-    <div class="aviso-error" role="alert">
-      {{ error }}
+    <div class="toast toast-danger" role="alert">
+      <p>{{ error }}</p>
 
       <button type="button"
-              class="btn-reintentar"
+              class="btn btn-quiet"
               (click)="cargarHistorial()">
         Reintentar
       </button>
@@ -26,83 +42,92 @@
 
   <!-- Estado de carga -->
   @if (cargando()) {
-    <p class="texto-estado">Cargando historial de compras...</p>
+    <p class="estado-lista">Cargando historial de compras...</p>
   }
 
   <!-- Lista vacía -->
   @if (!cargando() && !mensajeError() && compras().length === 0) {
-    <p class="texto-estado">No hay compras registradas todavía.</p>
+    <p class="estado-lista">No hay compras registradas todavía.</p>
   }
 
-  <!-- Una tarjeta por compra registrada en el backend -->
+  <!-- Una tarjeta por compra registrada en el backend.
+       .card-compra conserva el content-visibility: auto de styles/motion.css. -->
   @for (compra of compras(); track compra.id) {
 
-    <div class="card-compra">
+    <section class="card card-compra">
 
-      <div class="fecha">
-        {{ compra.fecha || 'Sin fecha' }}
-      </div>
+      <header class="compra-head">
 
-      <div class="cabecera-compra">
-        <p>
-          <strong>Proveedor:</strong>
-          {{ compra.proveedor || 'Sin proveedor' }}
-        </p>
+        <div class="compra-datos">
 
-        <p>
-          <strong>N° factura:</strong>
-          {{ compra.numeroFactura }}
-        </p>
-      </div>
+          <h2 class="fecha">
+            {{ compra.fecha || 'Sin fecha' }}
+          </h2>
 
-      <table class="tabla-detalles">
+          <p>
+            <strong>Proveedor:</strong>
+            {{ compra.proveedor || 'Sin proveedor' }}
+          </p>
 
-        <thead>
+          <p>
+            <strong>N° factura:</strong>
+            {{ compra.numeroFactura }}
+          </p>
 
-          <tr>
-            <th>MEDICAMENTO</th>
-            <th>CANTIDAD</th>
-            <th>P. COMPRA</th>
-            <th>P. VENTA</th>
-            <th>TOTAL</th>
-          </tr>
+        </div>
 
-        </thead>
+        <div class="total">
+          Total: ${{ compra.total }}
+        </div>
 
-        <tbody>
+      </header>
 
-          @for (detalle of compra.detalles; track detalle.id) {
+      <div class="tabla-scroll">
 
+        <table class="tabla-detalles">
+
+          <thead>
             <tr>
-
-              <td>
-                {{ obtenerNombre(detalle.medicamentoId) }}
-                <span class="codigo-detalle">
-                  ({{ detalle.medicamentoId }})
-                </span>
-              </td>
-
-              <td>{{ detalle.cantidad }}</td>
-
-              <td>${{ detalle.precioCompra }}</td>
-
-              <td>${{ detalle.precioVenta }}</td>
-
-              <td>${{ detalle.total }}</td>
-
+              <th scope="col">Medicamento</th>
+              <th scope="col" class="num">Cantidad</th>
+              <th scope="col" class="num">P. compra</th>
+              <th scope="col" class="num">P. venta</th>
+              <th scope="col" class="num">Total</th>
             </tr>
+          </thead>
 
-          }
+          <tbody>
 
-        </tbody>
+            @for (detalle of compra.detalles; track detalle.id) {
 
-      </table>
+              <tr>
 
-      <div class="total">
-        Total: ${{ compra.total }}
+                <td>
+                  {{ obtenerNombre(detalle.medicamentoId) }}
+                  <span class="codigo-detalle">
+                    ({{ detalle.medicamentoId }})
+                  </span>
+                </td>
+
+                <td class="num">{{ detalle.cantidad }}</td>
+
+                <td class="num">${{ detalle.precioCompra }}</td>
+
+                <td class="num">${{ detalle.precioVenta }}</td>
+
+                <td class="num">${{ detalle.total }}</td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
       </div>
 
-    </div>
+    </section>
 
   }
 

@@ -1,15 +1,20 @@
 <!-- Botón flotante que abre y cierra el chat -->
 <button
+  type="button"
   class="boton-chat"
+  aria-label="Abrir el asistente virtual"
+  [attr.aria-expanded]="abierto"
   (click)="abierto = !abierto">
 
-  <img src="iconos/chat bot.png" alt="chat bot">
+  <img src="iconos/chat bot.png" alt="">
 
 </button>
 
 <!-- Contenedor principal del chat -->
 <div
   class="chat-container"
+  role="dialog"
+  aria-label="Asistente Virtual"
   *ngIf="abierto">
 
   <!-- Encabezado del chat -->
@@ -20,7 +25,10 @@
 
     <!-- Botón para cerrar el chat -->
     <button
+      type="button"
+      aria-label="Cerrar el asistente virtual"
       (click)="abierto = false">
+      ×
     </button>
 
   </div>
@@ -45,12 +53,14 @@
     <!-- Campo de texto del usuario -->
     <input
       type="text"
+      aria-label="Escribe un mensaje para el asistente"
       [(ngModel)]="mensaje"
       placeholder="Escribe un mensaje..."
       (keyup.enter)="enviarMensaje()">
 
     <!-- Botón para enviar el mensaje -->
     <button
+      type="button"
       (click)="enviarMensaje()">
 
       Enviar

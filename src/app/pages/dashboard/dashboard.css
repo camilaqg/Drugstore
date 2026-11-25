@@ -1,202 +1,220 @@
-:host {
-  display: block;
-  padding: 40px;
-  background: #f4f6fb;
-  min-height: 100vh;
-  font-family: 'Poppins', sans-serif; 
+/* ============================================================================
+   Dashboard — dirección Bóveda
+   Todo el color, el radio, el espacio y la tipografía vienen de
+   src/styles/tokens.css. Acá no se declara un solo hex ni una familia propia.
+
+   Motion: sólo transform y opacity. El hover de las tarjetas es un
+   levantamiento de 4px; la sombra no se anima para no repintar por frame.
+   ========================================================================== */
+
+.page {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-6) var(--space-7);
 }
 
-.header-seccion {
+/* ---- Encabezado --------------------------------------------------------- */
+.page-head {
   display: flex;
-  align-items: center; 
-  gap: 20px;
-  margin-bottom: 40px;
-  width: 100%; 
-}
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: #f2f2f2;
-    font-family: Arial, sans-serif;
-}
-
-.ubicacion-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: white;
-    padding: 12px 18px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.icono {
-    color: #00A650;
-    font-size: 24px;
-}
-
-select {
-    border: none;
-    outline: none;
-    font-size: 22px;
-    color: #3b3b3b;
-    background: transparent;
-    cursor: pointer;
-    appearance: none;
-    padding-right: 20px;
-}
-
-/* Flecha personalizada */
-.ubicacion-container {
-    position: relative;
-}
-
-.ubicacion-container::after {
-    content: "⌄";
-    position: absolute;
-    right: 10px;
-    color: #8c8c8c;
-    font-size: 18px;
-    pointer-events: none;
-}
-.logo-pequeno {
-  width: 70px;
-  height: 70px;
-  background: radial-gradient(circle, #5bb1c7, #2f8f8f);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
   align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.logo-pequeno {
+  width: 52px;
+  height: 52px;
   flex-shrink: 0;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
 }
 
 .logo-pequeno img {
-  width: 60%;
-  height: auto;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
 }
 
-.texto-header .titulo {
-  font-size: 32px;
+.page-title h1 {
   margin: 0;
-  color: #1a2a40;
-  font-weight: 700;
+  font-size: var(--text-2xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  font-weight: 650;
+  color: var(--ink);
 }
 
-.texto-header .subtitulo {
-  margin: 5px 0 0 0;
-  color: #7f8c8d;
-  font-size: 16px;
+.page-title p {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-base);
+  color: var(--ink-muted);
 }
 
+/* ---- Cuenta ------------------------------------------------------------- */
 .user-section {
-  margin-left: auto; 
+  margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 15px; 
+  gap: var(--space-3);
 }
 
 .admin {
-  background: #d7f1ed;
-  padding: 8px 20px;
-  border-radius: 20px;
-  color: #2c7a7b;
-  font-weight: 600;
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  white-space: nowrap;
+  /* A 390px el nombre largo se recorta en vez de empujar el botón fuera. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .logout {
-  padding: 10px 20px;
-  border-radius: 12px;
-  border: 2px solid #ff6b6b;
-  background: white;
-  color: #ff6b6b;
-  font-weight: bold;
+  height: var(--control-sm);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  color: var(--danger);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 650;
   cursor: pointer;
   transition: transform var(--dur-quick) var(--motion-press);
 }
 
-/* Colour swap stays instant; only the lift is animated. */
+.logout:active {
+  transform: scale(0.985);
+  transition-duration: var(--dur-instant);
+}
+
+/* El color cambia de golpe: animarlo repintaría por frame para nada. */
 @media (hover: hover) and (pointer: fine) {
   .logout:hover {
-    background: #ff6b6b;
-    color: white;
-    transform: translateY(-1px);
+    background: var(--danger-soft);
+    border-color: var(--danger);
   }
 }
 
-/* Contenedor de tarjetas */
+/* ---- Tarjetas de navegación -------------------------------------------- */
 .contenedor {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 25px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
 }
+
+/* Cada tarjeta es un enlace real: entra en el orden de tabulación y responde
+   a Enter sin JavaScript extra. */
 .card {
-  background: white;
-  padding: 40px 30px;
-  border-radius: 25px;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  display: block;
+  padding: var(--space-5);
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  color: inherit;
+  text-decoration: none;
   transition: transform var(--dur-quick) var(--motion-press);
 }
 
-/* The lift carries the hover state; the shadow stays put so nothing repaints
-   per frame. */
 @media (hover: hover) and (pointer: fine) {
   .card:hover {
     transform: translateY(-4px);
+    border-color: var(--accent-line);
   }
 }
 
+.card:active {
+  transform: scale(0.985);
+  transition-duration: var(--dur-instant);
+}
+
+/* Superficie del módulo: los cuatro tonos salen del set semántico, no de una
+   paleta nueva. El glifo es el PNG de siempre, que es multicolor de origen. */
 .icono {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 20px;
-  border-radius: 20px; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-4);
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
 }
 
 .icono img {
-  width: 50%;
-  height: auto;
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
 }
 
-/* Colores de los iconos */
-.inventario { background: #ffeaa7; }
-.compras { background: #dfe6e9; }
-.ventas { background: #55efc4; }
-.informes { background: #74b9ff; }
+.inventario {
+  background: var(--accent-soft);
+}
+
+.compras {
+  background: var(--info-soft);
+}
+
+.ventas {
+  background: var(--success-soft);
+}
+
+.informes {
+  background: var(--warning-soft);
+}
+
+.historial {
+  background: var(--surface-sunken);
+}
 
 .card h3 {
-  margin-bottom: 10px;
-  color: #1a2a40;
-  font-size: 22px;
-  font-weight: 600;
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-md);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  font-weight: 650;
+  color: var(--ink);
 }
 
 .card p {
-  color: #7f8c8d;
-  font-size: 14px;
-  line-height: 1.5;
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-base);
+  color: var(--ink-muted);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .header-seccion {
-    flex-direction: column;
-    text-align: center;
+/* ---- Pantallas chicas --------------------------------------------------- */
+@media (max-width: 991px) {
+  .page {
+    padding: var(--space-5) var(--space-4) var(--space-6);
   }
+
+  .page-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
   .user-section {
     margin-left: 0;
+    width: 100%;
+  }
+
+  .contenedor {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .contenedor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .page-title h1 {
+    font-size: var(--text-xl);
   }
 }

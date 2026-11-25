@@ -1,238 +1,282 @@
-/* BOTON FLOTANTE */
+/* ============================================================================
+   Chatbot — dirección Bóveda
+   Todo el color, la tipografía, el radio, la sombra y el espacio vienen de
+   src/styles/tokens.css. Antes esta hoja tenía su propio trío de morados
+   (#6c63ff, #4f54d3, #3f44b8) que no era el morado de la marca; ahora el
+   relleno de marca es --accent, su hover --accent-hover, y --accent-soft llega
+   por --shadow-focus (el anillo del campo de texto).
+
+   Motion: sólo transform y opacity, con --dur-quick / --motion-press. Nunca
+   `all` ni box-shadow animado: el anillo de foco aparece de golpe.
+   ========================================================================== */
+
+:host {
+  /* La escala de tokens declara controles y espacio, no paneles. El ancho y el
+     alto máximos del panel son las dos únicas medidas propias de esta hoja y
+     se declaran una sola vez acá. */
+  --chat-ancho-max: 360px;
+  --chat-alto-max: 500px;
+
+  --chat-margen: var(--space-5);
+  /* Huella del botón flotante: ícono + su padding. Se usa para despegar el
+     panel del botón sin repetir la cuenta. */
+  --chat-boton: calc(var(--space-7) + var(--space-3) * 2);
+}
+
+/* ---- Botón flotante ----------------------------------------------------- */
+/* Se queda sobre superficie blanca y no relleno con --accent: el ícono
+   (public/iconos) trae fondo opaco, así que un relleno de marca le dibujaría un
+   cuadrado alrededor. El acento entra por el anillo de foco. */
 .boton-chat {
-
   position: fixed;
-  bottom: 25px;
-  right: 25px;
+  bottom: var(--chat-margen);
+  right: var(--chat-margen);
 
-  width: 70px;
-  height: 70px;
+  display: grid;
+  place-items: center;
+  padding: var(--space-3);
 
-  border: none;
-  border-radius: 50%;
-
-  background: white;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-2);
 
   cursor: pointer;
-
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
   z-index: 1000;
 
   transition: transform var(--dur-quick) var(--motion-press);
-
-}
-
-@media (hover: hover) and (pointer: fine) {
-
-  .boton-chat:hover {
-
-    transform: scale(1.06);
-
-  }
-
 }
 
 .boton-chat img {
-
-  width: 50px;
-  height: 50px;
+  width: var(--space-7);
+  height: var(--space-7);
   object-fit: contain;
-
 }
 
-/* CONTENEDOR CHAT */
-.chat-container {
+/* El anillo de marca es la señal de teclado; el fondo no se anima. */
+.boton-chat:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: var(--space-1);
+}
 
+@media (hover: hover) and (pointer: fine) {
+  .boton-chat:hover {
+    transform: scale(1.06);
+  }
+}
+
+/* ---- Ventana del chat --------------------------------------------------- */
+.chat-container {
   position: fixed;
 
-  bottom: 110px;
-  right: 25px;
+  /* Por encima del botón, con aire entre los dos. */
+  bottom: calc(var(--chat-margen) + var(--chat-boton) + var(--space-2));
+  right: var(--chat-margen);
 
-  width: 360px;
-  height: 500px;
+  width: min(var(--chat-ancho-max), calc(100vw - var(--chat-margen) * 2));
+  height: min(
+    var(--chat-alto-max),
+    calc(100dvh - var(--chat-margen) * 2 - var(--chat-boton) - var(--space-4))
+  );
 
-  background: white;
-
-  border-radius: 20px;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
 
   overflow: hidden;
-
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 
   display: flex;
   flex-direction: column;
 
   z-index: 1000;
-
 }
 
-/* HEADER */
+/* ---- Encabezado --------------------------------------------------------- */
 .chat-header {
-
-  background: linear-gradient(135deg, #4f54d3, #6c63ff);
-
-  color: white;
-
-  padding: 15px 20px;
-
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
 
+  padding: var(--space-3) var(--space-4);
+
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 .chat-header h3 {
-
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-
+  font-size: var(--text-md);
+  font-weight: 650;
+  letter-spacing: var(--tracking-tight);
 }
 
 .chat-header button {
+  display: grid;
+  place-items: center;
+
+  width: var(--control-md);
+  height: var(--control-md);
 
   background: transparent;
-  border: none;
-  color: white;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--accent-ink);
 
-  font-size: 20px;
-
-  cursor: pointer;
-
-}
-
-/* MENSAJES */
-.chat-body {
-
-  flex: 1;
-
-  padding: 15px;
-
-  overflow-y: auto;
-
-  background: #f5f7fb;
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 10px;
-
-}
-
-/* MENSAJE BOT */
-.mensaje-bot {
-
-  align-self: flex-start;
-
-  background: white;
-
-  padding: 10px 14px;
-
-  border-radius: 15px 15px 15px 5px;
-
-  max-width: 80%;
-
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-
-  font-size: 14px;
-
-}
-
-/* MENSAJE USUARIO */
-.mensaje-user {
-
-  align-self: flex-end;
-
-  background: #4f54d3;
-
-  color: white;
-
-  padding: 10px 14px;
-
-  border-radius: 15px 15px 5px 15px;
-
-  max-width: 80%;
-
-  font-size: 14px;
-
-}
-
-/* FOOTER */
-.chat-footer {
-
-  display: flex;
-
-  gap: 10px;
-
-  padding: 15px;
-
-  border-top: 1px solid #e5e5e5;
-
-  background: white;
-
-}
-
-/* INPUT */
-.chat-footer input {
-
-  flex: 1;
-
-  padding: 10px 12px;
-
-  border: 1px solid #dcdcdc;
-
-  border-radius: 10px;
-
-  outline: none;
-
-}
-
-.chat-footer input:focus {
-
-  border-color: #4f54d3;
-
-}
-
-/* BOTON ENVIAR */
-.chat-footer button {
-
-  background: #4f54d3;
-
-  color: white;
-
-  border: none;
-
-  border-radius: 10px;
-
-  padding: 10px 15px;
+  font: inherit;
+  font-size: var(--text-lg);
+  line-height: 1;
 
   cursor: pointer;
 
   transition: opacity var(--dur-quick) var(--motion-press);
-
 }
 
-.chat-footer button:hover {
-
-  background: #3f44b8;
-
+/* Sobre el acento el anillo de marca no se vería: el foco usa la tinta del
+   propio encabezado. */
+.chat-header button:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: var(--space-1);
 }
 
-/* SCROLL */
+@media (hover: hover) and (pointer: fine) {
+  .chat-header button:hover {
+    opacity: 0.85;
+  }
+}
+
+/* ---- Historial ---------------------------------------------------------- */
+.chat-body {
+  flex: 1;
+  /* Sin esto un ítem flex no baja de su contenido y el historial se recorta en
+     vez de scrollear cuando el panel se achica (pantallas bajas). */
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  padding: var(--space-4);
+
+  background: var(--surface-sunken);
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+/* ---- Mensajes ----------------------------------------------------------- */
+.mensaje-bot,
+.mensaje-user {
+  max-width: 80%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  line-height: var(--leading-base);
+  overflow-wrap: anywhere;
+}
+
+.mensaje-bot {
+  align-self: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.mensaje-user {
+  align-self: flex-end;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* ---- Pie ---------------------------------------------------------------- */
+.chat-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  padding: var(--space-3);
+
+  background: var(--surface-raised);
+  border-top: 1px solid var(--line);
+}
+
+/* ---- Campo de texto ----------------------------------------------------- */
+.chat-footer input {
+  flex: 1;
+  min-width: 0;
+
+  height: var(--control-md);
+  padding: 0 var(--space-3);
+
+  font: inherit;
+  font-size: var(--text-base);
+  color: var(--ink);
+
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.chat-footer input::placeholder {
+  color: var(--ink-faint);
+}
+
+.chat-footer input:hover:not(:disabled) {
+  border-color: var(--line-strong);
+}
+
+.chat-footer input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ---- Enviar ------------------------------------------------------------- */
+.chat-footer button {
+  height: var(--control-md);
+  padding: 0 var(--space-4);
+
+  background: var(--accent);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--accent-ink);
+
+  font: inherit;
+  font-size: var(--text-base);
+  font-weight: 650;
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition: transform var(--dur-quick) var(--motion-press);
+}
+
+.chat-footer button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.chat-footer button:active {
+  transform: scale(0.985);
+  transition-duration: var(--dur-instant);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .chat-footer button:hover {
+    background: var(--accent-hover);
+  }
+}
+
+/* ---- Scrollbar (WebKit) ------------------------------------------------- */
 .chat-body::-webkit-scrollbar {
-
-  width: 6px;
-
+  width: var(--space-1);
 }
 
 .chat-body::-webkit-scrollbar-thumb {
-
-  background: #c5c5c5;
-  border-radius: 10px;
-
+  background: var(--line-strong);
+  border-radius: var(--radius-pill);
 }

@@ -100,7 +100,8 @@ html.motion-ready [data-reveal='push'] {
    ------------------------------------------------------------------------- */
 .bloque-mensaje,
 .aviso,
-.bloque-confirmar {
+.bloque-confirmar,
+.toast {
   transition:
     opacity var(--dur-base) var(--motion-enter),
     transform var(--dur-base) var(--motion-enter);
@@ -109,7 +110,8 @@ html.motion-ready [data-reveal='push'] {
 @starting-style {
   .bloque-mensaje,
   .aviso,
-  .bloque-confirmar {
+  .bloque-confirmar,
+  .toast {
     opacity: 0;
     transform: translateY(-6px);
   }

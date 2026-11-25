@@ -1,11 +1,11 @@
 <!-- Contenedor principal del módulo de gestión de usuarios -->
-<div class="users-container">
+<div class="page">
 
   <!-- Bloque de error al cargar la lista del backend -->
   @if (errorCarga()) {
-    <div class="bloque-mensaje bloque-error" role="alert">
+    <div class="toast toast-danger" role="alert">
       <p>{{ errorCarga() }}</p>
-      <button type="button" class="btn btn-clear" (click)="reintentar()">
+      <button type="button" class="btn btn-quiet" (click)="reintentar()">
         Reintentar
       </button>
     </div>
@@ -13,30 +13,30 @@
 
   <!-- Mensaje de éxito tras cambiar rol, editar o eliminar -->
   @if (mensajeExito()) {
-    <div class="bloque-mensaje bloque-exito" role="status">
+    <div class="toast toast-success" role="status">
       <p>{{ mensajeExito() }}</p>
     </div>
   }
 
   <!-- Mensaje de error de validaciones o del backend -->
   @if (mensajeError()) {
-    <div class="bloque-mensaje bloque-error" role="alert">
+    <div class="toast toast-danger" role="alert">
       <p>{{ mensajeError() }}</p>
     </div>
   }
 
   <!-- Confirmación inline para eliminar (reemplaza al confirm()) -->
   @if (pendienteEliminar(); as pend) {
-    <div class="bloque-mensaje bloque-confirmar" role="alertdialog">
-      <p>
+    <div class="toast toast-confirm" role="alertdialog" aria-labelledby="confirmar-eliminar">
+      <p id="confirmar-eliminar">
         ¿Desea eliminar el usuario <strong>{{ pend.usuario }}</strong>
         ({{ pend.nombre }})? Esta acción no se puede deshacer.
       </p>
-      <div class="botones-confirmacion">
-        <button type="button" class="btn btn-del" (click)="confirmarEliminar()">
+      <div class="toast-actions">
+        <button type="button" class="btn btn-danger" (click)="confirmarEliminar()">
           Sí, eliminar
         </button>
-        <button type="button" class="btn btn-clear" (click)="cancelarEliminar()">
+        <button type="button" class="btn btn-quiet" (click)="cancelarEliminar()">
           Cancelar
         </button>
       </div>
@@ -44,60 +44,85 @@
   }
 
   <!-- Encabezado de la página -->
-  <div class="header-seccion">
+  <header class="page-head">
 
-    <h2 data-reveal="settle">Gestión de Usuarios</h2>
+    <div class="page-title">
+      <h1 data-reveal="settle">Gestión de Usuarios</h1>
+      <p>Asigná roles y mantené al día los datos del equipo.</p>
+    </div>
 
-    <!-- Panel de edición inline: aparece solo cuando hay un usuario
-         seleccionado. NO hay creación de usuarios acá: el alta es el
-         registro público y siempre nace 'cliente'. -->
-    @if (editandoId() !== null) {
-      <section class="tarjeta-blanca">
+    <div class="stats">
+      <div class="stat">
+        <b>{{ usuarios().length }}</b>
+        <span>Usuarios</span>
+      </div>
+      <div class="stat">
+        <b>{{ totalAdmins() }}</b>
+        <span>Administradores</span>
+      </div>
+      <div class="stat">
+        <b>{{ totalClientes() }}</b>
+        <span>Clientes</span>
+      </div>
+    </div>
 
-        <p class="titulo-gris">EDITAR USUARIO</p>
+  </header>
 
-        <div class="grid-formulario">
+  <!-- Panel de edición inline: aparece solo cuando hay un usuario
+       seleccionado. NO hay creación de usuarios acá: el alta es el
+       registro público y siempre nace 'cliente'. -->
+  @if (editandoId() !== null) {
 
-          <div class="campo grande">
-            <label>NOMBRE</label>
-            <input type="text" [(ngModel)]="formularioEdicion.nombre">
-          </div>
+    <section class="card" aria-labelledby="titulo-edicion">
 
-          <div class="campo grande">
-            <label>CORREO</label>
-            <input type="email" [(ngModel)]="formularioEdicion.correo">
-          </div>
+      <h2 id="titulo-edicion">
+        Editar usuario
+        <small>
+          El nombre y el correo no pueden quedar vacíos.
+        </small>
+      </h2>
 
-          <!-- Contraseña opcional: vacía = no cambiar. El servidor la
-               hashea y exige mínimo 8 caracteres. -->
-          <div class="campo grande">
-            <label>NUEVA CONTRASEÑA (OPCIONAL)</label>
-            <input type="password" [(ngModel)]="formularioEdicion.contrasena">
-            <span class="ayuda-campo">
-              Mínimo 8 caracteres. Si la deja vacía no se cambia.
-            </span>
-          </div>
+      <div class="form-grid">
 
+        <div class="field">
+          <label for="campo-nombre">Nombre</label>
+          <input id="campo-nombre" type="text" [(ngModel)]="formularioEdicion.nombre">
         </div>
 
-        <div class="botones-confirmacion">
-          <button type="button" class="btn btn-mod" (click)="guardarEdicion()">
-            Guardar cambios
-          </button>
-          <button type="button" class="btn btn-clear" (click)="cancelarEdicion()">
-            Cancelar
-          </button>
+        <div class="field">
+          <label for="campo-correo">Correo</label>
+          <input id="campo-correo" type="email" [(ngModel)]="formularioEdicion.correo">
         </div>
 
-      </section>
-    }
+        <!-- Contraseña opcional: vacía = no cambiar. El servidor la
+             hashea y exige mínimo 8 caracteres. -->
+        <div class="field">
+          <label for="campo-contrasena">Nueva contraseña (opcional)</label>
+          <input id="campo-contrasena" type="password" [(ngModel)]="formularioEdicion.contrasena">
+          <small class="hint">
+            Mínimo 8 caracteres. Si la deja vacía no se cambia.
+          </small>
+        </div>
 
-  </div>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="btn btn-quiet" (click)="cancelarEdicion()">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="guardarEdicion()">
+          Guardar cambios
+        </button>
+      </div>
+
+    </section>
+
+  }
 
   <!-- Tarjeta con la lista de usuarios cargada desde el backend -->
-  <section class="tarjeta-blanca">
+  <section class="card" aria-labelledby="titulo-lista">
 
-    <p class="titulo-gris">USUARIOS REGISTRADOS</p>
+    <h2 id="titulo-lista">Usuarios registrados</h2>
 
     <!-- Estado de carga -->
     @if (cargando()) {
@@ -125,11 +150,11 @@
 
           <thead>
             <tr>
-              <th>NOMBRE</th>
-              <th>CORREO</th>
-              <th>USUARIO</th>
-              <th>ROL</th>
-              <th>ACCIONES</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Correo</th>
+              <th scope="col">Usuario</th>
+              <th scope="col">Rol</th>
+              <th scope="col">Acciones</th>
             </tr>
           </thead>
 
@@ -139,15 +164,16 @@
             @for (u of usuarios(); track u.id) {
               <tr>
 
-                <td>{{ u.nombre }}</td>
+                <td class="nombre">{{ u.nombre }}</td>
                 <td>{{ u.correo }}</td>
-                <td>{{ u.usuario }}</td>
+                <td class="mono">{{ u.usuario }}</td>
 
                 <!-- Cambio de rol en línea: al elegir otro rol se hace
                      PATCH con el rol nuevo y se confirma en línea. -->
                 <td>
                   <select
                     class="select-rol"
+                    aria-label="Cambiar rol de {{ u.usuario }}"
                     [ngModel]="u.rol"
                     (ngModelChange)="cambiarRol(u, $event)"
                     [disabled]="cargando()">
@@ -185,13 +211,14 @@
       </div>
     }
 
-  </section>
+    <!-- Botón para regresar al menú principal -->
+    <div class="card-foot">
+      <button type="button" class="btn btn-quiet" (click)="irAlMenu()">
+        Salir
+      </button>
+      <span class="foot-hint">El cambio de rol se guarda en el momento.</span>
+    </div>
 
-  <!-- Botón para regresar al menú principal -->
-  <div class="botones-abajo">
-    <button class="btn btn-exit" (click)="irAlMenu()">
-      Salir
-    </button>
-  </div>
+  </section>
 
 </div>

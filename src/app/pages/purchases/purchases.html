@@ -1,349 +1,373 @@
-<!-- Contenedor principal que organiza el formulario y el carrito -->
-<div class="layout-compras">
+<!-- Compras — dirección Bóveda. La estructura sigue inventory.html:
+     .compras > .page-head (título + stats) + tarjetas del sistema. -->
+<div class="compras">
 
-  <!-- ========================= -->
-  <!-- SECCIÓN DE REGISTRO DE COMPRAS -->
-  <!-- ========================= -->
-  <div class="purchase-container">
+  <!-- Avisos inline que reemplazan los alert() -->
+  @if (mensajeError(); as error) {
+    <div class="toast toast-danger" role="alert">
+      <p>{{ error }}</p>
+    </div>
+  }
 
-    <!-- Título principal del módulo -->
-    <h2 data-reveal="settle">Registro de Compras</h2>
+  @if (mensajeExito(); as exito) {
+    <div class="toast toast-success" role="status">
+      <p>{{ exito }}</p>
+    </div>
+  }
 
-    <!-- Avisos inline que reemplazan los alert() -->
-    @if (mensajeError(); as error) {
-      <div class="aviso aviso-error" role="alert">
-        {{ error }}
-      </div>
-    }
+  @if (errorCarga(); as errorCargando) {
+    <div class="toast toast-danger" role="alert">
+      <p>{{ errorCargando }}</p>
 
-    @if (mensajeExito(); as exito) {
-      <div class="aviso aviso-exito" role="status">
-        {{ exito }}
-      </div>
-    }
+      <button type="button"
+              class="btn btn-quiet"
+              (click)="cargarCatalogo()">
+        Reintentar
+      </button>
+    </div>
+  }
 
-    @if (errorCarga(); as errorCargando) {
-      <div class="aviso aviso-error" role="alert">
-        {{ errorCargando }}
-
-        <button type="button"
-                class="btn-reintentar"
-                (click)="cargarCatalogo()">
-          Reintentar
-        </button>
-      </div>
-    }
-
-    <!-- Tarjeta con los datos generales de la compra -->
-    <div class="card" data-reveal="io" style="--i: 0">
-
-      <p class="section-title">DATOS DE LA COMPRA</p>
-
-      <div class="grid-row">
-
-        <!-- Fecha en la que se realiza la compra -->
-        <div class="field">
-          <label>FECHA</label>
-          <input type="date" [(ngModel)]="newPurchase.date">
-        </div>
-
-        <!-- Nombre del proveedor -->
-        <div class="field">
-          <label>PROVEEDOR</label>
-          <input type="text"
-                 [(ngModel)]="newPurchase.provider"
-                 placeholder="Nombre del proveedor">
-        </div>
-
-        <!-- Número de factura asociada a la compra -->
-        <div class="field">
-          <label>N° FACTURA</label>
-          <input type="text"
-                 [(ngModel)]="newPurchase.invoiceNumber"
-                 placeholder="Número de factura">
-        </div>
-
-      </div>
+  <!-- Encabezado -->
+  <header class="page-head">
+    <div class="page-title">
+      <h1 data-reveal="settle">Compras</h1>
+      <p>Cargá la compra, armá el detalle y guardá los datos.</p>
     </div>
 
-    <!-- Tarjeta para buscar y agregar medicamentos del catálogo -->
-    <div class="card" data-reveal="io" style="--i: 1">
-
-      <p class="section-title">BUSCAR MEDICAMENTO</p>
-
-      @if (cargandoCatalogo()) {
-        <p class="texto-estado">Cargando catálogo de medicamentos...</p>
-      }
-
-      <div class="grid-row">
-
-        <!-- Lista desplegable con los medicamentos del backend -->
-        <div class="field">
-
-          <label>SELECCIONAR</label>
-
-          <select class="form-select"
-                  [(ngModel)]="newPurchase.medicineId"
-                  (change)="buscarMed()" [disabled]="cargandoCatalogo()">
-
-            <option value="">
-              Seleccione un producto
-            </option>
-
-            <!-- Muestra todos los medicamentos del catálogo -->
-            @for (med of listaMedicamentos(); track med.id) {
-              <option [value]="med.id">
-                {{ med.id }} - {{ med.nombre }}
-              </option>
-            }
-
-          </select>
-
-        </div>
-
-        <!-- Muestra automáticamente el nombre del medicamento -->
-        <div class="field">
-
-          <label>NOMBRE</label>
-
-          <input type="text"
-                 [value]="medEncontrado()?.nombre || ''"
-                 readonly>
-
-        </div>
-
-        <!-- Muestra automáticamente el laboratorio -->
-        <div class="field">
-
-          <label>LABORATORIO</label>
-
-          <input type="text"
-                 [value]="medEncontrado()?.laboratorio || ''"
-                 readonly>
-
-        </div>
-
+    <div class="stats">
+      <div class="stat">
+        <b>{{ listaMedicamentos().length }}</b>
+        <span>Catálogo</span>
       </div>
+      <div class="stat">
+        <b>{{ tablaTemporal().length }}</b>
+        <span>Ítems</span>
+      </div>
+      <div class="stat">
+        <b>${{ total() }}</b>
+        <span>Total</span>
+      </div>
+    </div>
+  </header>
 
-      <!-- Stock actual del medicamento elegido -->
-      @if (avisoStock(); as aviso) {
-        <p class="aviso-stock">{{ aviso }}</p>
-      }
+  <div class="layout-compras">
 
-      <!-- Datos relacionados con la compra del medicamento -->
-      <div class="grid-row" style="margin-top: 25px;">
+    <!-- ========================= -->
+    <!-- COLUMNA DE CONTENIDO -->
+    <!-- ========================= -->
+    <div class="col-principal">
 
-        <!-- Cantidad a comprar (entera >= 1) -->
-        <div class="field">
+      <!-- Tarjeta con los datos generales de la compra -->
+      <section class="card" data-reveal="io" style="--i: 0" aria-labelledby="titulo-datos">
 
-          <label>CANTIDAD</label>
+        <h2 id="titulo-datos">
+          Datos de la compra
+          <small>Proveedor y número de factura son obligatorios.</small>
+        </h2>
 
-          <input type="number"
-                 min="1"
-                 step="1"
-                 [(ngModel)]="newPurchase.quantity">
+        <div class="form-grid cols-3">
+
+          <!-- Fecha en la que se realiza la compra -->
+          <div class="field">
+            <label for="compra-fecha">Fecha</label>
+            <input id="compra-fecha"
+                   class="mono"
+                   type="date"
+                   [(ngModel)]="newPurchase.date">
+          </div>
+
+          <!-- Nombre del proveedor -->
+          <div class="field">
+            <label for="compra-proveedor">Proveedor</label>
+            <input id="compra-proveedor"
+                   type="text"
+                   [(ngModel)]="newPurchase.provider"
+                   placeholder="Nombre del proveedor">
+          </div>
+
+          <!-- Número de factura asociada a la compra -->
+          <div class="field">
+            <label for="compra-factura">N° factura</label>
+            <input id="compra-factura"
+                   class="mono"
+                   type="text"
+                   [(ngModel)]="newPurchase.invoiceNumber"
+                   placeholder="Número de factura">
+          </div>
 
         </div>
 
-        <!-- Precio de compra (>= 0) -->
-        <div class="field">
+      </section>
 
-          <label>PRECIO COMPRA</label>
+      <!-- Tarjeta para buscar y agregar medicamentos del catálogo -->
+      <section class="card" data-reveal="io" style="--i: 1" aria-labelledby="titulo-producto">
 
-          <input type="number"
-                 min="0"
-                 [(ngModel)]="newPurchase.purchasePrice">
+        <h2 id="titulo-producto">
+          Buscar medicamento
+          <small>Al elegir un producto se cargan sus precios actuales del catálogo.</small>
+        </h2>
+
+        @if (cargandoCatalogo()) {
+          <p class="texto-estado">Cargando catálogo de medicamentos...</p>
+        }
+
+        <div class="form-grid cols-3">
+
+          <!-- Lista desplegable con los medicamentos del backend -->
+          <div class="field">
+            <label for="compra-medicamento">Seleccionar</label>
+
+            <select id="compra-medicamento"
+                    class="form-select"
+                    [(ngModel)]="newPurchase.medicineId"
+                    (change)="buscarMed()"
+                    [disabled]="cargandoCatalogo()">
+
+              <option value="">
+                Seleccione un producto
+              </option>
+
+              <!-- Muestra todos los medicamentos del catálogo -->
+              @for (med of listaMedicamentos(); track med.id) {
+                <option [value]="med.id">
+                  {{ med.id }} - {{ med.nombre }}
+                </option>
+              }
+
+            </select>
+          </div>
+
+          <!-- Muestra automáticamente el nombre del medicamento -->
+          <div class="field">
+            <label for="compra-nombre">Nombre</label>
+            <input id="compra-nombre"
+                   type="text"
+                   [value]="medEncontrado()?.nombre || ''"
+                   readonly>
+          </div>
+
+          <!-- Muestra automáticamente el laboratorio -->
+          <div class="field">
+            <label for="compra-laboratorio">Laboratorio</label>
+            <input id="compra-laboratorio"
+                   type="text"
+                   [value]="medEncontrado()?.laboratorio || ''"
+                   readonly>
+          </div>
 
         </div>
 
-        <!-- Precio de venta (>= 0) -->
-        <div class="field">
+        <!-- Stock actual del medicamento elegido -->
+        @if (avisoStock(); as aviso) {
+          <p class="aviso-stock">{{ aviso }}</p>
+        }
 
-          <label>PRECIO VENTA</label>
+        <!-- Datos relacionados con la compra del medicamento -->
+        <div class="form-grid">
 
-          <input type="number"
-                 min="0"
-                 [(ngModel)]="newPurchase.salePrice">
+          <!-- Cantidad a comprar (entera >= 1) -->
+          <div class="field">
+            <label for="compra-cantidad">Cantidad</label>
+            <input id="compra-cantidad"
+                   class="mono"
+                   type="number"
+                   min="1"
+                   step="1"
+                   [(ngModel)]="newPurchase.quantity">
+          </div>
+
+          <!-- Precio de compra (>= 0) -->
+          <div class="field">
+            <label for="compra-precio-compra">Precio compra</label>
+            <input id="compra-precio-compra"
+                   class="mono"
+                   type="number"
+                   min="0"
+                   [(ngModel)]="newPurchase.purchasePrice">
+          </div>
+
+          <!-- Precio de venta (>= 0) -->
+          <div class="field">
+            <label for="compra-precio-venta">Precio venta</label>
+            <input id="compra-precio-venta"
+                   class="mono"
+                   type="number"
+                   min="0"
+                   [(ngModel)]="newPurchase.salePrice">
+          </div>
+
+          <!-- Botón para agregar el producto a la compra actual -->
+          <div class="field-button">
+            <button type="button"
+                    class="btn btn-primary btn-add"
+                    aria-label="Agregar el producto al detalle de la compra"
+                    (click)="meterALista()">
+              +
+            </button>
+          </div>
 
         </div>
 
-        <!-- Botón para agregar el producto a la compra actual -->
-        <div class="field-button">
+      </section>
 
+      <!-- Tarjeta con el detalle de la compra -->
+      <section class="card" aria-labelledby="titulo-detalle">
+
+        <h2 id="titulo-detalle">Detalle de la compra actual</h2>
+
+        <div class="tabla-scroll">
+
+          <table>
+
+            <!-- Encabezados de la tabla -->
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Laboratorio</th>
+                <th scope="col" class="num">Cant</th>
+                <th scope="col" class="num">P. compra</th>
+                <th scope="col" class="num">P. venta</th>
+                <th scope="col" class="num">Total</th>
+                <th scope="col"><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <!-- Mensaje cuando no hay productos agregados -->
+              @if (tablaTemporal().length === 0) {
+                <tr>
+                  <td colspan="8" class="tabla-vacia">
+                    No hay productos en la lista
+                  </td>
+                </tr>
+              }
+
+              <!-- Una fila por línea: se usa el id propio de línea
+                   (lineaId) para permitir el mismo medicamento dos veces -->
+              @for (item of tablaTemporal(); track item.lineaId) {
+
+                <tr>
+
+                  <td class="mono codigo">{{ item.medicamentoId }}</td>
+
+                  <td class="nombre">{{ item.nombre }}</td>
+
+                  <td>{{ item.laboratorio }}</td>
+
+                  <td class="num">{{ item.cantidad }}</td>
+
+                  <td class="num">{{ item.precioCompra }}</td>
+
+                  <td class="num">{{ item.precioVenta }}</td>
+
+                  <td class="num">{{ item.cantidad * item.precioCompra }}</td>
+
+                  <td class="celda-accion">
+                    <button type="button"
+                            class="btn btn-danger-soft btn-xs"
+                            (click)="quitarItem(item.lineaId)">
+                      Quitar
+                    </button>
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <!-- Botones principales de la compra -->
+        <div class="card-foot">
+
+          <!-- Guarda la compra en el backend -->
           <button type="button"
-                  class="btn-add-circle"
-                  (click)="meterALista()">
+                  class="btn btn-primary"
+                  (click)="guardarCompra()"
+                  [disabled]="guardando()">
 
-            +
+            {{ guardando() ? 'Guardando...' : 'Guardar Datos' }}
+
+          </button>
+
+          <!-- Regresa al menú principal -->
+          <button type="button"
+                  class="btn btn-quiet"
+                  (click)="regresar()">
+
+            Volver
 
           </button>
 
         </div>
 
-      </div>
+      </section>
 
     </div>
 
-    <!-- Tabla con el detalle de la compra -->
-    <div class="card">
+    <!-- ========================= -->
+    <!-- CARRITO LATERAL -->
+    <!-- ========================= -->
+    <aside class="card carrito-lateral" aria-labelledby="titulo-carrito">
 
-      <p class="section-title">
-        DETALLE DE LA COMPRA ACTUAL
-      </p>
+      <!-- Título del carrito -->
+      <h3 id="titulo-carrito">
+        <span aria-hidden="true">🛒</span> Carrito de compras
+      </h3>
 
-      <div class="table-container">
+      <!-- Productos agregados al carrito (mismo id de línea) -->
+      @for (item of tablaTemporal(); track item.lineaId) {
 
-        <table>
+        <div class="producto-carrito" data-reveal="push">
 
-          <!-- Encabezados de la tabla -->
-          <thead>
+          <div>
 
-            <tr>
-              <th>ID</th>
-              <th>NOMBRE</th>
-              <th>LABORATORIO</th>
-              <th>CANT</th>
-              <th>P. COMPRA</th>
-              <th>P. VENTA</th>
-              <th>TOTAL</th>
-              <th></th>
-            </tr>
+            <!-- Nombre del medicamento -->
+            <strong>
+              {{ item.nombre }}
+            </strong>
 
-          </thead>
+            <!-- Cantidad seleccionada -->
+            <p>
+              Cantidad: {{ item.cantidad }}
+            </p>
 
-          <tbody>
+          </div>
 
-            <!-- Mensaje cuando no hay productos agregados -->
-            @if (tablaTemporal().length === 0) {
-              <tr>
+          <!-- Precio total del producto -->
+          <div class="precio">
 
-                <td colspan="8"
-                    style="text-align: center; padding: 20px;">
+            ${{ item.precioCompra * item.cantidad }}
 
-                  No hay productos en la lista
+          </div>
 
-                </td>
+        </div>
 
-              </tr>
-            }
+      }
 
-            <!-- Una fila por línea: se usa el id propio de línea
-                 (lineaId) para permitir el mismo medicamento dos veces -->
-            @for (item of tablaTemporal(); track item.lineaId) {
+      <!-- Total general de la compra -->
+      <div class="total-carrito">
 
-              <tr>
-
-                <td>{{ item.medicamentoId }}</td>
-
-                <td>{{ item.nombre }}</td>
-
-                <td>{{ item.laboratorio }}</td>
-
-                <td>{{ item.cantidad }}</td>
-
-                <td>{{ item.precioCompra }}</td>
-
-                <td>{{ item.precioVenta }}</td>
-
-                <td>{{ item.cantidad * item.precioCompra }}</td>
-
-                <td>
-                  <button type="button"
-                          class="btn-quitar"
-                          (click)="quitarItem(item.lineaId)">
-                    Quitar
-                  </button>
-                </td>
-
-              </tr>
-
-            }
-
-          </tbody>
-
-        </table>
+        TOTAL: ${{ total() }}
 
       </div>
 
-    </div>
-
-    <!-- Botones principales de la compra -->
-    <div class="footer-actions">
-
-      <!-- Guarda la compra en el backend -->
-      <button class="btn-save"
+      <!-- Botón para guardar la compra desde el carrito -->
+      <button type="button"
+              class="btn btn-primary btn-block"
               (click)="guardarCompra()"
               [disabled]="guardando()">
 
-        {{ guardando() ? 'Guardando...' : 'Guardar Datos' }}
+        {{ guardando() ? 'Guardando...' : 'Guardar compra' }}
 
       </button>
 
-      <!-- Regresa al menú principal -->
-      <button class="btn-exit"
-              (click)="regresar()">
-
-        Volver
-
-      </button>
-
-    </div>
-
-  </div>
-
-  <!-- ========================= -->
-  <!-- CARRITO LATERAL -->
-  <!-- ========================= -->
-  <div class="carrito-lateral">
-
-    <!-- Título del carrito -->
-    <h3>🛒 Carrito de compras</h3>
-
-    <!-- Productos agregados al carrito (mismo id de línea) -->
-    @for (item of tablaTemporal(); track item.lineaId) {
-
-      <div class="producto-carrito" data-reveal="push">
-
-        <div>
-
-          <!-- Nombre del medicamento -->
-          <strong>
-            {{ item.nombre }}
-          </strong>
-
-          <!-- Cantidad seleccionada -->
-          <p>
-            Cantidad: {{ item.cantidad }}
-          </p>
-
-        </div>
-
-        <!-- Precio total del producto -->
-        <div class="precio">
-
-          ${{ item.precioCompra * item.cantidad }}
-
-        </div>
-
-      </div>
-
-    }
-
-    <!-- Total general de la compra -->
-    <div class="total-carrito">
-
-      TOTAL: ${{ total() }}
-
-    </div>
-
-    <!-- Botón para guardar la compra desde el carrito -->
-    <button class="btn-guardar-carrito"
-            (click)="guardarCompra()"
-            [disabled]="guardando()">
-
-      {{ guardando() ? 'Guardando...' : 'Guardar compra' }}
-
-    </button>
+    </aside>
 
   </div>
 

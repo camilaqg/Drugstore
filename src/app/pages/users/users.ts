@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -29,6 +29,15 @@ export class Users {
 
   // Lista completa que viene del backend
   readonly usuarios = signal<Usuario[]>([]);
+
+  // Proyección de la lista para los KPI del encabezado. No toca el estado:
+  // se deriva de `usuarios()` y se recalcula en cada carga.
+  readonly totalAdmins = computed(
+    () => this.usuarios().filter((u) => u.rol === 'admin').length
+  );
+  readonly totalClientes = computed(
+    () => this.usuarios().filter((u) => u.rol === 'cliente').length
+  );
 
   // Id del usuario logueado, confirmado por el backend con GET /auth/me
   // (AuthService). NO se compara por nombre ni con el rol de
