@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -13,9 +14,8 @@ export class CompraService {
 
   private readonly http = inject(HttpClient);
 
-  // Misma convención hardcodeada que el resto de los servicios; sin
-  // environment por decisión de esta fase.
-  private readonly apiUrl = 'http://localhost:3000/compra';
+  // URL del backend centralizada en environments.
+  private readonly apiUrl = `${environment.apiUrl}/compra`;
 
   // GET /compra exige token de cualquier rol (lo agrega el interceptor)
   // y devuelve las compras con sus detalles.

@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ActualizarUsuario, Usuario } from '../models/usuario';
@@ -12,7 +13,7 @@ export class UsuarioService {
 
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/usuario';
+  private readonly apiUrl = `${environment.apiUrl}/usuario`;
 
   // Público en el backend: siempre crea rol 'cliente' (lo fuerza el
   // servidor). Lo usa la pantalla de registro; NO la gestión de usuarios.

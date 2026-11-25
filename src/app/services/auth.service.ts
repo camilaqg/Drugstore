@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
@@ -28,7 +29,7 @@ export class AuthService {
 
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/auth';
+  private readonly apiUrl = `${environment.apiUrl}/auth`;
 
   // Rol de autoridad: se completa SOLO con la respuesta de GET /auth/me
   // (backend). Nunca se lee de localStorage para autorizar, porque ahí es

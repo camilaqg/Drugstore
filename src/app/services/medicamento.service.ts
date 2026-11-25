@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -17,9 +18,8 @@ export class MedicamentoService {
 
   private readonly http = inject(HttpClient);
 
-  // Misma convención hardcodeada que el resto de los servicios; sin
-  // environment por decisión de esta fase.
-  private readonly apiUrl = 'http://localhost:3000/medicamento';
+  // URL del backend centralizada en environments.
+  private readonly apiUrl = `${environment.apiUrl}/medicamento`;
 
   // GET /medicamento exige token de cualquier rol (lo agrega el interceptor).
   listar(filtros?: FiltrosMedicamento): Observable<Medicamento[]> {
